@@ -47,3 +47,12 @@ Manuel alternatif: `js/config.production.example.js` → `js/config.production.j
 ## Monorepo tek port
 
 Backend `SERVE_FRONTEND=true` ile frontend'i `:8000` üzerinden servis eder; ayrı config gerekmez.
+
+## Yönetici paneli
+
+- **Ayarlar → Görünen ad:** Dashboard karşılama metni (`Günaydın, …`)
+- **Ayarlar → Aktif etkinlik:** Fotoğraf yükleme aç/kapa, davetiye aktif/pasif
+- **Misafirler → Düzenle:** Katılım durumu ve kişi sayısı
+- **Galeri / Anı Defteri:** Onayla veya gizle — yalnızca onaylı içerik davetiyede görünür
+
+Hard refresh: **Ctrl+Shift+R** (önbellek temizliği).

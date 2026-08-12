@@ -135,11 +135,6 @@ window.LumaEventData = {
     };
   },
 
-  addActivity(text, kind = 'check') {
-    this.cache.activities.unshift({ text, kind, created_at: new Date().toISOString() });
-    this.cache.activities = this.cache.activities.slice(0, 6);
-  },
-
   async fetchActivities(token) {
     const response = await fetch(
       `${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/activities`,
@@ -176,6 +171,25 @@ window.LumaEventData = {
     );
     if (!response.ok) throw new Error('Misafir silinemedi.');
     this.cache.guests = this.cache.guests.filter(g => g.id !== guestId);
+  },
+
+  async updateGuest(token, guestId, payload) {
+    const response = await fetch(
+      `${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/guests/${encodeURIComponent(guestId)}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...LumaConfig.adminAuthHeaders() },
+        body: JSON.stringify(payload),
+      },
+    );
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(apiErrorMessage(err, 'Misafir güncellenemedi.'));
+    }
+    const guest = await response.json();
+    const index = this.cache.guests.findIndex(item => item.id === guestId);
+    if (index >= 0) this.cache.guests[index] = guest;
+    return guest;
   },
 
   async submitRsvp(token, payload) {
@@ -219,6 +233,25 @@ window.LumaEventData = {
     );
     if (!response.ok) throw new Error('Mesaj silinemedi.');
     this.cache.messages = this.cache.messages.filter(m => m.id !== messageId);
+  },
+
+  async updateMessage(token, messageId, payload) {
+    const response = await fetch(
+      `${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/messages/${encodeURIComponent(messageId)}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...LumaConfig.adminAuthHeaders() },
+        body: JSON.stringify(payload),
+      },
+    );
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(apiErrorMessage(err, 'Mesaj güncellenemedi.'));
+    }
+    const message = await response.json();
+    const index = this.cache.messages.findIndex(item => item.id === messageId);
+    if (index >= 0) this.cache.messages[index] = message;
+    return message;
   },
 
   invitationPayloadFromForm(formData) {
