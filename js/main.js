@@ -39,10 +39,18 @@ const defaultEvent={id:'',slug:'',private_token:'',name:'Etkinlik yükleniyor...
 function eventList(){return window._lumaEvents||[]}
 function isAdminPanelRoute(){return !LumaConfig.publicEventToken()}
 function currentEventId(){
-  if(sessionStorage.getItem('lumaAdminJwt')&&isAdminPanelRoute())return sessionStorage.getItem('lumaActiveEventSlug')||eventList()[0]?.id||'';
+  if(sessionStorage.getItem('lumaAdminJwt')&&isAdminPanelRoute()){
+    const events=eventList();
+    const stored=sessionStorage.getItem('lumaActiveEventSlug');
+    if(stored&&events.some(item=>item.id===stored))return stored;
+    return events[0]?.id||'';
+  }
   const publicToken=LumaConfig.publicEventToken();
   if(publicToken){const match=eventList().find(item=>item.private_token===publicToken);if(match)return match.id}
-  return sessionStorage.getItem('lumaActiveEventSlug')||eventList()[0]?.id||'';
+  const events=eventList();
+  const stored=sessionStorage.getItem('lumaActiveEventSlug');
+  if(stored&&events.some(item=>item.id===stored))return stored;
+  return events[0]?.id||'';
 }
 function currentEventMeta(){return eventList().find(item=>item.id===currentEventId())||defaultEvent}
 function currentEventToken(){
@@ -74,12 +82,19 @@ async function syncBackendEvents(){
   _eventsSyncPromise=_syncBackendEventsImpl().finally(()=>{_eventsSyncPromise=null});
   return _eventsSyncPromise;
 }
+function clearAdminEventSession(){
+  sessionStorage.removeItem('lumaActiveEventSlug');
+  window._lumaEvents=[];
+}
 async function _syncBackendEventsImpl(){
   try{
     await LumaEventData.migrateLegacyEventsOnce();
     const mapped=await LumaEventData.listEvents();
-    if(!mapped.length)return false;
     window._lumaEvents=mapped;
+    if(!mapped.length){
+      sessionStorage.removeItem('lumaActiveEventSlug');
+      return false;
+    }
     const activeSlug=sessionStorage.getItem('lumaActiveEventSlug');
     const matched=activeSlug?mapped.find(item=>item.id===activeSlug):null;
     const active=matched||mapped[0];
@@ -88,7 +103,10 @@ async function _syncBackendEventsImpl(){
     hydrateEventUI();
     if(!document.getElementById('qrView').classList.contains('hidden'))LumaQr.render();
     return Boolean(active?.private_token);
-  }catch{return false}
+  }catch{
+    window._lumaEvents=[];
+    return false;
+  }
 }
 window.syncBackendEvents=syncBackendEvents;
 async function loginBackendAdmin(email,password){
@@ -100,6 +118,7 @@ async function loginBackendAdmin(email,password){
     const data=await response.json();
     sessionStorage.setItem('lumaAdminJwt',data.access_token);
     sessionStorage.setItem('lumaAdminSession',data.email||email);
+    clearAdminEventSession();
     applyAdminProfile({email:data.email||email,display_name:data.display_name});
     const synced=await syncBackendEvents();
     return {ok:true,synced,profile:data};
@@ -117,16 +136,20 @@ async function registerBackendAdmin(email,password,displayName){
     const data=await response.json();
     sessionStorage.setItem('lumaAdminJwt',data.access_token);
     sessionStorage.setItem('lumaAdminSession',data.email||email);
+    clearAdminEventSession();
     applyAdminProfile({email:data.email||email,display_name:data.display_name});
     const synced=await syncBackendEvents();
     return {ok:true,synced,profile:data};
   }catch{return {ok:false,reason:'network'}}
 }
 async function ensureEventToken(){
-  const token=currentEventToken();
-  if(token)return token;
-  if(sessionStorage.getItem('lumaAdminJwt')){await syncBackendEvents();return currentEventToken()}
-  return '';
+  if(!sessionStorage.getItem('lumaAdminJwt'))return currentEventToken();
+  const events=eventList();
+  const activeId=currentEventId();
+  const active=events.find(item=>item.id===activeId);
+  if(active?.private_token)return active.private_token;
+  await syncBackendEvents();
+  return currentEventToken();
 }
 window.ensureEventToken=ensureEventToken;
 function scopedKey(base,id=currentEventId()){return `${base}:${id}`}
@@ -423,7 +446,7 @@ document.getElementById('authForm').onsubmit=async e=>{
   finally{button.disabled=false;button.textContent=isRegister?'Kayıt Ol':'Giriş Yap'}
 };
 document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);e.currentTarget.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
-function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');location.reload()}
+function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');sessionStorage.removeItem('lumaActiveEventSlug');window._lumaEvents=[];location.reload()}
 document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('adminProfileForm').onsubmit=async e=>{e.preventDefault();const displayName=document.getElementById('settingsDisplayName').value.trim();if(!displayName){toast('Görünen ad boş bırakılamaz.');return}try{const profile=await LumaEventData.updateAdminProfile({display_name:displayName});applyAdminProfile(profile);toast('Profiliniz kaydedildi.');}catch(err){toast(err?.message||'Profil kaydedilemedi.')}};
 const userPopup=document.getElementById('userPopupMenu'),userMenuButton=document.getElementById('userMenuBtn');userMenuButton.onclick=e=>{e.stopPropagation();userPopup.classList.toggle('hidden');userMenuButton.setAttribute('aria-expanded',!userPopup.classList.contains('hidden'))};document.getElementById('profileBtn').onclick=()=>showView('profile');document.querySelector('[data-profile-action]').onclick=()=>{userPopup.classList.add('hidden');showView('profile')};document.querySelector('[data-logout-action]').onclick=logout;document.addEventListener('click',e=>{if(!document.getElementById('userCard').contains(e.target)){userPopup.classList.add('hidden');userMenuButton.setAttribute('aria-expanded','false')}});

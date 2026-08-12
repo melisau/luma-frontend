@@ -14,10 +14,24 @@ window.LumaQr = {
       : `luma-${safeSlug}-fotograf-yukleme-qr.png`;
   },
 
+  adminEventCount() {
+    return Array.isArray(window._lumaEvents) ? window._lumaEvents.length : 0;
+  },
+
+  tokenUnavailableMessage() {
+    if (!sessionStorage.getItem('lumaAdminJwt')) {
+      return 'QR kod için yönetici olarak giriş yapın.';
+    }
+    if (!this.adminEventCount()) {
+      return 'QR kod için önce bir etkinlik oluşturun.';
+    }
+    return 'Etkinlik bağlantısı alınamadı. Sayfayı yenileyip tekrar deneyin.';
+  },
+
   async getTokenOrWarn() {
     const token = window.ensureEventToken ? await window.ensureEventToken() : LumaConfig.getEventToken();
     if (!token) {
-      Luma.toast('Etkinlik bağlantısı alınamadı. Çıkış yapıp admin@example.com ile tekrar giriş yapın.');
+      Luma.toast(this.tokenUnavailableMessage());
       return '';
     }
     return token;
@@ -99,6 +113,46 @@ window.LumaQr = {
       const ok = await this.downloadQr(token, 'print', meta?.slug || meta?.id || '');
       if (ok) Luma.toast('Baskı için yüksek çözünürlüklü QR kod indirildi.');
     });
+
+    document.getElementById('createEventFromQrBtn')?.addEventListener('click', event => {
+      event.preventDefault();
+      document.getElementById('newEventBtn')?.click();
+    });
+  },
+
+  updateEmptyState() {
+    const empty = document.getElementById('uploadQrEmpty');
+    const preview = document.getElementById('uploadQrPreview');
+    const actions = document.querySelector('#qrView .qr-actions');
+    const urlLabel = document.querySelector('#qrView .qr-url-label');
+    const emptyTitle = document.getElementById('uploadQrEmptyTitle');
+    const emptyText = document.getElementById('uploadQrEmptyText');
+    const createBtn = document.getElementById('createEventFromQrBtn');
+    const loggedIn = Boolean(sessionStorage.getItem('lumaAdminJwt'));
+    const eventCount = this.adminEventCount();
+
+    empty?.classList.remove('hidden');
+    preview?.classList.add('hidden');
+    actions?.classList.add('hidden');
+    urlLabel?.classList.add('hidden');
+
+    if (!loggedIn) {
+      if (emptyTitle) emptyTitle.textContent = 'Yönetici girişi gerekli';
+      if (emptyText) emptyText.textContent = 'QR kod oluşturmak için hesabınızla giriş yapın.';
+      createBtn?.classList.add('hidden');
+      return;
+    }
+
+    if (!eventCount) {
+      if (emptyTitle) emptyTitle.textContent = 'Henüz etkinlik yok';
+      if (emptyText) emptyText.textContent = 'Her etkinliğin kendi QR kodu vardır. Başlamak için bir etkinlik oluşturun.';
+      createBtn?.classList.remove('hidden');
+      return;
+    }
+
+    if (emptyTitle) emptyTitle.textContent = 'Etkinlik seçilemedi';
+    if (emptyText) emptyText.textContent = 'Üst menüden bir etkinlik seçin veya sayfayı yenileyin.';
+    createBtn?.classList.add('hidden');
   },
 
   async render() {
@@ -109,10 +163,11 @@ window.LumaQr = {
     const image = document.getElementById('uploadQrImage');
     const urlEl = document.getElementById('uploadQrUrl');
     const eventNameEl = document.getElementById('uploadQrEventName');
+    const actions = document.querySelector('#qrView .qr-actions');
+    const urlLabel = document.querySelector('#qrView .qr-url-label');
 
     if (!token) {
-      empty?.classList.remove('hidden');
-      preview?.classList.add('hidden');
+      this.updateEmptyState();
       if (urlEl) urlEl.textContent = '';
       if (eventNameEl) eventNameEl.textContent = '';
       return;
@@ -121,6 +176,9 @@ window.LumaQr = {
     const uploadUrl = LumaConfig.uploadUrl(token);
     empty?.classList.add('hidden');
     preview?.classList.remove('hidden');
+    actions?.classList.remove('hidden');
+    urlLabel?.classList.remove('hidden');
+    document.getElementById('createEventFromQrBtn')?.classList.add('hidden');
     if (eventNameEl) {
       eventNameEl.textContent = meta?.name ? `${meta.name} · Bu etkinliğe özel QR` : 'Bu etkinliğe özel QR';
     }

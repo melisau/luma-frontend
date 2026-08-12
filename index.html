@@ -168,8 +168,9 @@
           <section class="editor-panel qr-preview-card">
             <div id="uploadQrEmpty" class="qr-empty hidden">
               <i data-icon="qr"></i>
-              <h2>Etkinlik bağlantısı hazırlanıyor</h2>
-              <p>QR kod oluşturmak için yönetici olarak giriş yapın ve backend etkinliğiniz senkronize edilsin.</p>
+              <h2 id="uploadQrEmptyTitle">Etkinlik bağlantısı hazırlanıyor</h2>
+              <p id="uploadQrEmptyText">QR kod, seçili etkinliğe özel oluşturulur. Giriş yaptıysanız üstten etkinlik seçin veya yeni bir etkinlik oluşturun.</p>
+              <button id="createEventFromQrBtn" class="create-btn hidden" type="button">Yeni Etkinlik Oluştur</button>
             </div>
             <div id="uploadQrPreview" class="qr-preview-wrap">
               <p id="uploadQrEventName" class="qr-event-name"></p>
