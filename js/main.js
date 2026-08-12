@@ -25,7 +25,7 @@ function showView(view){
   if(view==='gallery')LumaGallery.renderAdminGallery();
   if(view==='guestbook')renderAdminMessages();
   if(view==='settings')loadEventSettingsForm();
-  if(view==='profile'){renderProfile();loadContacts().catch(()=>{})}
+  if(view==='profile'){renderProfileEvents();if(window._lumaContacts)renderContactList();loadContacts().catch(()=>{})}
   if(view==='qr')LumaQr.render();
   if(!['overview','invite','guests','gallery','guestbook','settings','profile'].includes(view)){document.getElementById('emptyTitle').textContent=labels[view][0];document.getElementById('emptyText').textContent=labels[view][1];document.getElementById('openInvite').style.display='none'}
   sidebar.classList.remove('open');
@@ -34,7 +34,7 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 
 const modal=document.getElementById('modal'), content=document.getElementById('modalContent');
 const modalTemplates={rsvp:`<p class="invite-kicker">KATILIM BİLDİR</p><h2>Sizi aramızda görecek miyiz?</h2><p>Yanıtınız hazırlıklarımızı kusursuzlaştırmamıza yardımcı olacak.</p><form id="rsvpForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input required placeholder="Adınız ve soyadınız"></div><div class="field full"><label>KATILIM DURUMU</label><div class="choice-row"><label><input type="radio" name="status" checked>Katılacağım</label><label><input type="radio" name="status">Katılamayacağım</label><label><input type="radio" name="status">Henüz emin değilim</label></div></div><div class="field"><label>KİŞİ SAYISI</label><select><option>1 kişi</option><option>2 kişi</option><option>3 kişi</option><option>4+ kişi</option></select></div><div class="field"><label>E-POSTA (İSTEĞE BAĞLI)</label><input type="email" placeholder="ornek@email.com"></div><div class="field full"><label>EK NOT</label><textarea placeholder="Alerji, ulaşım veya bize iletmek istediğiniz bir not..."></textarea></div><button class="submit-btn">Yanıtımı Gönder</button></form>`,upload:`<p class="invite-kicker">ANI PAYLAŞ</p><h2>Fotoğraflarını bizimle paylaş 💌</h2><p>Etkinlikte çektiğin fotoğrafları güvenle yükleyebilirsin. Aynı anda birden fazla fotoğraf seçebilir veya tek tek ekleyebilirsin.</p><form id="uploadForm" class="form-grid"><label class="dropzone field full"><i data-icon="upload"></i><p>Fotoğraf ekle</p><small>Birden fazla seçilebilir · JPG, PNG, WebP, HEIC · Her biri en fazla 15 MB</small><input id="fileInput" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" hidden></label><div class="field full"><label>AÇIKLAMA (İSTEĞE BAĞLI)</label><textarea placeholder="Bu güzel an hakkında birkaç kelime..."></textarea></div><button class="submit-btn">Gönder</button></form>`,message:`<p class="invite-kicker">ANI DEFTERİ</p><h2>Bize bir not bırak.</h2><p>Yıllar sonra yeniden okumaktan mutluluk duyacağımız birkaç güzel kelime...</p><form id="messageForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input required placeholder="Adınız ve soyadınız"></div><div class="field full"><label>MESAJINIZ</label><textarea required placeholder="Bir ömür boyu mutluluklar..." style="min-height:130px"></textarea></div><button class="submit-btn">Mesajı Bırak ♡</button></form>`};
-modalTemplates.event=`<p class="invite-kicker">YENİ ETKİNLİK</p><h2>Yeni bir etkinlik oluştur.</h2><p>Temel bilgileri girin. Etkinlik oluşturulduğunda aktif olarak seçilecektir.</p><form id="eventForm" class="form-grid"><div class="field full"><label>ETKİNLİK ADI</label><input name="eventName" required placeholder="Örn. Melisa & Berk Düğünü"></div><div class="field"><label>TARİH VE SAAT</label><input name="eventDate" type="datetime-local" required></div><div class="field"><label>MEKÂN</label><input name="eventVenue" required placeholder="Örn. Esma Sultan Yalısı"></div><div class="field full"><label>ŞEHİR</label><input name="eventCity" required placeholder="Örn. İstanbul"></div><button class="submit-btn">Etkinliği Oluştur</button></form>`;
+modalTemplates.event=`<p class="invite-kicker">YENİ ETKİNLİK</p><h2>Yeni bir etkinlik oluştur.</h2><p>Temel bilgileri girin. Etkinlik oluşturulduğunda aktif olarak seçilecektir.</p><form id="eventForm" class="form-grid"><div class="field full"><label>ETKİNLİK ADI</label><input name="eventName" required placeholder="Örn. Düğünümüz"></div><div class="field"><label>TARİH VE SAAT</label><input name="eventDate" type="datetime-local" required></div><div class="field"><label>MEKÂN (İSTEĞE BAĞLI)</label><input name="eventVenue" placeholder="Örn. Esma Sultan Yalısı"></div><div class="field full"><label>ŞEHİR (İSTEĞE BAĞLI)</label><input name="eventCity" placeholder="Örn. İstanbul"></div><button class="submit-btn">Etkinliği Oluştur</button></form>`;
 const defaultEvent={id:'',slug:'',private_token:'',name:'Etkinlik yükleniyor...',date:null,venue:'',city:''};
 function eventList(){return window._lumaEvents||[]}
 function isAdminPanelRoute(){return !LumaConfig.publicEventToken()}
@@ -96,6 +96,23 @@ async function loginBackendAdmin(email,password){
     const response=await fetch(`${LumaConfig.apiBase}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     if(response.status===401)return {ok:false,reason:'invalid'};
     if(response.status===429)return {ok:false,reason:'rate_limit'};
+    if(!response.ok)return {ok:false,reason:'server'};
+    const data=await response.json();
+    sessionStorage.setItem('lumaAdminJwt',data.access_token);
+    sessionStorage.setItem('lumaAdminSession',data.email||email);
+    applyAdminProfile({email:data.email||email,display_name:data.display_name});
+    const synced=await syncBackendEvents();
+    return {ok:true,synced,profile:data};
+  }catch{return {ok:false,reason:'network'}}
+}
+async function registerBackendAdmin(email,password,displayName){
+  try{
+    const payload={email,password};
+    if(displayName)payload.display_name=displayName;
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(response.status===409)return {ok:false,reason:'exists'};
+    if(response.status===429)return {ok:false,reason:'rate_limit'};
+    if(response.status===422)return {ok:false,reason:'invalid'};
     if(!response.ok)return {ok:false,reason:'server'};
     const data=await response.json();
     sessionStorage.setItem('lumaAdminJwt',data.access_token);
@@ -315,7 +332,7 @@ function openModal(type){
       const submitBtn=form.querySelector('.submit-btn');
       if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Oluşturuluyor...'}
       try{
-        const created=await LumaEventData.createEvent({name:eventName,event_date:parsed.toISOString(),venue:value('eventVenue'),city:value('eventCity'),tagline:invitationContentDefaults.tagline,story_title:invitationContentDefaults.storyTitle,story_text:invitationContentDefaults.storyText,guest_note:invitationContentDefaults.guestNote});
+        const created=await LumaEventData.createEvent({name:eventName,event_date:parsed.toISOString(),venue:value('eventVenue'),city:value('eventCity')});
         sessionStorage.setItem('lumaActiveEventSlug',created.id);
         window._lumaEvents=await LumaEventData.listEvents();
         await refreshEventData();
@@ -352,6 +369,20 @@ function applyAdminProfile(profile){const email=profile?.email||sessionStorage.g
 async function refreshAdminProfile(){if(!sessionStorage.getItem('lumaAdminJwt'))return;try{applyAdminProfile(await LumaEventData.fetchAdminProfile())}catch{applyAdminProfile({email:sessionStorage.getItem('lumaAdminSession')||''})}}
 function updatePlanUI(){const plan=localStorage.getItem('lumaPlan')||'free';document.getElementById('sidebarPlanName').textContent=plan==='premium'?'Premium Plan':'Free Plan';document.querySelectorAll('[data-plan]').forEach(button=>button.classList.toggle('active',button.dataset.plan===plan))}
 function showAuthFeedback(message){const box=document.getElementById('authFeedback');box.textContent=message;box.classList.toggle('hidden',!message)}
+let authMode='login';
+function setAuthMode(mode){
+  authMode=mode;
+  const isRegister=mode==='register';
+  document.getElementById('authTitle').textContent=isRegister?'Hesap oluşturun':'Yönetici girişi';
+  document.getElementById('authDescription').textContent=isRegister?'E-posta ve şifrenizle yeni bir yönetici hesabı oluşturun.':'Yönetici e-posta adresiniz ve şifrenizle giriş yapın.';
+  document.getElementById('authDisplayNameWrap').classList.toggle('hidden',!isRegister);
+  document.getElementById('authSubmitBtn').textContent=isRegister?'Kayıt Ol':'Giriş Yap';
+  document.getElementById('authSwitchText').textContent=isRegister?'Zaten hesabınız var mı?':'Hesabınız yok mu?';
+  document.getElementById('authSwitchBtn').textContent=isRegister?'Giriş yapın':'Kayıt olun';
+  document.getElementById('authPassword').autocomplete=isRegister?'new-password':'current-password';
+  showAuthFeedback('');
+}
+document.getElementById('authSwitchBtn').onclick=()=>setAuthMode(authMode==='login'?'register':'login');
 function initializeAccess(){
   const publicToken=LumaConfig.publicEventToken();
   const loggedIn=Boolean(sessionStorage.getItem('lumaAdminJwt'));
@@ -365,16 +396,19 @@ document.getElementById('authForm').onsubmit=async e=>{
   e.preventDefault();showAuthFeedback('');
   const emailInput=document.getElementById('authEmail'),passwordInput=document.getElementById('authPassword');
   const email=emailInput.value.trim().toLocaleLowerCase('tr-TR'),password=passwordInput.value,button=document.getElementById('authSubmitBtn');
+  const displayName=(document.getElementById('authDisplayName').value||'').trim();
   if(!emailInput.validity.valid){showAuthFeedback('Lütfen geçerli bir e-posta adresi girin.');emailInput.focus();return}
   if(password.length<8){showAuthFeedback('Şifre en az 8 karakter olmalıdır.');passwordInput.focus();return}
-  button.disabled=true;button.textContent='Giriş yapılıyor...';
+  const isRegister=authMode==='register';
+  button.disabled=true;button.textContent=isRegister?'Kayıt oluşturuluyor...':'Giriş yapılıyor...';
   try{
-    const result=await loginBackendAdmin(email,password);
+    const result=isRegister?await registerBackendAdmin(email,password,displayName):await loginBackendAdmin(email,password);
     if(!result.ok){
-      if(result.reason==='invalid')showAuthFeedback('E-posta veya şifre hatalı.');
-      else if(result.reason==='rate_limit')showAuthFeedback('Çok fazla giriş denemesi. Lütfen bir dakika bekleyin.');
+      if(result.reason==='invalid')showAuthFeedback(isRegister?'Lütfen geçerli bilgiler girin.':'E-posta veya şifre hatalı.');
+      else if(result.reason==='exists')showAuthFeedback('Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.');
+      else if(result.reason==='rate_limit')showAuthFeedback('Çok fazla deneme. Lütfen bir dakika bekleyin.');
       else if(result.reason==='network')showAuthFeedback('Sunucuya bağlanılamadı. Backend çalışıyor mu?');
-      else showAuthFeedback('Giriş şu an tamamlanamadı. Lütfen tekrar deneyin.');
+      else showAuthFeedback(isRegister?'Kayıt şu an tamamlanamadı. Lütfen tekrar deneyin.':'Giriş şu an tamamlanamadı. Lütfen tekrar deneyin.');
       return;
     }
     initializeAccess();
@@ -384,9 +418,9 @@ document.getElementById('authForm').onsubmit=async e=>{
     await syncPhotoCount();
     updateDashboard();
     renderGuestTable();
-    toast('Yönetici paneline giriş yapıldı.');
-  }catch{showAuthFeedback('Giriş işlenemedi. Tarayıcı depolama iznini kontrol edin.')}
-  finally{button.disabled=false;button.textContent='Giriş Yap'}
+    toast(isRegister?'Hesabınız oluşturuldu. Yönetici paneline hoş geldiniz.':'Yönetici paneline giriş yapıldı.');
+  }catch{showAuthFeedback(isRegister?'Kayıt işlenemedi. Tarayıcı depolama iznini kontrol edin.':'Giriş işlenemedi. Tarayıcı depolama iznini kontrol edin.')}
+  finally{button.disabled=false;button.textContent=isRegister?'Kayıt Ol':'Giriş Yap'}
 };
 document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);e.currentTarget.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
 function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');location.reload()}
@@ -486,20 +520,84 @@ async function openContactEventPicker(contact){
   document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;
   content.innerHTML=`<p class="invite-kicker">KİŞİNİN ETKİNLİKLERİ</p><h2>Etkinlik seç</h2><p><strong>${escapeHtml(contact.name)}</strong> kişisinin katılabileceği etkinlikleri işaretleyin. İşareti kaldırılan etkinliklerden kişi çıkarılır.</p><div class="event-picker-list">${events.map(event=>{const exists=membership[event.id];return `<label class="event-picker-option"><input type="checkbox" value="${event.id}" ${exists?'checked':''}><span><strong>${escapeHtml(event.name)}</strong><small>${exists?'Şu anda misafir listesinde':trDate(eventDateFor(event),{day:'numeric',month:'long',year:'numeric'})}</small></span></label>`}).join('')}</div><div class="event-picker-actions"><button id="cancelEventPicker" class="confirm-cancel">Vazgeç</button><button id="confirmEventPicker" class="confirm-delete">Seçimleri Kaydet</button></div>`;
   modal.classList.remove('hidden');document.getElementById('cancelEventPicker').onclick=closeModal;document.getElementById('confirmEventPicker').onclick=async()=>{let added=0,removed=0;for(const event of events){const selected=content.querySelector(`.event-picker-option input[value="${event.id}"]`).checked,token=event.private_token;if(!token)continue;const existing=membership[event.id];if(selected&&!existing){try{await LumaEventData.createGuest(token,{name:contact.name,email,status:'pending',people:1,source:'admin'});added++}catch{}}else if(!selected&&existing){try{const guests=event.id===currentEventId()?readData().guests:await LumaEventData.fetchGuests(token);const guest=guests.find(g=>normalizedEmail(g.email)===email);if(guest){await LumaEventData.deleteGuest(token,guest.id);removed++}}catch{}}}await refreshGuestViews();await refreshActivities();closeModal();toast(added||removed?`${added} etkinliğe eklendi, ${removed} etkinlikten çıkarıldı.`:'Etkinlik seçimlerinde değişiklik yapılmadı.')}}
-function renderProfile(){
+function renderProfileEvents(){
   const events=eventList(),eventContainer=document.getElementById('profileEventList');
   eventContainer.innerHTML=events.length?events.map(event=>`<div class="profile-event-row"><button class="profile-event ${event.id===currentEventId()?'active':''}" data-profile-event="${event.id}"><strong>${escapeHtml(event.name)}</strong><small>${trDate(eventDateFor(event),{day:'numeric',month:'long',year:'numeric'})} · ${escapeHtml(event.venue||'Mekân belirtilmedi')}</small><small class="profile-event-link">${event.private_token?`Davet: ${escapeHtml(LumaConfig.inviteUrl(event.private_token))}`:'Davet bağlantısı senkronize ediliyor...'}</small><small class="profile-event-link">${event.private_token?`Fotoğraf yükleme: ${escapeHtml(LumaConfig.uploadUrl(event.private_token))}`:''}</small></button><div class="profile-event-actions"><button class="profile-event-qr" data-open-event-qr="${event.id}" ${event.private_token?'':'disabled'}>QR kodu</button><button class="profile-event-delete" data-delete-event="${event.id}" aria-label="${escapeHtml(event.name)} etkinliğini sil">Sil</button></div></div>`).join(''):'<div class="guest-empty">Henüz etkinlik yok.</div>';
   eventContainer.querySelectorAll('[data-profile-event]').forEach(button=>button.onclick=async()=>{await switchActiveEvent(button.dataset.profileEvent)});
   eventContainer.querySelectorAll('[data-open-event-qr]').forEach(button=>button.onclick=async()=>{await switchActiveEvent(button.dataset.openEventQr);showView('qr')});
   eventContainer.querySelectorAll('[data-delete-event]').forEach(button=>button.onclick=()=>{const event=events.find(item=>item.id===button.dataset.deleteEvent);if(!event?.private_token)return;LumaGallery.openDeleteConfirmation('Etkinlik silinsin mi?',`"${event.name}" ve bağlı tüm misafir, fotoğraf ve anı defteri verileri kalıcı olarak silinecek.`,async()=>{try{await LumaEventData.deleteEvent(event.private_token);const wasActive=event.id===currentEventId();window._lumaEvents=await LumaEventData.listEvents();if(!window._lumaEvents.length)sessionStorage.removeItem('lumaActiveEventSlug');else if(wasActive)sessionStorage.setItem('lumaActiveEventSlug',window._lumaEvents[0].id);await syncBackendEvents();renderProfile();updateDashboard();renderGuestTable();toast('Etkinlik silindi.')}catch(err){toast(err?.message||'Etkinlik silinemedi.');throw err}})});
-  renderContactList();
 }
+function renderProfile(){renderProfileEvents();renderContactList()}
 document.getElementById('savedContactSelect').onchange=e=>{const contact=contactList().find(item=>item.id===e.currentTarget.value);if(!contact)return;document.getElementById('guestNameInput').value=contact.name;document.getElementById('guestEmailInput').value=contact.email};
 document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();const name=document.getElementById('contactName').value.trim(),email=normalizedEmail(document.getElementById('contactEmail').value);const button=e.currentTarget.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Kaydediliyor...'}try{const created=await LumaEventData.createContact({name,email});upsertContact(created);e.currentTarget.reset();toast('Kişi rehbere kaydedildi.')}catch(err){toast(err.message||'Kişi kaydedilemedi.')}finally{if(button){button.disabled=false;button.textContent='Kişiyi Kaydet'}}};
-const invitationContentDefaults={names:'Melisa & Berk',tagline:'Birlikte, sonsuza...',storyTitle:'Hayat, seninle daha güzel.',storyText:'Bir kahveyle başlayan hikâyemiz, şimdi en güzel “evet”e hazırlanıyor. Bu özel günümüzde sevincimizi sizinle paylaşmak için sabırsızlanıyoruz.',venue:'The Marmara Esma Sultan',location:'Ortaköy, Beşiktaş · İstanbul',guestNote:'Şıklığınızı yansıtan kokteyl veya gece kıyafeti.'};
 function invitationContentFromForm(){return {names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
-function applyInvitationContent(data){const contentData={...invitationContentDefaults,...data};document.getElementById('inviteNames').textContent=contentData.names;document.getElementById('inviteTagline').textContent=contentData.tagline;document.getElementById('inviteStoryTitle').textContent=contentData.storyTitle;document.getElementById('inviteStoryText').textContent=contentData.storyText;document.getElementById('inviteHeroPlace').textContent=`${contentData.venue} · ${contentData.location}`.toLocaleUpperCase('tr-TR');const venueText=document.querySelector('.detail-grid article:nth-child(2) p');venueText.replaceChildren(document.createTextNode(contentData.venue),document.createElement('br'),document.createTextNode(contentData.location));document.querySelector('.detail-grid article:nth-child(3) p').textContent=contentData.guestNote;document.querySelector('.signature').textContent=contentData.names.split(/\s*&\s*|\s+/).filter(Boolean).slice(0,2).map(part=>part[0].toLocaleUpperCase('tr-TR')).join(' & ');const footer=document.querySelector('.invite-footer p'),dateSpan=document.getElementById('footerDate')||document.createElement('span');dateSpan.id='footerDate';footer.replaceChildren(document.createTextNode(`${contentData.names} · `),dateSpan)}
-function loadInvitationContentEditor(){const meta=currentEventMeta(),inv=LumaEventData.cache.invitation;if(!inv&&!meta.id)return;const data={names:inv?.name||meta.name,tagline:inv?.tagline||invitationContentDefaults.tagline,storyTitle:inv?.story_title||invitationContentDefaults.storyTitle,storyText:inv?.story_text||invitationContentDefaults.storyText,venue:inv?.venue||meta.venue,location:inv?.city||meta.city,guestNote:inv?.guest_note||invitationContentDefaults.guestNote};document.getElementById('contentCoupleNames').value=data.names;document.getElementById('contentTagline').value=data.tagline;document.getElementById('contentStoryTitle').value=data.storyTitle;document.getElementById('contentStoryText').value=data.storyText;document.getElementById('contentVenue').value=data.venue;document.getElementById('contentLocation').value=data.location;document.getElementById('contentGuestNote').value=data.guestNote;applyInvitationContent(data);if(inv?.event_date){dateInput.value=inv.event_date.slice(0,16);eventDate=new Date(inv.event_date);updateDateContent(eventDate)}if(inv?.cover_url){pendingCover=inv.cover_url;coverPreview.src=pendingCover;document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`}}
+function applyInvitationContent(data){
+  const meta=currentEventMeta();
+  const names=(data.names||meta.name||'').trim();
+  const tagline=(data.tagline||'').trim();
+  const storyTitle=(data.storyTitle||'').trim();
+  const storyText=(data.storyText||'').trim();
+  const venue=(data.venue||'').trim();
+  const location=(data.location||'').trim();
+  const guestNote=(data.guestNote||'').trim();
+  const heroPlace=[venue,location].filter(Boolean).join(' · ');
+  document.getElementById('inviteNames').textContent=names;
+  document.getElementById('inviteTagline').textContent=tagline;
+  document.getElementById('inviteTagline').classList.toggle('hidden',!tagline);
+  document.getElementById('inviteHeroPlace').textContent=heroPlace.toLocaleUpperCase('tr-TR');
+  document.getElementById('inviteHeroPlace').classList.toggle('hidden',!heroPlace);
+  document.getElementById('inviteStoryTitle').textContent=storyTitle;
+  document.getElementById('inviteStoryText').textContent=storyText;
+  document.getElementById('story').classList.toggle('hidden',!storyTitle&&!storyText);
+  const signature=document.querySelector('.signature');
+  const initials=names.split(/\s*&\s*|\s+/).filter(Boolean).slice(0,2).map(part=>part[0].toLocaleUpperCase('tr-TR')).join(' & ');
+  signature.textContent=initials;
+  signature.classList.toggle('hidden',!initials);
+  const venueArticle=document.getElementById('detailVenueArticle');
+  const venueParagraph=venueArticle?.querySelector('p');
+  if(venueParagraph){
+    venueParagraph.replaceChildren();
+    if(venue)venueParagraph.appendChild(document.createTextNode(venue));
+    if(venue&&location)venueParagraph.appendChild(document.createElement('br'));
+    if(location)venueParagraph.appendChild(document.createTextNode(location));
+  }
+  venueArticle?.classList.toggle('hidden',!venue&&!location);
+  const guestNoteArticle=document.getElementById('detailGuestNoteArticle');
+  const guestNoteParagraph=guestNoteArticle?.querySelector('p');
+  if(guestNoteParagraph)guestNoteParagraph.textContent=guestNote;
+  guestNoteArticle?.classList.toggle('hidden',!guestNote);
+  const footerName=document.getElementById('footerEventName');
+  const footerDate=document.getElementById('footerDate');
+  if(footerName){
+    footerName.textContent=names?`${names} · `:'';
+    footerName.classList.toggle('hidden',!names);
+  }
+  if(footerDate&&!footerDate.textContent&&eventDate&&!Number.isNaN(eventDate.getTime()))footerDate.textContent=trDate(eventDate,{day:'numeric',month:'long',year:'numeric'});
+}
+function loadInvitationContentEditor(){
+  const meta=currentEventMeta(),inv=LumaEventData.cache.invitation;
+  if(!inv&&!meta.id)return;
+  const data={
+    names:inv?.name||meta.name||'',
+    tagline:inv?.tagline||'',
+    storyTitle:inv?.story_title||'',
+    storyText:inv?.story_text||'',
+    venue:inv?.venue||meta.venue||'',
+    location:inv?.city||meta.city||'',
+    guestNote:inv?.guest_note||''
+  };
+  document.getElementById('contentCoupleNames').value=data.names;
+  document.getElementById('contentTagline').value=data.tagline;
+  document.getElementById('contentStoryTitle').value=data.storyTitle;
+  document.getElementById('contentStoryText').value=data.storyText;
+  document.getElementById('contentVenue').value=data.venue;
+  document.getElementById('contentLocation').value=data.location;
+  document.getElementById('contentGuestNote').value=data.guestNote;
+  applyInvitationContent(data);
+  if(inv?.event_date){dateInput.value=inv.event_date.slice(0,16);eventDate=new Date(inv.event_date);updateDateContent(eventDate)}
+  else if(meta.date){dateInput.value=meta.date.slice(0,16);eventDate=new Date(meta.date);updateDateContent(eventDate)}
+  if(inv?.cover_url){pendingCover=inv.cover_url;coverPreview.src=pendingCover;document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`}
+}
 function updateDateContent(date){
   if(Number.isNaN(date.getTime()))return;
   const dayMonthYear=trDate(date,{day:'numeric',month:'long',year:'numeric'}),weekday=trDate(date,{weekday:'long'}),time=trDate(date,{hour:'2-digit',minute:'2-digit'}),capitalWeekday=weekday.charAt(0).toUpperCase()+weekday.slice(1);
@@ -533,10 +631,12 @@ document.getElementById('removeMusicBtn').onclick=()=>{pendingMusicFile=undefine
 document.getElementById('editorPreviewBtn').onclick=async()=>{document.getElementById('inviteCoverImage').src=pendingCover;updateDateContent(new Date(dateInput.value));applyInvitationContent(invitationContentFromForm());await refreshPublicMemories();openInvitation()};
 document.getElementById('inviteEditorForm').onsubmit=async e=>{
   e.preventDefault();eventDate=new Date(dateInput.value);updateDateContent(eventDate);document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`;
-  const contentData=invitationContentFromForm(),token=currentEventToken();
+  const contentData=invitationContentFromForm(),token=currentEventToken(),meta=currentEventMeta();
   if(!token){toast('Etkinlik token bulunamadı.');return}
+  const savePayload={...contentData,event_date:new Date(dateInput.value).toISOString(),city:contentData.location};
+  if(!savePayload.names)savePayload.names=meta.name||'';
   try{
-    await LumaEventData.saveInvitation(token,{...contentData,event_date:new Date(dateInput.value).toISOString(),city:contentData.location});
+    await LumaEventData.saveInvitation(token,savePayload);
     if(pendingCover===defaultCover)await LumaEventData.removeCover(token);
     else if(typeof pendingCover==='string'&&(pendingCover.startsWith('data:')||pendingCover.startsWith('blob:')))await LumaEventData.uploadCover(token,pendingCover);
     if(removePendingMusic)await LumaEventData.removeMusic(token);else if(pendingMusicFile)await LumaEventData.uploadMusic(token,pendingMusicFile);

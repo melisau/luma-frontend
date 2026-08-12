@@ -256,14 +256,14 @@ window.LumaEventData = {
 
   invitationPayloadFromForm(formData) {
     return {
-      name: formData.names,
+      name: formData.names || formData.name || '',
       event_date: formData.event_date,
-      venue: formData.venue,
-      city: formData.city,
-      tagline: formData.tagline,
-      story_title: formData.story_title,
-      story_text: formData.story_text,
-      guest_note: formData.guest_note,
+      venue: formData.venue || '',
+      city: formData.city || formData.location || '',
+      tagline: formData.tagline || '',
+      story_title: formData.story_title || formData.storyTitle || '',
+      story_text: formData.story_text || formData.storyText || '',
+      guest_note: formData.guest_note || formData.guestNote || '',
     };
   },
 
@@ -559,7 +559,7 @@ window.LumaEventData = {
           city: item.city || '',
         });
       } catch {
-        /* atla */
+        /* skip */
       }
     }
     localStorage.removeItem('lumaEvents');

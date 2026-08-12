@@ -1,5 +1,5 @@
-// Production API adresi — deploy sırasında gerçek URL ile doldurun.
-// Cloudflare Pages: Build command olarak scripts/write-config.sh kullanın
-// veya bu dosyayı config.production.js olarak kopyalayıp commit edin.
+// Production API URL — set the real URL at deploy time.
+// Cloudflare Pages: use scripts/write-config.sh as the build command,
+// or copy this file to config.production.js and commit with your API URL.
 
 window.__LUMA_API_BASE__ = 'https://api.example.com';

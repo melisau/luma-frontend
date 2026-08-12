@@ -1,6 +1,6 @@
 function resolveApiBase() {
   if (typeof window.__LUMA_API_BASE__ === 'string') return window.__LUMA_API_BASE__;
-  // Frontend ayrı portta (5500) — aynı makinedeki API'ye bağlan
+  // Frontend on port 5500 — point at the API on the same machine
   if (location.port === '5500') {
     return `${location.protocol}//${location.hostname}:8000`;
   }
