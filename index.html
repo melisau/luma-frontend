@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Luma ile davetiyenizi, katılım durumunu ve tüm anılarınızı tek bağlantıda yönetin." />
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, noimageindex, nosnippet" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Luma — Anılarınız tek bir yerde</title>
+  <base href="/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css?v=35" />
+  <style>@media(max-width:1050px){.editor-grid{grid-template-columns:1fr}.add-guest-form{grid-template-columns:1fr 1fr}}@media(max-width:700px){.editor-heading{align-items:flex-start}.editor-heading .ghost-btn{width:38px;padding:0;font-size:0}.editor-panel{padding:18px}.cover-dropzone{height:240px}.editor-actions{position:sticky;bottom:10px;z-index:2}.add-guest-form{grid-template-columns:1fr}.guest-toolbar{align-items:stretch;flex-direction:column}.guest-search{margin:0}.guest-search input{width:100%}}</style>
+  <style>@media(max-width:700px){.content-fields{grid-template-columns:1fr}.content-fields .full{grid-column:1}}</style>
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <section id="authScreen" class="auth-screen hidden">
+    <div class="auth-card"><a class="brand auth-brand" href="#"><span class="brand-mark">L</span><span>Luma</span></a><p class="eyebrow">YÖNETİCİ PANELİ</p><h1 id="authTitle">Yönetici girişi</h1><p id="authDescription">Geliştirme ortamı: <strong>admin@example.com</strong> / <strong>change-me-admin</strong></p><form id="authForm"><div id="authFeedback" class="auth-feedback hidden" role="alert"></div><label><span>E-POSTA</span><input id="authEmail" type="email" required autocomplete="email" placeholder="admin@example.com" value="admin@example.com"></label><label><span>ŞİFRE</span><input id="authPassword" type="password" required minlength="8" autocomplete="current-password" placeholder="change-me-admin"></label><button id="authSubmitBtn" class="create-btn" type="submit">Giriş Yap</button></form><small>Yönetim bilgileri misafir davetiyesinde gösterilmez.</small></div>
+  </section>
+
+  <section id="dashboard" class="app-shell hidden">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Luma ana sayfa"><span class="brand-mark">L</span><span>Luma</span></a>
+      <nav class="side-nav" aria-label="Ana menü">
+        <p class="nav-label">MENÜ</p>
+        <button class="nav-item active" data-view="overview"><i data-icon="grid"></i>Genel Bakış</button>
+        <button class="nav-item" data-view="invite"><i data-icon="heart"></i>Davetiye</button>
+        <button class="nav-item" data-view="guests"><i data-icon="users"></i>Misafirler<span id="guestNavCount" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="gallery"><i data-icon="image"></i>Galeri<span id="galleryNavCount" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="guestbook"><i data-icon="book"></i>Anı Defteri<span id="guestbookNavCount" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="qr"><i data-icon="qr"></i>QR Kodlar</button>
+        <p class="nav-label nav-second">YÖNETİM</p>
+        <button class="nav-item" data-view="settings"><i data-icon="settings"></i>Ayarlar</button>
+      </nav>
+      <div class="side-bottom">
+        <div class="plan-card">
+          <div class="plan-head"><span class="spark">✦</span><span id="sidebarPlanName">Free Plan</span></div>
+          <p id="sidebarDaysRemaining">Etkinlik tarihi hesaplanıyor.</p>
+          <div class="progress"><span id="storageProgress"></span></div>
+          <small id="storageUsageLabel">Depolama hesaplanıyor...</small>
+        </div>
+        <div class="user-card" id="userCard">
+          <button id="profileBtn" class="profile-trigger" aria-label="Profilime git"><span class="avatar">MB</span><span><strong id="sidebarUserName">Yönetici</strong><small>Etkinlik sahibi</small></span></button>
+          <button id="userMenuBtn" aria-label="Kullanıcı menüsü" aria-expanded="false">•••</button>
+          <div id="userPopupMenu" class="user-popup hidden"><button data-profile-action>Profilim</button><button data-logout-action>Çıkış Yap</button></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn menu-btn" aria-label="Menüyü aç"><i data-icon="menu"></i></button>
+        <div class="event-switch">
+          <span class="event-thumb"></span>
+          <div><small>AKTİF ETKİNLİK</small><select id="eventSelect" aria-label="Aktif etkinliği seç"><option value="default">Melisa &amp; Berk</option></select></div>
+          <i data-icon="chevron"></i>
+        </div>
+        <div class="top-actions">
+          <button id="previewBtn" class="ghost-btn"><i data-icon="eye"></i><span>Davetiyeyi Görüntüle</span></button>
+          <button class="icon-btn notification" aria-label="Bildirimler"><i data-icon="bell"></i><span></span></button>
+          <button id="newEventBtn" class="create-btn">+ Yeni Etkinlik</button>
+        </div>
+      </header>
+
+      <div class="content" id="overviewView">
+        <div class="welcome-row">
+          <div><p class="eyebrow">23 TEMMUZ 2026, PERŞEMBE</p><h1>Günaydın, Melisa <span>✦</span></h1><p>Hazırlıklar harika gidiyor. İşte etkinliğinin bugünkü özeti.</p></div>
+          <button class="date-pill" data-view="invite"><i data-icon="calendar"></i><span id="dashboardDate">6 Eylül 2026 · Pazar</span><i data-icon="chevron"></i></button>
+        </div>
+
+        <section class="countdown-banner">
+          <div><span class="live-dot"></span><small>YAKLAŞAN ETKİNLİK</small><strong id="daysRemaining">Hesaplanıyor...</strong><p id="dashboardDateTime">Etkinlik bilgisi hesaplanıyor...</p></div>
+          <div class="mini-countdown" aria-label="Geri sayım"><b>00<small>GÜN</small></b><em>:</em><b>00<small>SAAT</small></b><em>:</em><b>00<small>DAKİKA</small></b><em>:</em><b>00<small>SANİYE</small></b></div>
+          <div class="rings">◎</div>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card"><div class="stat-icon rose"><i data-icon="users"></i></div><div><small>TOPLAM DAVETLİ</small><strong id="totalGuestsStat">0</strong><p id="totalGuestsNote">Henüz davetli kaydı yok</p></div><button>•••</button></article>
+          <article class="stat-card"><div class="stat-icon green"><i data-icon="check"></i></div><div><small>KATILACAK</small><strong id="attendingStat">0</strong><p id="attendingNote">Henüz katılım yanıtı yok</p></div><button>•••</button></article>
+          <article class="stat-card"><div class="stat-icon amber"><i data-icon="clock"></i></div><div><small>CEVAP BEKLENİYOR</small><strong id="pendingStat">0</strong><p>Yanıt vermeyen davetliler</p></div><button>•••</button></article>
+          <article class="stat-card"><div class="stat-icon blue"><i data-icon="image"></i></div><div><small>TOPLAM ANI</small><strong id="memoriesStat">0</strong><p id="memoriesNote">Henüz anı paylaşılmadı</p></div><button>•••</button></article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel rsvp-panel">
+            <div class="panel-head"><div><h2>Katılım Durumu</h2><p id="rsvpTotalLabel">Toplam 0 davetli</p></div><button class="more-link" data-view="guests">Tümünü Gör <span>→</span></button></div>
+            <div class="rsvp-body">
+              <div id="rsvpDonut" class="donut" aria-label="Yüzde 0 katılım"><div><strong id="rsvpPercent">0%</strong><small>KATILIM</small></div></div>
+              <div class="legend">
+                <div><span class="legend-dot l-green"></span><p><strong id="legendAttending">0</strong><small>Katılacak</small></p><b id="legendAttendingPercent">0%</b></div>
+                <div><span class="legend-dot l-rose"></span><p><strong id="legendDeclined">0</strong><small>Katılamayacak</small></p><b id="legendDeclinedPercent">0%</b></div>
+                <div><span class="legend-dot l-amber"></span><p><strong id="legendPending">0</strong><small>Bekleniyor</small></p><b id="legendPendingPercent">0%</b></div>
+              </div>
+            </div>
+            <div class="rsvp-foot"><span>Toplam kişi sayısı</span><strong id="totalPeopleLabel">0 kişi</strong><small id="companionLabel">Kayıtlı refakatçi yok</small></div>
+          </article>
+
+          <article class="panel activity-panel">
+            <div class="panel-head"><div><h2>Son Aktiviteler</h2><p>Etkinliğindeki son gelişmeler</p></div><button class="more-link">Tümünü Gör <span>→</span></button></div>
+            <div id="activityList" class="activity-list"><div class="activity-empty">Henüz gerçek bir etkinlik hareketi yok.</div></div>
+          </article>
+        </section>
+
+        <section class="quick-section">
+          <div class="section-title"><div><h2>Hızlı İşlemler</h2><p>En sık kullandığın araçlara kolayca ulaş.</p></div></div>
+          <div class="quick-grid">
+            <button class="quick-card" data-view="invite"><span class="quick-icon rose"><i data-icon="edit"></i></span><div><strong>Davetiyeyi Düzenle</strong><small>Tema, renk ve içerikleri özelleştir</small></div><i data-icon="arrow"></i></button>
+            <button class="quick-card" data-view="qr"><span class="quick-icon dark"><i data-icon="qr"></i></span><div><strong>QR Kodunu İndir</strong><small>Baskıya hazır yüksek çözünürlük</small></div><i data-icon="download"></i></button>
+            <button class="quick-card" data-view="guests"><span class="quick-icon green"><i data-icon="userplus"></i></span><div><strong>Misafir Ekle</strong><small>Tek tek ekle veya listeden aktar</small></div><i data-icon="arrow"></i></button>
+            <button class="quick-card" data-view="gallery"><span class="quick-icon blue"><i data-icon="image"></i></span><div><strong>Albümü Görüntüle</strong><small id="albumSummary">Henüz yükleme yok</small></div><i data-icon="arrow"></i></button>
+          </div>
+        </section>
+      </div>
+
+      <div class="content hidden" id="inviteEditorView">
+        <div class="editor-heading"><div><p class="eyebrow">DAVETİYE YÖNETİMİ</p><h1>Davetiyeni özelleştir</h1><p>Tarihi ve kapak görselini seç; değişiklikleri kaydetmeden önce önizle.</p></div><button id="editorPreviewBtn" class="ghost-btn"><i data-icon="eye"></i>Canlı önizleme</button></div>
+        <form id="inviteEditorForm" class="editor-grid">
+          <section class="editor-panel"><div class="editor-panel-head"><span>01</span><div><h2>Tarih ve saat</h2><p>Geri sayım ve davetiye detayları otomatik güncellenir.</p></div></div><label class="editor-field"><span>ETKİNLİK TARİHİ VE SAATİ</span><input id="eventDateInput" type="datetime-local" required value="2026-09-06T18:30"></label><div class="date-preview"><i data-icon="calendar"></i><div><small>SEÇİLEN TARİH</small><strong id="selectedDatePreview">6 Eylül 2026, Pazar · 18:30</strong></div></div></section>
+          <section class="editor-panel"><div class="editor-panel-head"><span>02</span><div><h2>Kapak görseli</h2><p>Yatay ve yüksek çözünürlüklü bir fotoğraf önerilir.</p></div></div><label id="coverDropzone" class="cover-dropzone"><input id="coverImageInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><img id="coverPreview" src="assets/images/wedding-hero.png" alt="Seçilen kapak görseli önizlemesi"><span class="cover-overlay"><i data-icon="upload"></i><b>Görseli değiştir</b><small>JPG, PNG veya WebP · En fazla 3 MB</small></span></label><button id="resetCoverBtn" class="text-btn" type="button">Varsayılan görsele dön</button></section>
+          <section class="editor-panel music-editor-panel"><div class="editor-panel-head"><span>03</span><div><h2>Arka plan müziği</h2><p>Misafirler davetiyeyi açtığında çalacak müziği seçin.</p></div></div><label id="musicDropzone" class="music-dropzone"><input id="musicFileInput" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg" hidden><i data-icon="upload"></i><div><b id="musicFileName">Müzik dosyası seç</b><small>MP3, M4A, WAV veya OGG · En fazla 15 MB</small></div></label><div id="musicAdminPreview" class="music-admin-preview hidden"><audio id="musicPreviewAudio" controls></audio><button id="removeMusicBtn" class="text-btn" type="button">Müziği kaldır</button></div></section>
+          <section class="editor-panel content-editor-panel"><div class="editor-panel-head"><span>04</span><div><h2>Davetiye içeriği</h2><p>Misafirlerin göreceği başlıkları, hikâyeyi, mekânı ve notu düzenleyin.</p></div></div><div class="content-fields"><label class="editor-field"><span>ÇİFT / ETKİNLİK BAŞLIĞI</span><input id="contentCoupleNames" required value="Melisa &amp; Berk"></label><label class="editor-field"><span>ÜST SLOGAN</span><input id="contentTagline" required value="Birlikte, sonsuza..."></label><label class="editor-field full"><span>HİKÂYE BAŞLIĞI</span><input id="contentStoryTitle" required value="Hayat, seninle daha güzel."></label><label class="editor-field full"><span>HİKÂYE METNİ</span><textarea id="contentStoryText" required>Bir kahveyle başlayan hikâyemiz, şimdi en güzel “evet”e hazırlanıyor. Bu özel günümüzde sevincimizi sizinle paylaşmak için sabırsızlanıyoruz.</textarea></label><label class="editor-field"><span>MEKÂN</span><input id="contentVenue" required value="The Marmara Esma Sultan"></label><label class="editor-field"><span>ŞEHİR / KONUM</span><input id="contentLocation" required value="Ortaköy, Beşiktaş · İstanbul"></label><label class="editor-field full"><span>MİSAFİRLERE NOT</span><textarea id="contentGuestNote" required>Şıklığınızı yansıtan kokteyl veya gece kıyafeti.</textarea></label></div></section>
+          <div class="editor-actions"><span>Değişiklikleriniz bu tarayıcıda saklanır.</span><button class="create-btn" type="submit">Değişiklikleri Kaydet</button></div>
+        </form>
+      </div>
+
+      <div class="content hidden" id="guestsView">
+        <div class="editor-heading"><div><p class="eyebrow">MİSAFİR YÖNETİMİ</p><h1>Davetli listesi</h1><p>Misafirleri ekleyin, davet bağlantısını paylaşın ve katılım yanıtlarını izleyin.</p></div><button id="copyInviteLinkBtn" class="ghost-btn"><i data-icon="arrow"></i>Davet linkini kopyala</button></div>
+        <section class="guest-manager">
+          <form id="addGuestForm" class="add-guest-form"><div><h2>Yeni misafir ekle</h2><p>Elle girin veya kayıtlı kişilerinizden seçin.</p></div><label><span>KAYITLI KİŞİ</span><select id="savedContactSelect"><option value="">Kişi seçin (isteğe bağlı)</option></select></label><label><span>AD SOYAD</span><input id="guestNameInput" required autocomplete="name" placeholder="Örn. Ayşe Kaya"></label><label><span>E-POSTA</span><input id="guestEmailInput" required type="email" autocomplete="email" placeholder="ayse@example.com"></label><button class="create-btn" type="submit">Misafir Ekle</button></form>
+          <div class="guest-list-panel"><div class="guest-toolbar"><div id="guestFilters" class="guest-filters"><button class="active" data-filter="all">Tümü <span id="filterAllCount">0</span></button><button data-filter="attending">Gelecek <span id="filterAttendingCount">0</span></button><button data-filter="declined">Gelmeyecek <span id="filterDeclinedCount">0</span></button><button data-filter="pending">Cevap bekleniyor <span id="filterPendingCount">0</span></button><button data-filter="external">Linkten gelen <span id="filterExternalCount">0</span></button></div><label class="guest-search"><i data-icon="users"></i><input id="guestSearchInput" type="search" placeholder="İsim veya e-posta ara"></label></div><div class="guest-table-wrap"><table class="guest-table"><thead><tr><th>MİSAFİR</th><th>DURUM</th><th>KAYNAK</th><th>KİŞİ</th><th></th></tr></thead><tbody id="guestTableBody"></tbody></table><div id="guestEmptyState" class="guest-empty">Henüz misafir eklenmedi.</div></div></div>
+        </section>
+      </div>
+
+      <div class="content hidden" id="galleryView">
+        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ GALERİSİ</p><h1>Misafirlerden gelen görseller</h1><p>Davetiyeden yüklenen fotoğraf ve videolar yalnızca bu yönetim ekranında listelenir.</p></div><button id="favoriteFilterBtn" class="ghost-btn" aria-pressed="false">☆ Yalnızca favoriler</button></div>
+        <div id="adminGalleryGrid" class="admin-gallery-grid"></div><div id="adminGalleryEmpty" class="manager-empty"><i data-icon="image"></i><h2>Henüz görsel yüklenmedi</h2><p>Misafirlerin davetiye üzerinden eklediği içerikler burada görünecek.</p></div>
+      </div>
+
+      <div class="content hidden" id="guestbookView">
+        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ ANI DEFTERİ</p><h1>Misafir mesajları</h1><p>Davetiyeden bırakılan mesajları burada okuyabilir ve yönetebilirsiniz.</p></div></div>
+        <div id="adminMessageList" class="admin-message-list"></div><div id="adminMessageEmpty" class="manager-empty"><i data-icon="book"></i><h2>Henüz mesaj bırakılmadı</h2><p>Misafirlerin mesajları burada görünecek.</p></div>
+      </div>
+
+      <div class="content hidden" id="settingsView">
+        <div class="editor-heading"><div><p class="eyebrow">HESAP VE PLAN</p><h1>Ayarlar</h1><p>Yönetici hesabınızı, şifrenizi ve planınızı yönetin.</p></div></div>
+        <div class="settings-grid"><section class="settings-card"><h2>Hesap bilgileri</h2><p>Yönetici panelinde kullanılan hesap.</p><div class="account-row"><div class="avatar">MB</div><div><strong id="settingsEmail">—</strong><small>Yönetici hesabı</small></div></div><button id="logoutBtn" class="danger-outline" type="button">Oturumu Kapat</button></section><section class="settings-card"><h2>Şifre değiştir</h2><p>Hesabınız için en az 8 karakterli yeni bir şifre belirleyin.</p><form id="passwordChangeForm"><label><span>MEVCUT ŞİFRE</span><input name="currentPassword" type="password" required autocomplete="current-password"></label><label><span>YENİ ŞİFRE</span><input name="newPassword" type="password" required minlength="8" autocomplete="new-password"></label><label><span>YENİ ŞİFRE TEKRAR</span><input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="create-btn" type="submit">Şifreyi Güncelle</button></form></section><section class="settings-card plan-settings"><h2>Plan seçimi</h2><p>İhtiyacınıza uygun planı seçin.</p><div class="plan-options"><button class="plan-option" data-plan="free"><span>FREE</span><strong>Ücretsiz</strong><small>1 etkinlik · 250 MB depolama</small><b>Planı Seç</b></button><button class="plan-option premium-option" data-plan="premium"><span>PREMIUM</span><strong>Premium</strong><small>Sınırsız etkinlik · 10 GB depolama</small><b>Planı Seç</b></button></div></section></div>
+      </div>
+
+      <div class="content hidden" id="profileView">
+        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ PROFİLİ</p><h1>Profilim</h1><p>Etkinliklerinizi ve tekrar kullanabileceğiniz kişi rehberini yönetin.</p></div></div>
+        <div class="profile-grid"><section class="settings-card"><h2>Etkinliklerim</h2><p>Bir etkinliğe geçmek için üzerine tıklayın.</p><div id="profileEventList" class="profile-event-list"></div></section><section class="settings-card contacts-card"><h2>Kayıtlı kişiler</h2><p>Aynı kişileri farklı etkinliklere yeniden eklemek için rehber oluşturun.</p><form id="contactForm" class="contact-form"><label><span>AD SOYAD</span><input id="contactName" required placeholder="Ad soyad"></label><label><span>E-POSTA</span><input id="contactEmail" type="email" required placeholder="ornek@email.com"></label><button class="create-btn" type="submit">Kişiyi Kaydet</button></form><div id="contactList" class="contact-list"></div><div id="contactEmpty" class="guest-empty">Henüz kayıtlı kişi yok.</div></section></div>
+      </div>
+
+      <div class="content hidden" id="qrView">
+        <div class="editor-heading">
+          <div>
+            <p class="eyebrow">BASKIYA HAZIR</p>
+            <h1>Fotoğraf yükleme QR kodu</h1>
+            <p>Misafirler bu kodu okutunca davetiyedeki fotoğraf yükleme paneli doğrudan açılır.</p>
+          </div>
+        </div>
+        <div class="qr-layout">
+          <section class="editor-panel qr-preview-card">
+            <div id="uploadQrEmpty" class="qr-empty hidden">
+              <i data-icon="qr"></i>
+              <h2>Etkinlik bağlantısı hazırlanıyor</h2>
+              <p>QR kod oluşturmak için yönetici olarak giriş yapın ve backend etkinliğiniz senkronize edilsin.</p>
+            </div>
+            <div id="uploadQrPreview" class="qr-preview-wrap">
+              <img id="uploadQrImage" width="280" height="280" alt="Fotoğraf yükleme QR kodu">
+              <p class="qr-caption">Fotoğraf Yükle · Anı Paylaş</p>
+            </div>
+            <p class="qr-url-label">YÖNLENDİRME ADRESİ</p>
+            <code id="uploadQrUrl" class="qr-url"></code>
+            <div class="qr-actions">
+              <button id="copyUploadQrUrlBtn" class="ghost-btn" type="button"><i data-icon="arrow"></i>Bağlantıyı kopyala</button>
+              <button id="downloadUploadQrBtn" class="ghost-btn" type="button"><i data-icon="download"></i>PNG indir</button>
+              <button id="downloadUploadQrPrintBtn" class="create-btn" type="button"><i data-icon="download"></i>Baskı PNG indir</button>
+            </div>
+          </section>
+          <section class="editor-panel qr-info-panel">
+            <div class="editor-panel-head"><span>01</span><div><h2>Nasıl çalışır?</h2><p>QR kod, davetiyedeki “Fotoğraf Yükle” butonuyla aynı panele yönlendirir.</p></div></div>
+            <ol class="qr-steps">
+              <li>QR kodu masa kartı, pano veya davetiye ekine bastırın.</li>
+              <li>Misafir kodu telefonuyla okutur.</li>
+              <li>Fotoğraf yükleme penceresi otomatik açılır.</li>
+              <li>Yüklenen görseller yönetici galerinizde görünür.</li>
+            </ol>
+            <div class="qr-print-tip">
+              <strong>Baskı ipucu</strong>
+              <p>“Baskı PNG indir” seçeneği yüksek çözünürlüklü (minimum 1200 px) dosya verir. Matbaa veya ev yazıcısı için uygundur.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="content hidden" id="placeholderView">
+        <button id="backOverview" class="back-link">← Genel bakışa dön</button>
+        <div class="empty-state"><span id="emptyIcon" class="empty-icon"><i data-icon="heart"></i></span><p class="eyebrow">LUMA YÖNETİM PANELİ</p><h1 id="emptyTitle">Davetiye</h1><p id="emptyText">Bu bölüm çok yakında etkinliğinizi yönetmeniz için hazır olacak.</p><button id="openInvite" class="create-btn">Canlı davetiyeyi aç</button></div>
+      </div>
+    </main>
+  </section>
+
+  <section id="invitation" class="invitation hidden" aria-hidden="true">
+    <audio id="invitationAudio" loop preload="metadata"></audio>
+    <button id="closeInvite" class="close-invite" aria-label="Davetiyeyi kapat">×</button>
+    <button id="musicBtn" class="music-btn" aria-label="Müziği aç veya kapat"><span>♫</span><small>Müzik</small></button>
+    <nav class="invite-nav"><a class="invite-brand" href="#inviteHero">Luma</a><div><a href="#story">Hikâyemiz</a><a href="#details">Detaylar</a><a href="#memories">Anılar</a></div><button class="rsvp-nav" data-modal="rsvp">Katılım Bildir</button></nav>
+    <header id="inviteHero" class="invite-hero">
+      <img id="inviteCoverImage" src="assets/images/wedding-hero.png" alt="Akdeniz bahçesinde yürüyen gelin ve damat" />
+      <div class="hero-shade"></div>
+      <div class="hero-copy"><p id="inviteTagline" class="script">Birlikte, sonsuza...</p><h1 id="inviteNames">Melisa <i>&amp;</i> Berk</h1><div class="ornament"><span></span>✦<span></span></div><p id="heroDate" class="hero-date">06 · 09 · 2026</p><p id="inviteHeroPlace" class="hero-place">THE MARMARA ESMA SULTAN · İSTANBUL</p><button class="hero-rsvp" data-modal="rsvp">Katılım Bildir <span>→</span></button></div>
+      <div class="scroll-note">KEŞFET <span>↓</span></div>
+    </header>
+
+    <section id="story" class="story-section invite-section">
+      <p class="invite-kicker">BİZİM HİKÂYEMİZ</p><h2 id="inviteStoryTitle">Hayat, seninle daha güzel.</h2><p id="inviteStoryText">Bir kahveyle başlayan hikâyemiz, şimdi en güzel “evet”e hazırlanıyor. Bu özel günümüzde sevincimizi sizinle paylaşmak için sabırsızlanıyoruz.</p><div class="signature">M &amp; B</div>
+    </section>
+
+    <section class="invite-countdown">
+      <p>BÜYÜK GÜNE KALAN</p><div id="publicCountdown"><span><b>00</b><small>GÜN</small></span><i>:</i><span><b>00</b><small>SAAT</small></span><i>:</i><span><b>00</b><small>DAKİKA</small></span><i>:</i><span><b>00</b><small>SANİYE</small></span></div>
+    </section>
+
+    <section id="details" class="details-section invite-section"><p class="invite-kicker">DAVETLİSİNİZ</p><h2>Günün Detayları</h2><div class="detail-grid"><article><span>01</span><i data-icon="calendar"></i><h3>Tarih &amp; Saat</h3><p><span id="detailDate">6 Eylül 2026, Pazar</span><br><span id="detailTime">Kokteyl 18:30 · Davet 19:30</span></p><button id="calendarBtn">Takvime Ekle ↗</button></article><article><span>02</span><i data-icon="pin"></i><h3>Mekân</h3><p>The Marmara Esma Sultan<br>Ortaköy, Beşiktaş · İstanbul</p><a href="https://maps.google.com" target="_blank" rel="noreferrer">Yol Tarifi Al ↗</a></article><article><span>03</span><i data-icon="sparkle"></i><h3>Notumuz</h3><p>Şıklığınızı yansıtan kokteyl<br>veya gece kıyafeti.</p><button data-modal="rsvp">Katılım Bildir ↗</button></article></div></section>
+
+    <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><div class="memory-actions"><button data-modal="upload"><i data-icon="upload"></i>Fotoğraf Yükle</button><button data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button></div></div><div class="memory-collage"><img src="assets/images/wedding-hero.png" alt="Düğün anısı"><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
+
+    <footer class="invite-footer"><span class="invite-brand">Luma</span><p>Melisa &amp; Berk · <span id="footerDate">6 Eylül 2026</span></p><small>Sevgiyle hazırlandı.</small></footer>
+  </section>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card"><button class="modal-close" data-close-modal aria-label="Kapat">×</button><div id="modalContent"></div></div>
+  </div>
+  <script src="/js/config.local.js?v=1"></script>
+  <script src="/js/config.js?v=5"></script>
+  <script src="/js/upload.js?v=6"></script>
+  <script src="/js/gallery.js?v=4"></script>
+  <script src="/js/qr.js?v=4"></script>
+  <script src="/js/main.js?v=9"></script>
+</body>
+</html>
