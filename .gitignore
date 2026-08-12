@@ -1,3 +1,4 @@
 .DS_Store
 *.log
 js/config.local.js
+js/config.production.js

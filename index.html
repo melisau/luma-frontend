@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=35" />
+  <link rel="stylesheet" href="/css/styles.css?v=40" />
   <style>@media(max-width:1050px){.editor-grid{grid-template-columns:1fr}.add-guest-form{grid-template-columns:1fr 1fr}}@media(max-width:700px){.editor-heading{align-items:flex-start}.editor-heading .ghost-btn{width:38px;padding:0;font-size:0}.editor-panel{padding:18px}.cover-dropzone{height:240px}.editor-actions{position:sticky;bottom:10px;z-index:2}.add-guest-form{grid-template-columns:1fr}.guest-toolbar{align-items:stretch;flex-direction:column}.guest-search{margin:0}.guest-search input{width:100%}}</style>
   <style>@media(max-width:700px){.content-fields{grid-template-columns:1fr}.content-fields .full{grid-column:1}}</style>
 </head>
@@ -45,7 +45,7 @@
           <small id="storageUsageLabel">Depolama hesaplanıyor...</small>
         </div>
         <div class="user-card" id="userCard">
-          <button id="profileBtn" class="profile-trigger" aria-label="Profilime git"><span class="avatar">MB</span><span><strong id="sidebarUserName">Yönetici</strong><small>Etkinlik sahibi</small></span></button>
+          <button id="profileBtn" class="profile-trigger" aria-label="Profilime git"><span id="sidebarAvatar" class="avatar">LU</span><span><strong id="sidebarUserName">Yönetici</strong><small>Etkinlik sahibi</small></span></button>
           <button id="userMenuBtn" aria-label="Kullanıcı menüsü" aria-expanded="false">•••</button>
           <div id="userPopupMenu" class="user-popup hidden"><button data-profile-action>Profilim</button><button data-logout-action>Çıkış Yap</button></div>
         </div>
@@ -57,19 +57,18 @@
         <button id="menuBtn" class="icon-btn menu-btn" aria-label="Menüyü aç"><i data-icon="menu"></i></button>
         <div class="event-switch">
           <span class="event-thumb"></span>
-          <div><small>AKTİF ETKİNLİK</small><select id="eventSelect" aria-label="Aktif etkinliği seç"><option value="default">Melisa &amp; Berk</option></select></div>
+          <div><small>AKTİF ETKİNLİK</small><select id="eventSelect" aria-label="Aktif etkinliği seç"><option value="">Yükleniyor...</option></select></div>
           <i data-icon="chevron"></i>
         </div>
         <div class="top-actions">
           <button id="previewBtn" class="ghost-btn"><i data-icon="eye"></i><span>Davetiyeyi Görüntüle</span></button>
-          <button class="icon-btn notification" aria-label="Bildirimler"><i data-icon="bell"></i><span></span></button>
           <button id="newEventBtn" class="create-btn">+ Yeni Etkinlik</button>
         </div>
       </header>
 
       <div class="content" id="overviewView">
         <div class="welcome-row">
-          <div><p class="eyebrow">23 TEMMUZ 2026, PERŞEMBE</p><h1>Günaydın, Melisa <span>✦</span></h1><p>Hazırlıklar harika gidiyor. İşte etkinliğinin bugünkü özeti.</p></div>
+          <div><p class="eyebrow">23 TEMMUZ 2026, PERŞEMBE</p><h1>Günaydın, <span id="dashboardGreetingName">Yönetici</span> <span>✦</span></h1><p>Hazırlıklar harika gidiyor. İşte etkinliğinin bugünkü özeti.</p></div>
           <button class="date-pill" data-view="invite"><i data-icon="calendar"></i><span id="dashboardDate">6 Eylül 2026 · Pazar</span><i data-icon="chevron"></i></button>
         </div>
 
@@ -137,7 +136,8 @@
       </div>
 
       <div class="content hidden" id="galleryView">
-        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ GALERİSİ</p><h1>Misafirlerden gelen görseller</h1><p>Davetiyeden yüklenen fotoğraf ve videolar yalnızca bu yönetim ekranında listelenir.</p></div><button id="favoriteFilterBtn" class="ghost-btn" aria-pressed="false">☆ Yalnızca favoriler</button></div>
+        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ GALERİSİ</p><h1>Misafirlerden gelen görseller</h1><p>Yüklenen fotoğrafları onaylayın veya gizleyin. Yalnızca onaylı görseller misafirlere görünür.</p></div><button id="favoriteFilterBtn" class="ghost-btn" aria-pressed="false">☆ Yalnızca favoriler</button></div>
+        <div class="gallery-toolbar"><div id="photoFilters" class="guest-filters"><button class="active" data-photo-filter="all">Tümü <span id="photoFilterAllCount">0</span></button><button data-photo-filter="uploaded">Bekleyen <span id="photoFilterUploadedCount">0</span></button><button data-photo-filter="approved">Onaylı <span id="photoFilterApprovedCount">0</span></button><button data-photo-filter="hidden">Gizli <span id="photoFilterHiddenCount">0</span></button></div></div>
         <div id="adminGalleryGrid" class="admin-gallery-grid"></div><div id="adminGalleryEmpty" class="manager-empty"><i data-icon="image"></i><h2>Henüz görsel yüklenmedi</h2><p>Misafirlerin davetiye üzerinden eklediği içerikler burada görünecek.</p></div>
       </div>
 
@@ -148,12 +148,12 @@
 
       <div class="content hidden" id="settingsView">
         <div class="editor-heading"><div><p class="eyebrow">HESAP VE PLAN</p><h1>Ayarlar</h1><p>Yönetici hesabınızı, şifrenizi ve planınızı yönetin.</p></div></div>
-        <div class="settings-grid"><section class="settings-card"><h2>Hesap bilgileri</h2><p>Yönetici panelinde kullanılan hesap.</p><div class="account-row"><div class="avatar">MB</div><div><strong id="settingsEmail">—</strong><small>Yönetici hesabı</small></div></div><button id="logoutBtn" class="danger-outline" type="button">Oturumu Kapat</button></section><section class="settings-card"><h2>Şifre değiştir</h2><p>Hesabınız için en az 8 karakterli yeni bir şifre belirleyin.</p><form id="passwordChangeForm"><label><span>MEVCUT ŞİFRE</span><input name="currentPassword" type="password" required autocomplete="current-password"></label><label><span>YENİ ŞİFRE</span><input name="newPassword" type="password" required minlength="8" autocomplete="new-password"></label><label><span>YENİ ŞİFRE TEKRAR</span><input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="create-btn" type="submit">Şifreyi Güncelle</button></form></section><section class="settings-card plan-settings"><h2>Plan seçimi</h2><p>İhtiyacınıza uygun planı seçin.</p><div class="plan-options"><button class="plan-option" data-plan="free"><span>FREE</span><strong>Ücretsiz</strong><small>1 etkinlik · 250 MB depolama</small><b>Planı Seç</b></button><button class="plan-option premium-option" data-plan="premium"><span>PREMIUM</span><strong>Premium</strong><small>Sınırsız etkinlik · 10 GB depolama</small><b>Planı Seç</b></button></div></section></div>
+        <div class="settings-grid"><section class="settings-card"><h2>Hesap bilgileri</h2><p>Panelde size hitap edilecek adı buradan belirleyin.</p><form id="adminProfileForm" class="contact-form"><label><span>GÖRÜNEN AD</span><input id="settingsDisplayName" required maxlength="255" placeholder="Örn. Melisa" autocomplete="name"></label><label><span>E-POSTA</span><input id="settingsEmailDisplay" type="email" readonly value="—"></label><button class="create-btn" type="submit">Profili Kaydet</button></form><div class="account-row"><div id="settingsAvatar" class="avatar">LU</div><div><strong id="settingsEmail">—</strong><small>Yönetici hesabı</small></div></div><button id="logoutBtn" class="danger-outline" type="button">Oturumu Kapat</button></section><section class="settings-card"><h2>Şifre değiştir</h2><p>Hesabınız için en az 8 karakterli yeni bir şifre belirleyin.</p><form id="passwordChangeForm"><label><span>MEVCUT ŞİFRE</span><input name="currentPassword" type="password" required autocomplete="current-password"></label><label><span>YENİ ŞİFRE</span><input name="newPassword" type="password" required minlength="8" autocomplete="new-password"></label><label><span>YENİ ŞİFRE TEKRAR</span><input name="confirmPassword" type="password" required minlength="8" autocomplete="new-password"></label><button class="create-btn" type="submit">Şifreyi Güncelle</button></form></section><section class="settings-card plan-settings"><h2>Plan seçimi</h2><p>İhtiyacınıza uygun planı seçin.</p><div class="plan-options"><button class="plan-option" data-plan="free"><span>FREE</span><strong>Ücretsiz</strong><small>1 etkinlik · 250 MB depolama</small><b>Planı Seç</b></button><button class="plan-option premium-option" data-plan="premium"><span>PREMIUM</span><strong>Premium</strong><small>Sınırsız etkinlik · 10 GB depolama</small><b>Planı Seç</b></button></div></section></div>
       </div>
 
       <div class="content hidden" id="profileView">
         <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ PROFİLİ</p><h1>Profilim</h1><p>Etkinliklerinizi ve tekrar kullanabileceğiniz kişi rehberini yönetin.</p></div></div>
-        <div class="profile-grid"><section class="settings-card"><h2>Etkinliklerim</h2><p>Bir etkinliğe geçmek için üzerine tıklayın.</p><div id="profileEventList" class="profile-event-list"></div></section><section class="settings-card contacts-card"><h2>Kayıtlı kişiler</h2><p>Aynı kişileri farklı etkinliklere yeniden eklemek için rehber oluşturun.</p><form id="contactForm" class="contact-form"><label><span>AD SOYAD</span><input id="contactName" required placeholder="Ad soyad"></label><label><span>E-POSTA</span><input id="contactEmail" type="email" required placeholder="ornek@email.com"></label><button class="create-btn" type="submit">Kişiyi Kaydet</button></form><div id="contactList" class="contact-list"></div><div id="contactEmpty" class="guest-empty">Henüz kayıtlı kişi yok.</div></section></div>
+        <div class="profile-grid"><section class="settings-card"><h2>Etkinliklerim</h2><p>Bir etkinliğe geçmek için üzerine tıklayın. Silmek geri alınamaz.</p><div id="profileEventList" class="profile-event-list"></div></section><section class="settings-card contacts-card"><h2>Kayıtlı kişiler</h2><p>Aynı kişileri farklı etkinliklere yeniden eklemek için rehber oluşturun.</p><form id="contactForm" class="contact-form"><label><span>AD SOYAD</span><input id="contactName" required placeholder="Ad soyad"></label><label><span>E-POSTA</span><input id="contactEmail" type="email" required placeholder="ornek@email.com"></label><button class="create-btn" type="submit">Kişiyi Kaydet</button></form><div id="contactList" class="contact-list"></div><div id="contactEmpty" class="guest-empty">Henüz kayıtlı kişi yok.</div></section></div>
       </div>
 
       <div class="content hidden" id="qrView">
@@ -161,7 +161,7 @@
           <div>
             <p class="eyebrow">BASKIYA HAZIR</p>
             <h1>Fotoğraf yükleme QR kodu</h1>
-            <p>Misafirler bu kodu okutunca davetiyedeki fotoğraf yükleme paneli doğrudan açılır.</p>
+            <p id="uploadQrEventHint">Her etkinliğin kendi QR kodu vardır. Misafirler yalnızca seçili etkinliğe fotoğraf yükler.</p>
           </div>
         </div>
         <div class="qr-layout">
@@ -172,6 +172,7 @@
               <p>QR kod oluşturmak için yönetici olarak giriş yapın ve backend etkinliğiniz senkronize edilsin.</p>
             </div>
             <div id="uploadQrPreview" class="qr-preview-wrap">
+              <p id="uploadQrEventName" class="qr-event-name"></p>
               <img id="uploadQrImage" width="280" height="280" alt="Fotoğraf yükleme QR kodu">
               <p class="qr-caption">Fotoğraf Yükle · Anı Paylaş</p>
             </div>
@@ -228,7 +229,7 @@
 
     <section id="details" class="details-section invite-section"><p class="invite-kicker">DAVETLİSİNİZ</p><h2>Günün Detayları</h2><div class="detail-grid"><article><span>01</span><i data-icon="calendar"></i><h3>Tarih &amp; Saat</h3><p><span id="detailDate">6 Eylül 2026, Pazar</span><br><span id="detailTime">Kokteyl 18:30 · Davet 19:30</span></p><button id="calendarBtn">Takvime Ekle ↗</button></article><article><span>02</span><i data-icon="pin"></i><h3>Mekân</h3><p>The Marmara Esma Sultan<br>Ortaköy, Beşiktaş · İstanbul</p><a href="https://maps.google.com" target="_blank" rel="noreferrer">Yol Tarifi Al ↗</a></article><article><span>03</span><i data-icon="sparkle"></i><h3>Notumuz</h3><p>Şıklığınızı yansıtan kokteyl<br>veya gece kıyafeti.</p><button data-modal="rsvp">Katılım Bildir ↗</button></article></div></section>
 
-    <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><div class="memory-actions"><button data-modal="upload"><i data-icon="upload"></i>Fotoğraf Yükle</button><button data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button></div></div><div class="memory-collage"><img src="assets/images/wedding-hero.png" alt="Düğün anısı"><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
+    <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><div class="memory-actions"><button type="button" data-modal="upload" data-upload-action><i data-icon="upload"></i>Fotoğraf Yükle</button><button type="button" data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button><p id="uploadDisabledNote" class="upload-disabled-note hidden">Bu etkinlik için fotoğraf yükleme geçici olarak kapalı.</p></div></div><div class="memory-collage" id="publicMemoryCollage"><img id="publicMemoryFallback" class="memory-collage-fallback" src="assets/images/wedding-hero.png" alt="Düğün anısı"><div id="publicPhotoGrid" class="public-photo-grid hidden" aria-live="polite"></div><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
 
     <footer class="invite-footer"><span class="invite-brand">Luma</span><p>Melisa &amp; Berk · <span id="footerDate">6 Eylül 2026</span></p><small>Sevgiyle hazırlandı.</small></footer>
   </section>
@@ -237,11 +238,12 @@
     <div class="modal-backdrop" data-close-modal></div>
     <div class="modal-card"><button class="modal-close" data-close-modal aria-label="Kapat">×</button><div id="modalContent"></div></div>
   </div>
-  <script src="/js/config.local.js?v=1"></script>
+  <script src="/js/config.production.js?v=1" onerror="void 0"></script>
+  <script src="/js/config.local.js?v=1" onerror="void 0"></script>
   <script src="/js/config.js?v=5"></script>
+  <script src="/js/event-data.js?v=8"></script>
   <script src="/js/upload.js?v=6"></script>
-  <script src="/js/gallery.js?v=4"></script>
-  <script src="/js/qr.js?v=4"></script>
-  <script src="/js/main.js?v=9"></script>
-</body>
+  <script src="/js/gallery.js?v=6"></script>
+  <script src="/js/qr.js?v=5"></script>
+  <script src="/js/main.js?v=22"></script></body>
 </html>

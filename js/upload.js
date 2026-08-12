@@ -179,7 +179,7 @@ window.LumaUpload = {
         });
         progressBar.style.width = '100%';
         statusBox.classList.add('hidden');
-        successBox.textContent = `✓ ${result.uploaded.length} fotoğraf başarıyla gönderildi.${guestUploadEntry ? ' Dilersen daha fazla ekleyebilirsin.' : ''}`;
+        successBox.textContent = `✓ ${result.uploaded.length} fotoğraf gönderildi. Onaylandıktan sonra albümde görünecek.${guestUploadEntry ? ' Dilersen daha fazla ekleyebilirsin.' : ''}`;
         successBox.classList.remove('hidden');
         await onComplete(result, uploaderName);
 
@@ -195,7 +195,7 @@ window.LumaUpload = {
         } else {
           await new Promise(resolve => setTimeout(resolve, 900));
           document.getElementById('modal').classList.add('hidden');
-          Luma.toast(`${result.uploaded.length} fotoğraf başarıyla gönderildi.`);
+          Luma.toast(`${result.uploaded.length} fotoğraf gönderildi. Yönetici onayından sonra paylaşılacak.`);
           form.reset();
         }
       } catch (error) {

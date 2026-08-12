@@ -7,6 +7,13 @@ window.LumaQr = {
     return `${LumaConfig.apiBase}/api/events/${encodeURIComponent(token)}/upload-qr?${params}`;
   },
 
+  downloadFilename(slug, size = 'screen') {
+    const safeSlug = (slug || 'etkinlik').replace(/[^a-z0-9-]+/gi, '-').replace(/^-+|-+$/g, '') || 'etkinlik';
+    return size === 'print'
+      ? `luma-${safeSlug}-fotograf-yukleme-qr-baski.png`
+      : `luma-${safeSlug}-fotograf-yukleme-qr.png`;
+  },
+
   async getTokenOrWarn() {
     const token = window.ensureEventToken ? await window.ensureEventToken() : LumaConfig.getEventToken();
     if (!token) {
@@ -44,7 +51,7 @@ window.LumaQr = {
     }
   },
 
-  async downloadQr(token, size = 'screen') {
+  async downloadQr(token, size = 'screen', slug = '') {
     try {
       const response = await fetch(this.qrApiUrl(token, size, true));
       if (!response.ok) throw new Error('QR indirilemedi');
@@ -53,9 +60,7 @@ window.LumaQr = {
       const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = objectUrl;
-      link.download = size === 'print'
-        ? 'luma-fotograf-yukleme-qr-baski.png'
-        : 'luma-fotograf-yukleme-qr.png';
+      link.download = this.downloadFilename(slug, size);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -82,39 +87,47 @@ window.LumaQr = {
       event.preventDefault();
       const token = await this.getTokenOrWarn();
       if (!token) return;
-      await this.downloadQr(token, 'screen');
+      const meta = window.currentEventMeta ? window.currentEventMeta() : null;
+      await this.downloadQr(token, 'screen', meta?.slug || meta?.id || '');
     });
 
     document.getElementById('downloadUploadQrPrintBtn')?.addEventListener('click', async event => {
       event.preventDefault();
       const token = await this.getTokenOrWarn();
       if (!token) return;
-      const ok = await this.downloadQr(token, 'print');
+      const meta = window.currentEventMeta ? window.currentEventMeta() : null;
+      const ok = await this.downloadQr(token, 'print', meta?.slug || meta?.id || '');
       if (ok) Luma.toast('Baskı için yüksek çözünürlüklü QR kod indirildi.');
     });
   },
 
   async render() {
     const token = window.ensureEventToken ? await window.ensureEventToken() : LumaConfig.getEventToken();
+    const meta = window.currentEventMeta ? window.currentEventMeta() : null;
     const empty = document.getElementById('uploadQrEmpty');
     const preview = document.getElementById('uploadQrPreview');
     const image = document.getElementById('uploadQrImage');
     const urlEl = document.getElementById('uploadQrUrl');
+    const eventNameEl = document.getElementById('uploadQrEventName');
 
     if (!token) {
       empty?.classList.remove('hidden');
       preview?.classList.add('hidden');
       if (urlEl) urlEl.textContent = '';
+      if (eventNameEl) eventNameEl.textContent = '';
       return;
     }
 
     const uploadUrl = LumaConfig.uploadUrl(token);
     empty?.classList.add('hidden');
     preview?.classList.remove('hidden');
+    if (eventNameEl) {
+      eventNameEl.textContent = meta?.name ? `${meta.name} · Bu etkinliğe özel QR` : 'Bu etkinliğe özel QR';
+    }
     if (urlEl) urlEl.textContent = uploadUrl;
     if (image) {
       image.src = `${this.qrApiUrl(token, 'screen')}&t=${Date.now()}`;
-      image.alt = 'Fotoğraf yükleme QR kodu';
+      image.alt = meta?.name ? `${meta.name} fotoğraf yükleme QR kodu` : 'Fotoğraf yükleme QR kodu';
     }
   }
 };
