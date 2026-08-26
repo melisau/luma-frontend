@@ -7,6 +7,16 @@ function resolveApiBase() {
   return '';
 }
 
+function appLocation() {
+  try {
+    return window.parent && window.parent !== window
+      ? window.parent.location
+      : window.location;
+  } catch (_) {
+    return window.location;
+  }
+}
+
 window.LumaConfig = {
   apiBase: resolveApiBase(),
   defaultCover: '/assets/images/wedding-hero.png',
@@ -42,15 +52,17 @@ window.LumaConfig = {
   },
 
   publicEventToken() {
-    const uploadMatch = location.pathname.match(/^\/e\/([^/]+)\/upload\/?$/);
+    const route = appLocation();
+    const uploadMatch = route.pathname.match(/^\/e\/([^/]+)\/upload\/?$/);
     if (uploadMatch) return decodeURIComponent(uploadMatch[1]);
-    const match = location.pathname.match(/^\/e\/([^/]+)\/?$/);
+    const match = route.pathname.match(/^\/e\/([^/]+)\/?$/);
     return match ? decodeURIComponent(match[1]) : null;
   },
 
   shouldOpenUploadModal() {
-    return /\/upload\/?$/.test(location.pathname)
-      || new URLSearchParams(location.search).get('upload') === '1';
+    const route = appLocation();
+    return /\/upload\/?$/.test(route.pathname)
+      || new URLSearchParams(route.search).get('upload') === '1';
   },
 
   inviteUrl(token) {
