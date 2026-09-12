@@ -45,3 +45,8 @@ test('public route wins even while an administrator session exists',async()=>{
  Object.assign(context,{currentEventToken:()=> 'invited-event',isAdminPanelRoute:()=>false,document:{getElementById:()=>null},LumaEventData:{load:async(token,settings)=>{options=settings;return true;}}});
  vm.runInNewContext(load,context);assert.equal(await context.refreshEventData(),true);assert.equal(options.admin,false);
 });
+
+test('locked invitation requests an access code without retaining event content',async()=>{
+ const data=setup(async()=>({ok:false,status:423}));
+ assert.equal(await data.load('locked'),false);assert.equal(data.accessRequired,true);assert.equal(data.cache.invitation,null);
+});

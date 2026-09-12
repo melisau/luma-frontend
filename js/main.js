@@ -163,10 +163,14 @@ function readData(){const data=LumaEventData.getData();data.uploads=readData._up
 async function refreshActivities(){const token=currentEventToken();if(!token||!sessionStorage.getItem('lumaAdminJwt'))return;await LumaEventData.fetchActivities(token);updateDashboard()}
 async function refreshEventData(){
   const token=currentEventToken()||LumaConfig.publicEventToken();
-  if(token&&sessionStorage.getItem('lumaAdminJwt')&&isAdminPanelRoute()){
-    await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/access-preview`,{method:'POST',headers:LumaConfig.adminAuthHeaders()});
+  const admin=Boolean(sessionStorage.getItem('lumaAdminJwt'))&&isAdminPanelRoute();
+  const loaded=await LumaEventData.load(token,{admin});
+  if(loaded&&token&&admin){
+    try{
+      const preview=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/access-preview`,{method:'POST',headers:LumaConfig.adminAuthHeaders()});
+      if(!preview.ok)throw new Error();
+    }catch{LumaEventData.loadErrors.push('Misafir önizlemesi için erişim açılamadı. Lütfen tekrar deneyin.')}
   }
-  const loaded=await LumaEventData.load(token,{admin:Boolean(sessionStorage.getItem('lumaAdminJwt'))&&isAdminPanelRoute()});
   const feedback=document.getElementById('dataLoadFeedback');if(feedback){feedback.textContent=LumaEventData.lastError||LumaEventData.loadErrors.join(' ');feedback.classList.toggle('hidden',!feedback.textContent)}
   return loaded;
 }
