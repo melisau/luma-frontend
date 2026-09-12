@@ -208,6 +208,10 @@ async function refreshPublicMemories(){
   updateDashboard();
 }
 function applyUploadVisibility(){
+  const expired=LumaEventData.memoriesExpired(),notice=document.getElementById('memoryPolicyNotice');
+  const albumPublic=(LumaEventData.cache.event||currentEventMeta()).album_public!==false;
+  document.querySelectorAll('[data-modal="message"]').forEach(button=>button.classList.toggle('hidden',expired));
+  if(notice){notice.textContent=expired?'Bu etkinliğin anı saklama süresi doldu.':!albumPublic?'Paylaşılan fotoğrafları yalnızca etkinlik sahibi görebilir.':'';notice.classList.toggle('hidden',!notice.textContent)}
   const enabled=LumaEventData.uploadsEnabled()&&currentEventMeta().uploads_enabled!==false;
   document.querySelectorAll('[data-upload-action]').forEach(button=>{
     button.classList.toggle('hidden',!enabled);
@@ -294,6 +298,9 @@ function loadEventSettingsForm(){
   activeEl.checked=meta.is_active!==false;
   uploadsEl.checked=meta.uploads_enabled!==false;
   document.getElementById('eventSettingsAlbumPublic').checked=meta.album_public!==false;
+  document.getElementById('eventSettingsRetentionEnabled').checked=Boolean(meta.memory_delete_at);
+  document.getElementById('eventSettingsRetentionDate').value=meta.memory_delete_at?LumaDates.toLocalInput(meta.memory_delete_at):'';
+  document.getElementById('eventSettingsRetentionConfirm').checked=false;
   document.getElementById('eventSettingsAccessCode').value='';
   document.getElementById('eventSettingsRemoveCode').checked=false;
   document.getElementById('eventAccessCodeStatus').textContent=meta.access_code_enabled?'Erişim kodu etkin. Yeni kod, önceki erişimleri kapatır.':'Erişim kodu kapalı.';
@@ -498,7 +505,9 @@ document.getElementById('eventSettingsForm').onsubmit=async e=>{
   const button=e.currentTarget.querySelector('button[type="submit"]');
   if(button){button.disabled=true;button.textContent='Kaydediliyor...'}
   try{
+    const retention=memoryRetentionPayload();
     await LumaEventData.updateEvent(token,{
+      ...retention,
       is_active:document.getElementById('eventSettingsActive').checked,
       uploads_enabled:document.getElementById('eventSettingsUploads').checked,
       album_public:document.getElementById('eventSettingsAlbumPublic').checked,
@@ -820,3 +829,14 @@ document.getElementById('eventUnlockForm').onsubmit=async e=>{
     document.getElementById('eventUnlockCode').value='';location.reload();
   }catch(error){feedback.textContent=error.message;button.disabled=false}
 };
+
+function memoryRetentionPayload(){
+  const meta=currentEventMeta(),enabled=document.getElementById('eventSettingsRetentionEnabled').checked;
+  if(!enabled)return meta.memory_delete_at?{memory_delete_at:null}:{};
+  const input=document.getElementById('eventSettingsRetentionDate').value,date=new Date(input);
+  if(!input||Number.isNaN(date.getTime()))throw new Error('Geçerli bir silme tarihi seçin.');
+  if(meta.memory_delete_at&&LumaDates.toLocalInput(meta.memory_delete_at)===input)return {};
+  if(date.getTime()<Date.now()+24*60*60*1000)throw new Error('Silme tarihi en az 24 saat sonrası olmalı.');
+  if(!document.getElementById('eventSettingsRetentionConfirm').checked)throw new Error('Anıların kalıcı silinmesini onaylayın.');
+  return {memory_delete_at:date.toISOString(),confirm_memory_deletion:true};
+}

@@ -117,7 +117,13 @@ window.LumaEventData = {
     ];
   },
 
+  memoriesExpired() {
+    const deadline=this.cache.event?.memory_delete_at||window.currentEventMeta?.().memory_delete_at;
+    return Boolean(deadline&&LumaDates.parse(deadline).getTime()<=Date.now());
+  },
+
   uploadsEnabled() {
+    if(this.memoriesExpired())return false;
     const meta = window._lumaEvents?.find(item => item.private_token === LumaConfig.publicEventToken());
     if (meta && meta.uploads_enabled === false) return false;
     if (this.cache.event && this.cache.event.uploads_enabled === false) return false;
@@ -420,8 +426,10 @@ window.LumaEventData = {
       venue: event.venue || '',
       city: event.city || '',
       uploads_enabled: event.uploads_enabled,
+      memory_delete_at: event.memory_delete_at,
       album_public: event.album_public,
       access_code_enabled: event.access_code_enabled,
+      role: event.role || 'owner',
       is_active: event.is_active,
     };
   },
@@ -434,6 +442,25 @@ window.LumaEventData = {
     if (!response.ok) throw new Error('Etkinlikler yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.');
     const events = await response.json();
     return events.map(event => this.mapEvent(event));
+  },
+
+  async listMembers(token) {
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/members`,{headers:LumaConfig.adminAuthHeaders()});
+    if(!response.ok)throw new Error('Etkinlik ekibi yüklenemedi.');
+    return response.json();
+  },
+  async addMember(token,payload) {
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/members`,{method:'POST',headers:{'Content-Type':'application/json',...LumaConfig.adminAuthHeaders()},body:JSON.stringify(payload)});
+    if(!response.ok){const error=await response.json().catch(()=>({}));throw new Error(error.detail||'Ekip üyesi eklenemedi.')}
+    return response.json();
+  },
+  async updateMember(token,id,role) {
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/members/${encodeURIComponent(id)}`,{method:'PATCH',headers:{'Content-Type':'application/json',...LumaConfig.adminAuthHeaders()},body:JSON.stringify({role})});
+    if(!response.ok)throw new Error('Rol güncellenemedi.');return response.json();
+  },
+  async removeMember(token,id) {
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/members/${encodeURIComponent(id)}`,{method:'DELETE',headers:LumaConfig.adminAuthHeaders()});
+    if(!response.ok)throw new Error('Ekip üyesi kaldırılamadı.');
   },
 
   async createEvent(payload) {
