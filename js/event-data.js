@@ -40,6 +40,7 @@ window.LumaEventData = {
 
   normalizeInvitation(invitation) {
     invitation.cover_url = this.coverFullUrl(invitation.cover_url);
+    invitation.memory_cover_url = this.coverFullUrl(invitation.memory_cover_url);
     invitation.music_url = this.mediaFullUrl(invitation.music_url);
     return invitation;
   },
@@ -271,6 +272,11 @@ window.LumaEventData = {
       story_title: formData.story_title || formData.storyTitle || '',
       story_text: formData.story_text || formData.storyText || '',
       guest_note: formData.guest_note || formData.guestNote || '',
+      signature_text: formData.signature_text || formData.signatureText || '',
+      memory_title: formData.memory_title || formData.memoryTitle || '',
+      memory_text: formData.memory_text || formData.memoryText || '',
+      language: formData.language || 'tr',
+      design_theme: formData.design_theme || formData.designTheme || 'romantic',
       opening_style: formData.opening_style || 'classic',
       address:formData.address||'',
       transport_notes:formData.transport_notes||'',
@@ -336,6 +342,19 @@ window.LumaEventData = {
     const invitation = await response.json();
     this.cache.invitation = this.normalizeInvitation(invitation);
     return invitation;
+  },
+
+  async uploadMemoryCover(token, file) {
+    const form=new FormData();form.append('file',file);
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/invitation/memory-cover`,{method:'POST',headers:LumaConfig.adminAuthHeaders(),body:form});
+    if(!response.ok)throw new Error('Anı bölümü görseli yüklenemedi.');
+    return this.cache.invitation=this.normalizeInvitation(await response.json());
+  },
+
+  async removeMemoryCover(token) {
+    const response=await fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/invitation/memory-cover`,{method:'DELETE',headers:LumaConfig.adminAuthHeaders()});
+    if(!response.ok)throw new Error('Anı bölümü görseli kaldırılamadı.');
+    return this.cache.invitation=this.normalizeInvitation(await response.json());
   },
 
   async uploadMusic(token, file) {
@@ -427,6 +446,9 @@ window.LumaEventData = {
       city: event.city || '',
       uploads_enabled: event.uploads_enabled,
       memory_delete_at: event.memory_delete_at,
+      publish_at: event.publish_at,
+      rsvp_reminder_at: event.rsvp_reminder_at,
+      rsvp_reminder_sent_at: event.rsvp_reminder_sent_at,
       album_public: event.album_public,
       access_code_enabled: event.access_code_enabled,
       role: event.role || 'owner',
