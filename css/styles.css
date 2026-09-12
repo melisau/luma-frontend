@@ -79,7 +79,7 @@ html,body{max-width:100%;overflow-x:hidden}img,video{max-width:100%}button,a,inp
 .envelope-pocket:after{clip-path:polygon(0 100%,50% 58%,100% 100%)}
 
 html.envelope-locked,html.envelope-locked body{overflow:hidden!important;overscroll-behavior:none}
-.envelope-locked #invitation{visibility:hidden;overflow:hidden!important;pointer-events:none}
+.envelope-locked #invitation{overflow:hidden!important;pointer-events:none}
 .envelope-touch{cursor:default}.wax-seal{cursor:pointer}
 @media(max-height:500px){.envelope-heading{margin-bottom:4px}.envelope-heading>span,.envelope-heading p{display:none}.envelope-touch{width:min(290px,65vw,48vh);margin:8px 0 18px}.envelope-hint{margin-bottom:0}.envelope-intro{padding:16px}}
 
