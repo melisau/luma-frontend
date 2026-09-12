@@ -203,7 +203,7 @@ window.LumaEventData = {
     );
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.detail || 'Katılım yanıtı gönderilemedi.');
+      throw new Error(typeof err.detail==='string'?err.detail:'Bilgilerinizi kontrol edin: geçerli e-posta ve 1–20 arası kişi sayısı gereklidir.');
     }
     return response.json();
   },
@@ -414,7 +414,8 @@ window.LumaEventData = {
     const response = await fetch(`${LumaConfig.apiBase}/api/admin/events`, {
       headers: LumaConfig.adminAuthHeaders(),
     });
-    if (!response.ok) throw new Error('Etkinlikler yüklenemedi.');
+    if (response.status === 401) throw new Error('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
+    if (!response.ok) throw new Error('Etkinlikler yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.');
     const events = await response.json();
     return events.map(event => this.mapEvent(event));
   },

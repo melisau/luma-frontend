@@ -51,7 +51,7 @@ frontend/
 If the backend `.env` has `SERVE_FRONTEND=true`, no separate frontend server is needed:
 
 ```bash
-cd ../backend
+cd ../luma-backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -153,7 +153,7 @@ Copy `js/config.production.example.js` → `js/config.production.js` and set the
 
 ## Guest experience
 
-- **RSVP:** Name, email, status, party size
+- **RSVP:** Name, email, status, exact party size (1–20), dietary requirements, and private notes
 - **Photo upload:** Multiple files, HEIC support; approved photos appear in the invitation collage
 - **Leave a message:** Guestbook; counts update after moderation
 - **Add to calendar:** Downloads an `.ics` file
@@ -179,3 +179,5 @@ Only **approved** photos and messages appear on the public invitation page.
 ## License
 
 Not specified by the project owner.
+
+RSVP dietary requirements and notes are persisted by the API and can be viewed and edited in the admin guest list. Deploy the backend migration `20260912_0005` before the updated frontend.

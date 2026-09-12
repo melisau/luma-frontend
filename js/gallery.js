@@ -12,10 +12,31 @@ window.LumaGallery = {
     hidden: 'Gizli',
   },
 
+  photoUrl(path) {
+    return new URL(path, new URL(LumaConfig.apiBase || '/', window.location.origin)).href;
+  },
+
+  async loadImage(img, path, item) {
+    try {
+      if (item.admin) {
+        const response = await fetch(path, { headers: item.authHeaders });
+        if (!response.ok) throw new Error('Görsel yüklenemedi.');
+        const url = URL.createObjectURL(await response.blob());
+        img.onload = () => URL.revokeObjectURL(url);
+        img.onerror = () => { URL.revokeObjectURL(url); img.alt = 'Görsel yüklenemedi. Galeriyi yeniden açın.'; };
+        img.src = url;
+      } else {
+        img.src = path;
+      }
+    } catch {
+      img.alt = 'Görsel yüklenemedi. Oturumunuzu ve bağlantınızı kontrol edin.';
+    }
+  },
+
   normalizePhoto(photo, token, { admin = false } = {}) {
     const headers = admin ? LumaConfig.adminAuthHeaders() : {};
-    const thumbPath = photo.thumbnail_url || LumaConfig.photoThumbnailUrl(photo.id, admin ? null : token);
-    const originalPath = photo.original_url || LumaConfig.photoOriginalUrl(photo.id, admin ? null : token);
+    const thumbPath = photo.thumbnail_url ? this.photoUrl(photo.thumbnail_url) : LumaConfig.photoThumbnailUrl(photo.id, admin ? null : token);
+    const originalPath = photo.original_url ? this.photoUrl(photo.original_url) : LumaConfig.photoOriginalUrl(photo.id, admin ? null : token);
     return {
       id: photo.id,
       fileName: photo.original_filename || 'fotoğraf.jpg',
@@ -64,10 +85,13 @@ window.LumaGallery = {
   },
 
   async fetchPhotos(token = LumaConfig.getEventToken(), { admin = false } = {}) {
+    if (!token) throw new Error('Önce bir etkinlik seçin veya yeni etkinlik oluşturun.');
     const url = admin ? LumaConfig.adminPhotosUrl(token) : LumaConfig.photosUrl(token);
     const headers = admin ? LumaConfig.adminAuthHeaders() : {};
     const response = await fetch(url, { headers });
-    if (!response.ok) throw new Error('Galeri verileri okunamadı.');
+    if (response.status === 401) throw new Error('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
+    if (response.status === 403 || response.status === 404) throw new Error('Bu etkinliğe erişilemiyor. Etkinlik seçiminizi kontrol edin.');
+    if (!response.ok) throw new Error('Fotoğraflar yüklenemedi. Lütfen tekrar deneyin.');
     const photos = await response.json();
     return photos.map(photo => this.normalizePhoto(photo, token, { admin }));
   },
@@ -153,14 +177,7 @@ window.LumaGallery = {
     const stage = content.querySelector('#viewerStage');
     const img = document.createElement('img');
     img.alt = item.fileName;
-    const src = item.originalPath;
-    if (item.admin) {
-      fetch(src, { headers: item.authHeaders })
-        .then(r => r.blob())
-        .then(blob => { img.src = URL.createObjectURL(blob); });
-    } else {
-      img.src = src;
-    }
+    this.loadImage(img, item.originalPath, item);
     stage.appendChild(img);
 
     document.getElementById('mediaPrev').onclick = () => this.showMediaAt(this.activeMediaIndex - 1);
@@ -268,9 +285,8 @@ window.LumaGallery = {
   async renderAdminGallery() {
     const grid = document.getElementById('adminGalleryGrid');
     const empty = document.getElementById('adminGalleryEmpty');
-    const token = LumaConfig.getEventToken();
-
     try {
+      const token = window.ensureEventToken ? await window.ensureEventToken() : LumaConfig.getEventToken();
       this.adminAllItems = await this.fetchPhotos(token, { admin: true });
       this.updateFilterCounts();
       this.adminMediaItems = this.filteredAdminItems();
@@ -284,9 +300,7 @@ window.LumaGallery = {
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.alt = item.fileName;
-        fetch(item.thumbPath, { headers: item.authHeaders })
-          .then(r => r.blob())
-          .then(blob => { img.src = URL.createObjectURL(blob); });
+        this.loadImage(img, item.thumbPath, item);
         container.appendChild(img);
       });
 
@@ -316,10 +330,13 @@ window.LumaGallery = {
       });
 
       this.bindModerationActions(grid, this.adminAllItems);
-    } catch {
+    } catch (err) {
+      this.adminAllItems = [];
+      this.adminMediaItems = [];
+      this.updateFilterCounts();
       grid.innerHTML = '';
       empty.classList.remove('hidden');
-      Luma.toast('Galeri verileri okunamadı.');
+      empty.querySelector('h2').textContent = err?.message || 'Fotoğraflar yüklenemedi. Lütfen tekrar deneyin.';
     }
   },
 

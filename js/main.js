@@ -33,7 +33,7 @@ function showView(view){
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));document.getElementById('backOverview').onclick=()=>showView('overview');
 
 const modal=document.getElementById('modal'), content=document.getElementById('modalContent');
-const modalTemplates={rsvp:`<p class="invite-kicker">KATILIM BİLDİR</p><h2>Sizi aramızda görecek miyiz?</h2><p>Yanıtınız hazırlıklarımızı kusursuzlaştırmamıza yardımcı olacak.</p><form id="rsvpForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input required placeholder="Adınız ve soyadınız"></div><div class="field full"><label>KATILIM DURUMU</label><div class="choice-row"><label><input type="radio" name="status" checked>Katılacağım</label><label><input type="radio" name="status">Katılamayacağım</label><label><input type="radio" name="status">Henüz emin değilim</label></div></div><div class="field"><label>KİŞİ SAYISI</label><select><option>1 kişi</option><option>2 kişi</option><option>3 kişi</option><option>4+ kişi</option></select></div><div class="field"><label>E-POSTA (İSTEĞE BAĞLI)</label><input type="email" placeholder="ornek@email.com"></div><div class="field full"><label>EK NOT</label><textarea placeholder="Alerji, ulaşım veya bize iletmek istediğiniz bir not..."></textarea></div><button class="submit-btn">Yanıtımı Gönder</button></form>`,upload:`<p class="invite-kicker">ANI PAYLAŞ</p><h2>Fotoğraflarını bizimle paylaş 💌</h2><p>Etkinlikte çektiğin fotoğrafları güvenle yükleyebilirsin. Aynı anda birden fazla fotoğraf seçebilir veya tek tek ekleyebilirsin.</p><form id="uploadForm" class="form-grid"><label class="dropzone field full"><i data-icon="upload"></i><p>Fotoğraf ekle</p><small>Birden fazla seçilebilir · JPG, PNG, WebP, HEIC · Her biri en fazla 15 MB</small><input id="fileInput" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" hidden></label><div class="field full"><label>AÇIKLAMA (İSTEĞE BAĞLI)</label><textarea placeholder="Bu güzel an hakkında birkaç kelime..."></textarea></div><button class="submit-btn">Gönder</button></form>`,message:`<p class="invite-kicker">ANI DEFTERİ</p><h2>Bize bir not bırak.</h2><p>Yıllar sonra yeniden okumaktan mutluluk duyacağımız birkaç güzel kelime...</p><form id="messageForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input required placeholder="Adınız ve soyadınız"></div><div class="field full"><label>MESAJINIZ</label><textarea required placeholder="Bir ömür boyu mutluluklar..." style="min-height:130px"></textarea></div><button class="submit-btn">Mesajı Bırak ♡</button></form>`};
+const modalTemplates={rsvp:`<p class="invite-kicker">KATILIM BİLDİR</p><h2>Sizi aramızda görecek miyiz?</h2><p>Yanıtınız hazırlıklarımıza yardımcı olacak. Bilgileriniz yalnızca etkinlik yöneticisiyle paylaşılır.</p><form id="rsvpForm" class="form-grid"><div class="field full"><label for="rsvpName">AD SOYAD</label><input id="rsvpName" name="guestName" required maxlength="255" autocomplete="name"></div><fieldset class="field full"><legend>KATILIM DURUMU</legend><div class="choice-row"><label><input type="radio" name="status" value="attending" checked>Katılacağım</label><label><input type="radio" name="status" value="declined">Katılamayacağım</label><label><input type="radio" name="status" value="pending">Henüz emin değilim</label></div></fieldset><div class="field"><label for="rsvpPeople">KİŞİ SAYISI (SİZ DAHİL)</label><input id="rsvpPeople" name="people" type="number" min="1" max="20" step="1" value="1" required></div><div class="field"><label for="rsvpEmail">E-POSTA</label><input id="rsvpEmail" name="email" type="email" required maxlength="255" autocomplete="email"></div><div class="field full"><label for="rsvpDietary">BESLENME GEREKSİNİMLERİ (İSTEĞE BAĞLI)</label><textarea id="rsvpDietary" name="dietary_requirements" maxlength="1000" placeholder="Alerji, vejetaryen menü..."></textarea></div><div class="field full"><label for="rsvpNotes">EK NOT (İSTEĞE BAĞLI)</label><textarea id="rsvpNotes" name="notes" maxlength="2000" placeholder="Bize iletmek istediğiniz bir not..."></textarea></div><p class="field full" role="status" id="rsvpFeedback" aria-live="polite"></p><button class="submit-btn" type="submit">Yanıtımı Gönder</button></form>`,upload:`<p class="invite-kicker">ANI PAYLAŞ</p><h2>Fotoğraflarını bizimle paylaş 💌</h2><p>Etkinlikte çektiğin fotoğrafları güvenle yükleyebilirsin. Aynı anda birden fazla fotoğraf seçebilir veya tek tek ekleyebilirsin.</p><form id="uploadForm" class="form-grid"><label class="dropzone field full"><i data-icon="upload"></i><p>Fotoğraf ekle</p><small>Birden fazla seçilebilir · JPG, PNG, WebP, HEIC · Her biri en fazla 15 MB</small><input id="fileInput" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" hidden></label><div class="field full"><label>AÇIKLAMA (İSTEĞE BAĞLI)</label><textarea placeholder="Bu güzel an hakkında birkaç kelime..."></textarea></div><button class="submit-btn">Gönder</button></form>`,message:`<p class="invite-kicker">ANI DEFTERİ</p><h2>Bize bir not bırak.</h2><p>Yıllar sonra yeniden okumaktan mutluluk duyacağımız birkaç güzel kelime...</p><form id="messageForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input required placeholder="Adınız ve soyadınız"></div><div class="field full"><label>MESAJINIZ</label><textarea required placeholder="Bir ömür boyu mutluluklar..." style="min-height:130px"></textarea></div><button class="submit-btn">Mesajı Bırak ♡</button></form>`};
 modalTemplates.event=`<p class="invite-kicker">YENİ ETKİNLİK</p><h2>Yeni bir etkinlik oluştur.</h2><p>Temel bilgileri girin. Etkinlik oluşturulduğunda aktif olarak seçilecektir.</p><form id="eventForm" class="form-grid"><div class="field full"><label>ETKİNLİK ADI</label><input name="eventName" required placeholder="Örn. Düğünümüz"></div><div class="field"><label>TARİH VE SAAT</label><input name="eventDate" type="datetime-local" required></div><div class="field"><label>MEKÂN (İSTEĞE BAĞLI)</label><input name="eventVenue" placeholder="Örn. Esma Sultan Yalısı"></div><div class="field full"><label>ŞEHİR (İSTEĞE BAĞLI)</label><input name="eventCity" placeholder="Örn. İstanbul"></div><button class="submit-btn">Etkinliği Oluştur</button></form>`;
 const defaultEvent={id:'',slug:'',private_token:'',name:'Etkinlik yükleniyor...',date:null,venue:'',city:''};
 function eventList(){return window._lumaEvents||[]}
@@ -77,6 +77,7 @@ window.switchActiveEvent=switchActiveEvent;
 window.currentEventMeta=currentEventMeta;
 LumaConfig.getEventToken=currentEventToken;
 let _eventsSyncPromise=null;
+let eventSyncError='';
 async function syncBackendEvents(){
   if(_eventsSyncPromise)return _eventsSyncPromise;
   _eventsSyncPromise=_syncBackendEventsImpl().finally(()=>{_eventsSyncPromise=null});
@@ -87,6 +88,7 @@ function clearAdminEventSession(){
   window._lumaEvents=[];
 }
 async function _syncBackendEventsImpl(){
+  eventSyncError='';
   try{
     await LumaEventData.migrateLegacyEventsOnce();
     const mapped=await LumaEventData.listEvents();
@@ -103,7 +105,8 @@ async function _syncBackendEventsImpl(){
     hydrateEventUI();
     if(!document.getElementById('qrView').classList.contains('hidden'))LumaQr.render();
     return Boolean(active?.private_token);
-  }catch{
+  }catch(err){
+    eventSyncError=err?.message||'Etkinlikler yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.';
     window._lumaEvents=[];
     return false;
   }
@@ -232,20 +235,22 @@ function renderGuestTable(){
   const counts={all:data.guests.length,attending:0,declined:0,pending:0,external:0};data.guests.forEach(g=>{counts[g.status]++;if(g.source==='external')counts.external++});
   ['All','Attending','Declined','Pending','External'].forEach(key=>document.getElementById(`filter${key}Count`).textContent=counts[key.toLowerCase()]);
   const visible=data.guests.filter(g=>(activeGuestFilter==='all'||g.status===activeGuestFilter||activeGuestFilter==='external'&&g.source==='external')&&(!query||`${g.name} ${g.email}`.toLocaleLowerCase('tr-TR').includes(query)));
-  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small></div></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions"><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
+  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small>${g.dietary_requirements?`<small>Beslenme: ${escapeHtml(g.dietary_requirements)}</small>`:''}${g.notes?`<small>Not: ${escapeHtml(g.notes)}</small>`:''}</div></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions"><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
   body.querySelectorAll('[data-edit-guest]').forEach(button=>button.onclick=()=>openGuestEditor(readData().guests.find(guest=>guest.id===button.dataset.editGuest)));
   body.querySelectorAll('[data-delete-guest]').forEach(button=>button.onclick=async()=>{try{await LumaEventData.deleteGuest(currentEventToken(),button.dataset.deleteGuest);await refreshGuestViews();toast('Misafir listeden kaldırıldı.')}catch{toast('Misafir silinemedi.')}});
 }
 function openGuestEditor(guest){
   if(!guest)return;
   document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;
-  content.innerHTML=`<p class="invite-kicker">MİSAFİR DÜZENLE</p><h2 id="guestEditTitle">Misafir</h2><p>Katılım durumunu, kişi sayısını veya iletişim bilgilerini güncelleyin.</p><form id="guestEditForm" class="form-grid"><div class="field full"><label>AD SOYAD</label><input name="guestName" required></div><div class="field full"><label>E-POSTA</label><input name="guestEmail" type="email" required></div><div class="field"><label>DURUM</label><select name="guestStatus"><option value="attending">Gelecek</option><option value="declined">Gelmeyecek</option><option value="pending">Cevap bekleniyor</option></select></div><div class="field"><label>KİŞİ SAYISI</label><input name="guestPeople" type="number" min="1" max="20" required></div><button class="submit-btn" type="submit">Kaydet</button></form>`;
+  content.innerHTML=`<p class="invite-kicker">MİSAFİR DÜZENLE</p><h2 id="guestEditTitle">Misafir</h2><p>Katılım durumunu, kişi sayısını veya iletişim bilgilerini güncelleyin.</p><form id="guestEditForm" class="form-grid"><div class="field full"><label for="edit-guestName">AD SOYAD</label><input id="edit-guestName" name="guestName" required></div><div class="field full"><label for="edit-guestEmail">E-POSTA</label><input id="edit-guestEmail" name="guestEmail" type="email" required></div><div class="field"><label for="edit-guestStatus">DURUM</label><select id="edit-guestStatus" name="guestStatus"><option value="attending">Gelecek</option><option value="declined">Gelmeyecek</option><option value="pending">Cevap bekleniyor</option></select></div><div class="field"><label for="edit-guestPeople">KİŞİ SAYISI</label><input id="edit-guestPeople" name="guestPeople" type="number" min="1" max="20" required></div><div class="field full"><label for="guestDietary">BESLENME GEREKSİNİMLERİ</label><textarea id="guestDietary" name="dietary_requirements" maxlength="1000"></textarea></div><div class="field full"><label for="guestNotes">EK NOT</label><textarea id="guestNotes" name="notes" maxlength="2000"></textarea></div><button class="submit-btn" type="submit">Kaydet</button></form>`;
   document.getElementById('guestEditTitle').textContent=guest.name;
   const form=document.getElementById('guestEditForm');
   form.guestName.value=guest.name;
   form.guestEmail.value=guest.email;
   form.guestStatus.value=guest.status;
   form.guestPeople.value=guest.people||1;
+  form.elements.dietary_requirements.value=guest.dietary_requirements||"";
+  form.elements.notes.value=guest.notes||"";
   modal.classList.remove('hidden');
   form.onsubmit=async e=>{
     e.preventDefault();
@@ -258,6 +263,8 @@ function openGuestEditor(guest){
         email:normalizedEmail(form.guestEmail.value),
         status:form.guestStatus.value,
         people:Number(form.guestPeople.value),
+        dietary_requirements:form.elements.dietary_requirements.value.trim(),
+        notes:form.elements.notes.value.trim(),
       });
       await refreshGuestViews();
       modal.classList.add('hidden');
@@ -308,7 +315,7 @@ function downloadCalendarEvent(){
   URL.revokeObjectURL(url);
   toast('Takvim dosyası indirildi.');
 }
-document.getElementById('addGuestForm').onsubmit=async e=>{e.preventDefault();const name=document.getElementById('guestNameInput').value.trim(),email=normalizedEmail(document.getElementById('guestEmailInput').value);const token=await ensureEventToken();if(!token){toast('Misafir eklemek için önce giriş yapın ve üstten bir etkinlik seçin.');return}try{await LumaEventData.createGuest(token,{name,email,status:'pending',people:1,source:'admin'});e.currentTarget.reset();await refreshGuestViews();await refreshActivities();toast('Misafir eklendi ve cevap bekleniyor listesine alındı.')}catch(err){toast(err.message||'Misafir eklenemedi.')}};
+document.getElementById('addGuestForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('guestNameInput').value.trim(),email=normalizedEmail(document.getElementById('guestEmailInput').value);const token=await ensureEventToken();if(!token){toast('Misafir eklemek için önce giriş yapın ve üstten bir etkinlik seçin.');return}try{await LumaEventData.createGuest(token,{name,email,status:'pending',people:1,source:'admin'});form.reset();await refreshGuestViews();await refreshActivities();toast('Misafir eklendi ve cevap bekleniyor listesine alındı.')}catch(err){toast(err.message||'Misafir eklenemedi.')}};
 document.querySelectorAll('#guestFilters [data-filter]').forEach(button=>button.onclick=()=>{activeGuestFilter=button.dataset.filter;document.querySelectorAll('#guestFilters button').forEach(x=>x.classList.toggle('active',x===button));renderGuestTable()});
 document.getElementById('guestSearchInput').addEventListener('input',renderGuestTable);
 document.getElementById('copyInviteLinkBtn').onclick=async()=>{const link=LumaConfig.inviteUrl(currentEventToken());try{await navigator.clipboard.writeText(link);toast('Bu etkinliğe özel davet bağlantısı kopyalandı.')}catch{window.prompt('Etkinliğe özel davet bağlantısını kopyalayın:',link)}};
@@ -371,8 +378,19 @@ function openModal(type){
       }finally{if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Etkinliği Oluştur'}}
       return;
     }else if(type==='rsvp'){
-      const name=form.querySelector('input[required]:not([type="email"])').value.trim(),email=normalizedEmail(form.querySelector('input[type="email"]').value),statusIndex=[...form.querySelectorAll('input[name="status"]')].findIndex(x=>x.checked),status=['attending','declined','pending'][statusIndex],people=form.querySelector('select').selectedIndex+1;
-      try{await LumaEventData.submitRsvp(token,{name,email,status,people});if(sessionStorage.getItem('lumaAdminJwt')){await refreshGuestViews();await refreshActivities()}else{updateDashboard();renderGuestTable()}modal.classList.add('hidden');toast('Katılım yanıtınız kaydedildi.')}catch(err){toast(err.message||'Katılım yanıtı gönderilemedi.')}
+      const values=new FormData(form),button=form.querySelector('.submit-btn'),feedback=form.querySelector('#rsvpFeedback');
+      if(button.disabled)return;
+      const payload={name:String(values.get('guestName')).trim(),email:normalizedEmail(values.get('email')),status:values.get('status'),people:Number(values.get('people')),dietary_requirements:String(values.get('dietary_requirements')).trim(),notes:String(values.get('notes')).trim()};
+      if(!payload.name){feedback.textContent='Lütfen adınızı ve soyadınızı girin.';return}
+      if(!token){feedback.textContent='Davetiye bağlantısı bulunamadı.';return}
+      button.disabled=true;button.textContent='Gönderiliyor...';feedback.textContent='';
+      try{
+        await LumaEventData.submitRsvp(token,payload);
+        feedback.textContent='Katılım yanıtınız kaydedildi. Teşekkür ederiz!';
+        button.textContent='Yanıt kaydedildi';
+        form.querySelectorAll('input,textarea').forEach(input=>input.disabled=true);
+        if(sessionStorage.getItem('lumaAdminJwt')){refreshGuestViews().catch(()=>{});refreshActivities().catch(()=>{})}
+      }catch(err){feedback.textContent=err.message||'Katılım yanıtı gönderilemedi. Lütfen tekrar deneyin.';button.disabled=false;button.textContent='Yanıtımı Gönder'}
       return;
     }else{
       const name=form.querySelector('input[required]').value.trim(),message=form.querySelector('textarea[required]').value.trim();
@@ -445,7 +463,7 @@ document.getElementById('authForm').onsubmit=async e=>{
   }catch{showAuthFeedback(isRegister?'Kayıt işlenemedi. Tarayıcı depolama iznini kontrol edin.':'Giriş işlenemedi. Tarayıcı depolama iznini kontrol edin.')}
   finally{button.disabled=false;button.textContent=isRegister?'Kayıt Ol':'Giriş Yap'}
 };
-document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);e.currentTarget.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
+document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);form.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
 function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');sessionStorage.removeItem('lumaActiveEventSlug');window._lumaEvents=[];location.reload()}
 document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('adminProfileForm').onsubmit=async e=>{e.preventDefault();const displayName=document.getElementById('settingsDisplayName').value.trim();if(!displayName){toast('Görünen ad boş bırakılamaz.');return}try{const profile=await LumaEventData.updateAdminProfile({display_name:displayName});applyAdminProfile(profile);toast('Profiliniz kaydedildi.');}catch(err){toast(err?.message||'Profil kaydedilemedi.')}};
@@ -552,7 +570,7 @@ function renderProfileEvents(){
 }
 function renderProfile(){renderProfileEvents();renderContactList()}
 document.getElementById('savedContactSelect').onchange=e=>{const contact=contactList().find(item=>item.id===e.currentTarget.value);if(!contact)return;document.getElementById('guestNameInput').value=contact.name;document.getElementById('guestEmailInput').value=contact.email};
-document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();const name=document.getElementById('contactName').value.trim(),email=normalizedEmail(document.getElementById('contactEmail').value);const button=e.currentTarget.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Kaydediliyor...'}try{const created=await LumaEventData.createContact({name,email});upsertContact(created);e.currentTarget.reset();toast('Kişi rehbere kaydedildi.')}catch(err){toast(err.message||'Kişi kaydedilemedi.')}finally{if(button){button.disabled=false;button.textContent='Kişiyi Kaydet'}}};
+document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('contactName').value.trim(),email=normalizedEmail(document.getElementById('contactEmail').value);const button=e.currentTarget.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Kaydediliyor...'}try{const created=await LumaEventData.createContact({name,email});upsertContact(created);form.reset();toast('Kişi rehbere kaydedildi.')}catch(err){toast(err.message||'Kişi kaydedilemedi.')}finally{if(button){button.disabled=false;button.textContent='Kişiyi Kaydet'}}};
 function invitationContentFromForm(){return {names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
 function applyInvitationContent(data){
   const meta=currentEventMeta();
@@ -653,20 +671,39 @@ musicInput.onchange=()=>{const file=musicInput.files[0];if(!file)return;if(file.
 document.getElementById('removeMusicBtn').onclick=()=>{pendingMusicFile=undefined;removePendingMusic=true;musicInput.value='';hideMusicPreview();toast('Müzik kaldırılmak üzere işaretlendi.')};
 document.getElementById('editorPreviewBtn').onclick=async()=>{document.getElementById('inviteCoverImage').src=pendingCover;updateDateContent(new Date(dateInput.value));applyInvitationContent(invitationContentFromForm());await refreshPublicMemories();openInvitation()};
 document.getElementById('inviteEditorForm').onsubmit=async e=>{
-  e.preventDefault();eventDate=new Date(dateInput.value);updateDateContent(eventDate);document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`;
-  const contentData=invitationContentFromForm(),token=currentEventToken(),meta=currentEventMeta();
-  if(!token){toast('Etkinlik token bulunamadı.');return}
-  const savePayload={...contentData,event_date:new Date(dateInput.value).toISOString(),city:contentData.location};
-  if(!savePayload.names)savePayload.names=meta.name||'';
+  e.preventDefault();
+  const form=e.currentTarget,button=form.querySelector('button[type="submit"]');
+  if(button?.disabled)return;
+  const contentData=invitationContentFromForm(),date=new Date(dateInput.value);
+  if(Number.isNaN(date.getTime())){toast('Lütfen geçerli bir etkinlik tarihi seçin.');return}
+  const cover=pendingCover,musicFile=pendingMusicFile,removeMusic=removePendingMusic;
+  const originalLabel=button?.textContent;
+  if(button){button.disabled=true;button.textContent='Kaydediliyor...'}
   try{
+    if(!sessionStorage.getItem('lumaAdminJwt'))throw new Error('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
+    let token=await ensureEventToken();
+    if(!token){
+      if(eventSyncError)throw new Error(eventSyncError);
+      if(eventList().length)throw new Error('Etkinlik bilgileri eksik. Sayfayı yenileyip tekrar deneyin.');
+      if(!contentData.names)throw new Error('Lütfen etkinlik veya ev sahibi adını girin.');
+      const created=await LumaEventData.createEvent({name:contentData.names,event_date:date.toISOString(),venue:contentData.venue,city:contentData.location});
+      window._lumaEvents=[created];
+      sessionStorage.setItem('lumaActiveEventSlug',created.id);
+      token=created.private_token;
+      setupEventSwitcher();
+    }
+    const savePayload={...contentData,event_date:date.toISOString(),city:contentData.location};
+    if(!savePayload.names)savePayload.names=currentEventMeta().name||'';
     await LumaEventData.saveInvitation(token,savePayload);
-    if(pendingCover===defaultCover)await LumaEventData.removeCover(token);
-    else if(typeof pendingCover==='string'&&(pendingCover.startsWith('data:')||pendingCover.startsWith('blob:')))await LumaEventData.uploadCover(token,pendingCover);
-    if(removePendingMusic)await LumaEventData.removeMusic(token);else if(pendingMusicFile)await LumaEventData.uploadMusic(token,pendingMusicFile);
+    if(cover===defaultCover)await LumaEventData.removeCover(token);
+    else if(typeof cover==='string'&&(cover.startsWith('data:')||cover.startsWith('blob:')))await LumaEventData.uploadCover(token,cover);
+    if(removeMusic)await LumaEventData.removeMusic(token);else if(musicFile)await LumaEventData.uploadMusic(token,musicFile);
     await loadSavedMusic();
+    eventDate=date;updateDateContent(date);
     applyInvitationContent(contentData);
     pendingMusicFile=undefined;removePendingMusic=false;updateStorageCard();updateDashboard();toast('Davetiye içeriği ve görünümü kaydedildi.');
-  }catch{toast('Davetiye ayarları kaydedilemedi.')}
+  }catch(err){toast(err?.message||'Davetiye ayarları kaydedilemedi.')}
+  finally{if(button){button.disabled=false;button.textContent=originalLabel}}
 };
 function eventDateFor(meta){return new Date(meta.date||LumaEventData.cache.invitation?.event_date||Date.now())}
 function tick(){const meta=currentEventMeta(),date=Number.isNaN(eventDate.getTime())?eventDateFor(meta):eventDate,countdown=countdownValues(date);document.getElementById('daysRemaining').textContent=countdown.diff?`${countdown.days} gün kaldı`:'Etkinlik tarihi geldi';document.getElementById('dashboardDateTime').textContent=`${meta.name||'Etkinlik'} · ${trDate(date,{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}`;document.getElementById('sidebarDaysRemaining').textContent=countdown.diff?`Etkinliğinize ${countdown.days} gün kaldı.`:'Etkinlik tarihi geldi.';document.querySelectorAll('.mini-countdown b').forEach((el,i)=>el.childNodes[0].nodeValue=countdown.nums[i]);document.querySelectorAll('#publicCountdown b').forEach((el,i)=>el.textContent=countdown.nums[i])}
