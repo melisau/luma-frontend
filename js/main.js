@@ -3,8 +3,8 @@ document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icons[el.data
 
 const { escapeHtml, trDate, toast } = Luma;
 const dashboard=document.getElementById('dashboard'), invitation=document.getElementById('invitation'), sidebar=document.querySelector('.sidebar');
-function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTop=0;playInvitationMusic()}
-function closeInvitation(){invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
+function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTop=0;const style=document.getElementById('openingStyle').value;if(style==='envelope'){LumaEnvelope.show({name:document.getElementById('contentCoupleNames').value||currentEventMeta().name,date:eventDate,appearance:LumaEnvelope.readEditor(),onOpen:playInvitationMusic});}else{playInvitationMusic()}}
+function closeInvitation(){LumaEnvelope.close();invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
 document.getElementById('previewBtn').onclick=openInvitation;document.getElementById('closeInvite').onclick=closeInvitation;document.getElementById('openInvite').onclick=openInvitation;
 document.getElementById('menuBtn').onclick=()=>sidebar.classList.toggle('open');
 
@@ -496,7 +496,7 @@ document.getElementById('eventSettingsForm').onsubmit=async e=>{
   }catch(err){toast(err?.message||'Etkinlik ayarları kaydedilemedi.')}
   finally{if(button){button.disabled=false;button.textContent='Etkinlik Ayarlarını Kaydet'}}
 };
-document.addEventListener('keydown',e=>{if(!modal.classList.contains('hidden')&&modal.dataset.viewer==='media'&&e.key==='ArrowLeft')LumaGallery.showMediaAt(LumaGallery.activeMediaIndex-1);if(!modal.classList.contains('hidden')&&modal.dataset.viewer==='media'&&e.key==='ArrowRight')LumaGallery.showMediaAt(LumaGallery.activeMediaIndex+1);if(e.key==='Escape'){if(!modal.classList.contains('hidden'))closeModal();else if(!invitation.classList.contains('hidden'))closeInvitation()}});
+document.addEventListener('keydown',e=>{if(document.documentElement.classList.contains('envelope-locked')){if(['Escape','Tab','PageDown','PageUp','Home','End','ArrowDown','ArrowUp'].includes(e.key))e.preventDefault();return}if(!modal.classList.contains('hidden')&&modal.dataset.viewer==='media'&&e.key==='ArrowLeft')LumaGallery.showMediaAt(LumaGallery.activeMediaIndex-1);if(!modal.classList.contains('hidden')&&modal.dataset.viewer==='media'&&e.key==='ArrowRight')LumaGallery.showMediaAt(LumaGallery.activeMediaIndex+1);if(e.key==='Escape'){if(!modal.classList.contains('hidden'))closeModal();else if(!invitation.classList.contains('hidden'))closeInvitation()}});
 
 const defaultCover=LumaConfig.defaultCover;
 let eventDate=new Date(),pendingCover=defaultCover;
@@ -571,7 +571,7 @@ function renderProfileEvents(){
 function renderProfile(){renderProfileEvents();renderContactList()}
 document.getElementById('savedContactSelect').onchange=e=>{const contact=contactList().find(item=>item.id===e.currentTarget.value);if(!contact)return;document.getElementById('guestNameInput').value=contact.name;document.getElementById('guestEmailInput').value=contact.email};
 document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('contactName').value.trim(),email=normalizedEmail(document.getElementById('contactEmail').value);const button=e.currentTarget.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Kaydediliyor...'}try{const created=await LumaEventData.createContact({name,email});upsertContact(created);form.reset();toast('Kişi rehbere kaydedildi.')}catch(err){toast(err.message||'Kişi kaydedilemedi.')}finally{if(button){button.disabled=false;button.textContent='Kişiyi Kaydet'}}};
-function invitationContentFromForm(){return {names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
+function invitationContentFromForm(){return {...LumaEnvelope.readEditor(),opening_style:document.getElementById('openingStyle').value,names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
 function applyInvitationContent(data){
   const meta=currentEventMeta();
   const names=(data.names||meta.name||'').trim();
@@ -627,6 +627,8 @@ function loadInvitationContentEditor(){
     location:inv?.city||meta.city||'',
     guestNote:inv?.guest_note||''
   };
+  document.getElementById('openingStyle').value=inv?.opening_style||'classic';
+  LumaEnvelope.fillEditor(inv||{});
   document.getElementById('contentCoupleNames').value=data.names;
   document.getElementById('contentTagline').value=data.tagline;
   document.getElementById('contentStoryTitle').value=data.storyTitle;

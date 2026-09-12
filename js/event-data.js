@@ -264,6 +264,14 @@ window.LumaEventData = {
       story_title: formData.story_title || formData.storyTitle || '',
       story_text: formData.story_text || formData.storyText || '',
       guest_note: formData.guest_note || formData.guestNote || '',
+      opening_style: formData.opening_style || 'classic',
+      envelope_color: formData.envelope_color || '#e9dcc4',
+      seal_color: formData.seal_color || '#873f43',
+      paper_color: formData.paper_color || '#fffdf7',
+      envelope_texture: formData.envelope_texture || 'linen',
+      envelope_pattern: formData.envelope_pattern || 'plain',
+      seal_motif: formData.seal_motif || 'botanical',
+
     };
   },
 

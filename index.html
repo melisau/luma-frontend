@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/styles.css?v=42" />
+  <link rel="stylesheet" href="/css/styles.css?v=48" />
   <style>@media(max-width:1050px){.editor-grid{grid-template-columns:1fr}.add-guest-form{grid-template-columns:1fr 1fr}}@media(max-width:700px){.editor-heading{align-items:flex-start}.editor-heading .ghost-btn{width:38px;padding:0;font-size:0}.editor-panel{padding:18px}.cover-dropzone{height:240px}.editor-actions{position:sticky;bottom:10px;z-index:2}.add-guest-form{grid-template-columns:1fr}.guest-toolbar{align-items:stretch;flex-direction:column}.guest-search{margin:0}.guest-search input{width:100%}}</style>
   <style>@media(max-width:700px){.content-fields{grid-template-columns:1fr}.content-fields .full{grid-column:1}}</style>
 </head>
@@ -119,6 +119,7 @@
       <div class="content hidden" id="inviteEditorView">
         <div class="editor-heading"><div><p class="eyebrow">DAVETİYE YÖNETİMİ</p><h1>Davetiyeni özelleştir</h1><p>Tarihi ve kapak görselini seç; değişiklikleri kaydetmeden önce önizle.</p></div><button id="editorPreviewBtn" class="ghost-btn"><i data-icon="eye"></i>Canlı önizleme</button></div>
         <form id="inviteEditorForm" class="editor-grid">
+          <section class="editor-panel opening-style-panel"><div class="editor-panel-head"><span>✦</span><div><h2>Davetiye görünümü</h2><p>Misafirlerinizi nasıl karşılamak istersiniz?</p></div></div><label class="editor-field"><span>AÇILIŞ DENEYİMİ</span><select id="openingStyle"><option value="classic">Klasik · Davetiyeyi doğrudan göster</option><option value="envelope">Mühürlü Zarf · Dokunarak aç</option></select></label><div class="envelope-customization"><label class="editor-field"><span>ZARF RENGİ</span><input type="color" id="envelope_color" value="#e9dcc4"></label><label class="editor-field"><span>MÜHÜR RENGİ</span><input type="color" id="seal_color" value="#873f43"></label><label class="editor-field"><span>DAVETİYE KÂĞIDI</span><input type="color" id="paper_color" value="#fffdf7"></label><label class="editor-field"><span>KÂĞIT DOKUSU</span><select id="envelope_texture"><option value="smooth">Pürüzsüz</option><option value="linen" selected>Keten</option><option value="grain">El yapımı kâğıt</option></select></label><label class="editor-field"><span>ZARF VE KART DESENİ</span><select id="envelope_pattern"><option value="plain">Sade</option><option value="pinstripe">İnce çizgili</option><option value="botanical">Botanik</option><option value="lace">Dantelli · Romantik</option><option value="floral_cut">Çiçek kesimli · Vintage</option><option value="embossed">Kabartmalı · İpli</option></select></label><label class="editor-field"><span>MÜHÜR MOTİFİ</span><select id="seal_motif"><option value="botanical">Zarif dal</option><option value="heart">Kalp</option><option value="monogram">Baş harfler</option></select></label></div><p class="opening-description">Mühür kalkar, zarf açılır ve davetiyeniz dışarı çıkar. Seçiminizi üstteki önizleme düğmesiyle deneyebilirsiniz.</p></section>
           <section class="editor-panel"><div class="editor-panel-head"><span>01</span><div><h2>Tarih ve saat</h2><p>Geri sayım ve davetiye detayları otomatik güncellenir.</p></div></div><label class="editor-field"><span>ETKİNLİK TARİHİ VE SAATİ</span><input id="eventDateInput" type="datetime-local" required></label><div class="date-preview"><i data-icon="calendar"></i><div><small>SEÇİLEN TARİH</small><strong id="selectedDatePreview">Tarih seçilmedi</strong></div></div></section>
           <section class="editor-panel"><div class="editor-panel-head"><span>02</span><div><h2>Kapak görseli</h2><p>Yatay ve yüksek çözünürlüklü bir fotoğraf önerilir.</p></div></div><label id="coverDropzone" class="cover-dropzone"><input id="coverImageInput" type="file" accept="image/jpeg,image/png,image/webp" hidden><img id="coverPreview" src="assets/images/wedding-hero.png" alt="Seçilen kapak görseli önizlemesi"><span class="cover-overlay"><i data-icon="upload"></i><b>Görseli değiştir</b><small>JPG, PNG veya WebP · En fazla 3 MB</small></span></label><button id="resetCoverBtn" class="text-btn" type="button">Varsayılan görsele dön</button></section>
           <section class="editor-panel music-editor-panel"><div class="editor-panel-head"><span>03</span><div><h2>Arka plan müziği</h2><p>Misafirler davetiyeyi açtığında çalacak müziği seçin.</p></div></div><label id="musicDropzone" class="music-dropzone"><input id="musicFileInput" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/ogg" hidden><i data-icon="upload"></i><div><b id="musicFileName">Müzik dosyası seç</b><small>MP3, M4A, WAV veya OGG · En fazla 15 MB</small></div></label><div id="musicAdminPreview" class="music-admin-preview hidden"><audio id="musicPreviewAudio" controls></audio><button id="removeMusicBtn" class="text-btn" type="button">Müziği kaldır</button></div></section>
@@ -242,9 +243,10 @@
   <script src="/js/config.production.js?v=1" onerror="void 0"></script>
   <script src="/js/config.local.js?v=1" onerror="void 0"></script>
   <script src="/js/config.js?v=5"></script>
-  <script src="/js/event-data.js?v=11"></script>
+  <script src="/js/event-data.js?v=13"></script>
   <script src="/js/upload.js?v=6"></script>
   <script src="/js/gallery.js?v=6"></script>
   <script src="/js/qr.js?v=5"></script>
-  <script src="/js/main.js?v=25"></script></body>
+  <script src="/js/envelope.js?v=5"></script>
+  <script src="/js/main.js?v=28"></script></body>
 </html>
