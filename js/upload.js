@@ -43,6 +43,7 @@ window.LumaUpload = {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', LumaConfig.photosUrl(token));
+      xhr.withCredentials = true;
       xhr.upload.onprogress = event => {
         if (event.lengthComputable && onProgress) {
           onProgress(Math.round((event.loaded / event.total) * 100));
@@ -177,9 +178,10 @@ window.LumaUpload = {
           progressBar.style.width = `${percent}%`;
           statusBox.textContent = `Yükleniyor... ${percent}%`;
         });
+        const resultMessage=`${result.uploaded.length} fotoğraf gönderildi.${result.duplicates_skipped ? ` ${result.duplicates_skipped} yinelenen fotoğraf atlandı.` : ''}`;
         progressBar.style.width = '100%';
         statusBox.classList.add('hidden');
-        successBox.textContent = `✓ ${result.uploaded.length} fotoğraf gönderildi. Onaylandıktan sonra albümde görünecek.${guestUploadEntry ? ' Dilersen daha fazla ekleyebilirsin.' : ''}`;
+        successBox.textContent = `✓ ${resultMessage} Onaylandıktan sonra albümde görünecek.${guestUploadEntry ? ' Dilersen daha fazla ekleyebilirsin.' : ''}`;
         successBox.classList.remove('hidden');
         await onComplete(result, uploaderName);
 
@@ -191,11 +193,11 @@ window.LumaUpload = {
         if (guestUploadEntry) {
           await new Promise(resolve => setTimeout(resolve, 1200));
           successBox.classList.add('hidden');
-          Luma.toast(`${result.uploaded.length} fotoğraf gönderildi. Daha fazla ekleyebilirsin.`);
+          Luma.toast(`${resultMessage} Daha fazla ekleyebilirsin.`);
         } else {
           await new Promise(resolve => setTimeout(resolve, 900));
           document.getElementById('modal').classList.add('hidden');
-          Luma.toast(`${result.uploaded.length} fotoğraf gönderildi. Yönetici onayından sonra paylaşılacak.`);
+          Luma.toast(`${resultMessage} Yönetici onayından sonra paylaşılacak.`);
           form.reset();
         }
       } catch (error) {

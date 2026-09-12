@@ -56,46 +56,45 @@ window.LumaEventData = {
     return `${LumaConfig.apiBase}${relative}`;
   },
 
+  accessRequired: false,
+  lastError: '',
+  loadErrors: [],
+  loadSequence: 0,
   async load(token, { admin = false } = {}) {
-    if (!token) return false;
-    try {
-      const headers = this.authHeaders(admin);
-      const invitationUrl = admin
-        ? `${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/invitation`
-        : `${LumaConfig.apiBase}/api/events/${encodeURIComponent(token)}/invitation`;
-      const requests = [fetch(invitationUrl, { headers })];
-      if (admin) {
-        requests.push(
-          fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/guests`, { headers }),
-          fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/messages`, { headers }),
-          fetch(`${LumaConfig.apiBase}/api/admin/events/${encodeURIComponent(token)}/activities`, { headers }),
-        );
-      } else {
-        requests.push(
-          fetch(`${LumaConfig.apiBase}/api/events/${encodeURIComponent(token)}/messages`),
-          fetch(`${LumaConfig.apiBase}/api/events/${encodeURIComponent(token)}`),
-        );
+    const sequence=++this.loadSequence;
+    this.cache={guests:[],messages:[],invitation:null,activities:[],event:null};
+    this.lastError='';this.loadErrors=[];this.accessRequired=false;
+    if(!token){this.lastError='Etkinlik seçilmedi.';return false}
+    const headers=this.authHeaders(admin),base=`${LumaConfig.apiBase}/api/${admin?'admin/':''}events/${encodeURIComponent(token)}`;
+    const paths=admin?['invitation','guests','messages','activities']:['invitation','messages',''];
+    try{
+      const results=await Promise.allSettled(paths.map(path=>fetch(`${base}${path?'/'+path:''}`,{headers})));
+      const bodies=await Promise.all(results.map(async result=>{
+        if(result.status!=='fulfilled')return {error:'Bağlantı kurulamadı. İnternetinizi ve API bağlantısını kontrol edin.'};
+        const response=result.value;
+        if(response.status===423)return {error:'Bu davetiye için erişim kodu gerekiyor.',locked:true};
+        if(!response.ok)return {error:response.status===401?'Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.':[403,404].includes(response.status)?'Davetiye bulunamadı veya artık erişime açık değil.':'Bilgiler yüklenemedi. Lütfen tekrar deneyin.'};
+        try{return {data:await response.json()}}catch{return {error:'Sunucudan geçerli bir yanıt alınamadı.'}}
+      }));
+      if(sequence!==this.loadSequence)return false;
+      this.accessRequired=Boolean(bodies.some(body=>body.locked));
+      if(bodies[0].error||(!admin&&bodies[2].error)){this.lastError=bodies[0].error||bodies[2].error;return false}
+      const next={guests:[],messages:[],invitation:this.normalizeInvitation(bodies[0].data),activities:[],event:null};
+      if(admin){
+        for(const [index,key,label] of [[1,'guests','Misafirler'],[2,'messages','Anı defteri'],[3,'activities','Aktiviteler']]){
+          if(bodies[index].error)this.loadErrors.push(`${label}: ${bodies[index].error}`);
+          else next[key]=bodies[index].data;
+        }
+      }else{
+        if(bodies[1].error)this.loadErrors.push(`Anı defteri: ${bodies[1].error}`);
+        else next.messages=bodies[1].data;
+        next.event=bodies[2].data;
       }
-      const responses = await Promise.all(requests);
-      if (!responses[0].ok) return false;
-      const invitation = await responses[0].json();
-      this.cache.invitation = this.normalizeInvitation(invitation);
-      if (admin) {
-        if (responses[1]?.ok) this.cache.guests = await responses[1].json();
-        if (responses[2]?.ok) this.cache.messages = await responses[2].json();
-        if (responses[3]?.ok) this.cache.activities = await responses[3].json();
-        this.cache.event = null;
-      } else {
-        this.cache.guests = [];
-        this.cache.activities = [];
-        if (responses[1]?.ok) this.cache.messages = await responses[1].json();
-        else this.cache.messages = [];
-        if (responses[2]?.ok) this.cache.event = await responses[2].json();
-        else this.cache.event = null;
-        this.syncPublicEventList(token);
-      }
+      this.cache=next;
+      if(!admin)this.syncPublicEventList(token);
       return true;
-    } catch {
+    }catch{
+      if(sequence===this.loadSequence)this.lastError='Bilgiler yüklenemedi. Lütfen tekrar deneyin.';
       return false;
     }
   },
@@ -198,14 +197,16 @@ window.LumaEventData = {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({...payload,edit_token:LumaRsvpAccess.credential(token,payload.email)}),
       },
     );
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       throw new Error(typeof err.detail==='string'?err.detail:'Bilgilerinizi kontrol edin: geçerli e-posta ve 1–20 arası kişi sayısı gereklidir.');
     }
-    return response.json();
+    const receipt=await response.json();
+    LumaRsvpAccess.save(token,payload.email,receipt.edit_token);
+    return receipt;
   },
 
   async submitMessage(token, payload) {
@@ -265,6 +266,11 @@ window.LumaEventData = {
       story_text: formData.story_text || formData.storyText || '',
       guest_note: formData.guest_note || formData.guestNote || '',
       opening_style: formData.opening_style || 'classic',
+      address:formData.address||'',
+      transport_notes:formData.transport_notes||'',
+      contact_info:formData.contact_info||'',
+      schedule:formData.schedule||'',
+
       envelope_color: formData.envelope_color || '#e9dcc4',
       seal_color: formData.seal_color || '#873f43',
       paper_color: formData.paper_color || '#fffdf7',
@@ -414,6 +420,8 @@ window.LumaEventData = {
       venue: event.venue || '',
       city: event.city || '',
       uploads_enabled: event.uploads_enabled,
+      album_public: event.album_public,
+      access_code_enabled: event.access_code_enabled,
       is_active: event.is_active,
     };
   },

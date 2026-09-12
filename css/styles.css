@@ -145,3 +145,5 @@ html.envelope-locked,html.envelope-locked body{overflow:hidden!important;overscr
 [data-pattern=lace] .envelope-letter:after{border-width:2px;border-radius:10px;background-size:12px 12px}
 [data-pattern=floral_cut] .envelope-pocket,[data-pattern=floral_cut] .envelope-pocket:after,[data-pattern=floral_cut] .envelope-flap{background-size:52px 52px,auto,auto}
 [data-pattern=floral_cut] .envelope-letter:after{background-size:52px 52px}
+
+.data-load-feedback{margin:20px;padding:16px;border:1px solid #c9b094;border-radius:8px;background:#fff7eb;color:#6b4631}.public-load-error{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;padding:24px}.public-load-error button{padding:14px 24px;cursor:pointer}.logistics-text{white-space:pre-line;overflow-wrap:anywhere}.logistics-section:has(article:not(.hidden)){padding-block:40px}.logistics-section:not(:has(article:not(.hidden))){display:none}

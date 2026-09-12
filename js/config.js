@@ -104,3 +104,13 @@ window.Luma = {
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 };
+
+// Include the HttpOnly event-access cookie only for our API origin.
+{
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=(input,options={})=>{
+    const url=new URL(typeof input==='string'?input:input.url,location.href);
+    const api=new URL(LumaConfig.apiBase||location.origin,location.href);
+    return nativeFetch(input,url.origin===api.origin?{...options,credentials:'include'}:options);
+  };
+}
