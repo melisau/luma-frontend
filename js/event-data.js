@@ -51,7 +51,7 @@ window.LumaEventData = {
 
   coverFullUrl(relative) {
     if (!relative) return null;
-    if (relative.startsWith('http') || relative.startsWith('data:') || relative.startsWith('/assets')) {
+    if (relative.startsWith('http') || relative.startsWith('data:') || relative.startsWith('blob:') || relative.startsWith('/assets')) {
       return relative;
     }
     return `${LumaConfig.apiBase}${relative}`;
@@ -277,18 +277,22 @@ window.LumaEventData = {
       memory_text: formData.memory_text || formData.memoryText || '',
       language: formData.language || 'tr',
       design_theme: formData.design_theme || formData.designTheme || 'romantic',
+      ...(formData.visual_layers !== undefined ? {visual_layers:formData.visual_layers.map(({src,...layer})=>layer)} : {}),
+      ...(formData.presentation !== undefined ? {presentation:formData.presentation} : {}),
+      ...(formData.palette !== undefined ? {palette: formData.palette} : {}),
       opening_style: formData.opening_style || 'classic',
       address:formData.address||'',
       transport_notes:formData.transport_notes||'',
       contact_info:formData.contact_info||'',
       schedule:formData.schedule||'',
 
-      envelope_color: formData.envelope_color || '#e9dcc4',
-      seal_color: formData.seal_color || '#873f43',
+      envelope_color: formData.envelope_color || '#25463B',
+      seal_color: formData.seal_color || '#C9AA78',
       paper_color: formData.paper_color || '#fffdf7',
+      ribbon_color: formData.ribbon_color || '#718CA2',
       envelope_texture: formData.envelope_texture || 'linen',
       envelope_pattern: formData.envelope_pattern || 'plain',
-      seal_motif: formData.seal_motif || 'botanical',
+      seal_motif: formData.seal_motif || 'original',
 
     };
   },

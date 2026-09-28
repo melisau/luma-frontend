@@ -1,0 +1,16 @@
+.invitation-color-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.invitation-color-grid .editor-field{margin-top:16px}.invitation-color-grid input[type=color]{width:100%;height:42px;padding:5px;cursor:pointer}.invitation-colors-panel{grid-column:1 / -1}
+.invitation[data-palette]{background:var(--invite-background);color:var(--invite-text)}
+.invitation[data-palette] .story-section h2,.invitation[data-palette] .details-section h2{color:var(--invite-heading)}
+.invitation[data-palette] .story-section .invite-kicker,.invitation[data-palette] .details-section .invite-kicker,.invitation[data-palette] .story-section p,.invitation[data-palette] .signature,.invitation[data-palette] .details-section p,.invitation[data-palette] .detail-grid h3,.invitation[data-palette] .details-section button,.invitation[data-palette] .details-section a{color:var(--invite-text)}
+.invitation[data-palette] .details-section{background:var(--invite-details-background)}
+.invitation[data-palette] .scroll-hint,.invitation[data-palette] .hero-copy,.invitation[data-palette] .hero-copy h1,.invitation[data-palette] .hero-copy p,.invitation[data-palette] .invite-nav,.invitation[data-palette] .invite-brand,.invitation[data-palette] .invite-nav a{color:var(--invite-hero-text)}
+.invitation[data-palette] .memory-section{background:var(--invite-memory-background);color:var(--invite-memory-text);max-width:none;padding-inline:max(24px,calc((100% - 1100px)/2))}
+.invitation[data-palette] .memory-section h2,.invitation[data-palette] .memory-section p,.invitation[data-palette] .memory-section .invite-kicker{color:var(--invite-memory-text)}
+.invitation[data-palette] .upload-badge{background:var(--invite-badge-background);color:var(--invite-badge-text)}
+.invitation[data-palette] .upload-badge strong,.invitation[data-palette] .upload-badge small{color:inherit}
+.invitation[data-palette] .memory-actions button,.invitation[data-palette] .memory-actions button:first-child,.invitation[data-palette] .hero-rsvp,.invitation[data-palette] .invite-nav .rsvp-nav{background:var(--invite-button-background);color:var(--invite-button-text);border-color:var(--invite-button-background)}
+.invitation[data-palette] .invite-countdown,.invitation[data-palette] .invite-footer{background:var(--invite-countdown-background);color:var(--invite-countdown-text)}
+.invitation[data-palette] .invite-countdown p,.invitation[data-palette] .invite-countdown small,.invitation[data-palette] .invite-countdown b,.invitation[data-palette] .invite-footer small{color:var(--invite-countdown-text)}
+@media(max-width:700px){.invitation-color-grid{gap:12px}.invitation[data-palette] .memory-section{padding-inline:20px}}
+
+.color-code-row{display:flex;align-items:center;gap:8px;min-width:0}.editor-field .color-code-row input[type=color]{width:44px;height:42px;min-width:44px;flex:0 0 44px;padding:4px}.editor-field .color-code-row .color-hex-input{width:100%;min-width:0;height:42px;font-family:var(--sans);font-size:13px;letter-spacing:.03em;text-transform:uppercase;padding:0 9px}.color-hex-input[aria-invalid=true]{border-color:#A44444;background:#FFF3F1}

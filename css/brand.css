@@ -1,0 +1,79 @@
+/* Luma brand: Sakin Zarafet. Invitation appearance settings stay independent. */
+:root{
+  --brand-background:#F8F5EF;
+  --brand-surface:#FFFDFA;
+  --brand-primary:#25463B;
+  --brand-primary-hover:#1C382F;
+  --brand-sage:#A8B8A0;
+  --brand-sage-soft:#EDF1E9;
+  --brand-rose:#B97978;
+  --brand-rose-soft:#F5E8E6;
+  --brand-champagne:#C9AA78;
+  --brand-ink:#242B27;
+  --brand-muted:#646F65;
+  --brand-border:#E3E1D7;
+  --ink:var(--brand-ink);
+  --muted:var(--brand-muted);
+  --line:var(--brand-border);
+  --cream:var(--brand-background);
+  --rose:var(--brand-rose);
+  --rose-soft:var(--brand-rose-soft);
+  --green:#4D755D;
+  --amber:#896A39;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Manrope',Arial,sans-serif;
+}
+body{background:var(--brand-background);color:var(--brand-ink)}
+.brand{color:var(--brand-primary);font-weight:600;font-size:27px}
+.brand-mark{background:var(--brand-primary);color:var(--brand-background)}
+.sidebar,.topbar{background:var(--brand-surface)}
+.nav-item{color:var(--brand-muted)}
+.nav-item.active,.nav-item:hover{background:var(--brand-sage-soft);color:var(--brand-primary)}
+.nav-label,.eyebrow{color:var(--brand-muted)}
+.plan-card,.countdown-banner{background:var(--brand-primary);color:#fff}
+.plan-card p,.plan-card small,.countdown-banner small,.countdown-banner p{color:#DDE6D9}
+.progress{background:#ffffff30}.progress span{background:var(--brand-champagne)}
+.spark{color:var(--brand-champagne)}
+.create-btn,.submit-btn,.quick-icon.dark{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff}
+.create-btn:hover,.submit-btn:hover{background:var(--brand-primary-hover);border-color:var(--brand-primary-hover)}
+.ghost-btn,.icon-btn,.date-pill{background:var(--brand-surface);color:var(--brand-primary);border-color:var(--brand-border)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--brand-primary);outline-offset:3px}
+.panel,.stat-card,.quick-card,.editor-panel,.editor-actions,.settings-card,.auth-card{background:var(--brand-surface);border-color:var(--brand-border)}
+.welcome-row h1,.editor-heading h1{color:var(--brand-primary);font-weight:600}
+.welcome-row h1 span{color:#936D42}
+.welcome-row>div>p:last-child,.editor-heading>div>p:last-child,.panel-head p,.section-title p,.stat-card p,.quick-card small{color:var(--brand-muted)}
+.welcome-row h1{font-size:34px}.editor-heading h1{font-size:36px}
+.countdown-banner strong{font-size:29px;font-weight:600}
+.stat-card strong,.donut strong,.mini-countdown b{font-family:var(--sans);font-variant-numeric:tabular-nums}
+.stat-card strong{font-size:25px;font-weight:500}
+.stat-card small{font-size:9px;color:var(--brand-muted);letter-spacing:.7px}
+.stat-card p{font-size:10px;line-height:1.6}
+.panel-head p,.section-title p,.quick-card small{font-size:11px;line-height:1.5}
+.quick-card strong{font-size:12px}
+.rose{background:var(--brand-rose-soft);color:#925551}
+.green{background:var(--brand-sage-soft);color:#4D755D}
+.amber{background:#F3ECDF;color:#896A39}
+.avatar{background:var(--brand-sage-soft);color:var(--brand-primary)}
+.auth-screen{background:radial-gradient(circle at 20% 10%,#EBEEE3,var(--brand-background) 55%)}
+.auth-card h1,.modal-card h2{font-family:var(--serif);font-weight:600;color:var(--brand-primary)}
+.auth-card input,.editor-field input,.editor-field select,.editor-field textarea,.field input,.field select,.field textarea{border-color:var(--brand-border);background:var(--brand-surface)}
+.auth-card input:focus,.editor-field input:focus,.editor-field select:focus,.editor-field textarea:focus{border-color:var(--brand-primary);box-shadow:0 0 0 3px #25463B15}
+.editor-field>span{font-size:10px;letter-spacing:.7px;color:var(--brand-muted)}
+.editor-panel-head p,.opening-description{color:var(--brand-muted);line-height:1.6}
+.editor-panel-head>span,.date-preview{background:var(--brand-sage-soft);color:var(--brand-primary)}
+.text-btn,.auth-switch button{color:var(--brand-primary)}
+.modal-card{background:var(--brand-background)}
+.choice-row label:has(input:checked){background:var(--brand-primary);border-color:var(--brand-primary);color:#fff}
+.toast{background:var(--brand-primary)}
+/* Shared romantic defaults; explicit minimal/celebration themes remain available. */
+.invitation:not([data-theme]),.invitation[data-theme="romantic"]{background:var(--brand-background);color:var(--brand-ink)}
+.invitation[data-theme="romantic"] .details-section{background:#EDF0E7}
+.invitation[data-theme="romantic"] .invite-countdown,.invitation[data-theme="romantic"] .invite-footer{background:var(--brand-primary)}
+.invitation[data-theme="romantic"] .memory-actions button:first-child{background:var(--brand-primary);border-color:var(--brand-primary)}
+.invitation[data-theme="romantic"] .upload-badge{background:#925551}
+@media(max-width:700px){
+  .welcome-row h1{font-size:30px}
+  .editor-heading h1{font-size:32px}
+  .countdown-banner strong{font-size:27px}
+  .stat-card small{font-size:10px}
+}

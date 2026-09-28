@@ -1,12 +1,23 @@
 const icons={grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>',users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',qr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM18 14h3M14 18v3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/>',eye:'<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',chevron:'<polyline points="6 9 12 15 18 9"/>',menu:'<path d="M3 12h18M3 6h18M3 18h18"/>',calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',check:'<path d="m20 6-11 11-5-5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',userplus:'<path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M8 11a4 4 0 1 0 0-8M19 8v6M22 11h-6"/>',pin:'<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/>',sparkle:'<path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5zM19 3v4M21 5h-4"/>',upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>'};
-document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icons[el.dataset.icon]||icons.heart;el.setAttribute('viewBox','0 0 24 24');el.setAttribute('fill','none');el.setAttribute('stroke','currentColor');el.setAttribute('stroke-linecap','round');el.setAttribute('stroke-linejoin','round')});
+document.querySelectorAll('[data-icon]').forEach(el=>{el.outerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icons[el.dataset.icon]||icons.heart}</svg>`});
 
 const { escapeHtml, trDate, toast } = Luma;
 const dashboard=document.getElementById('dashboard'), invitation=document.getElementById('invitation'), sidebar=document.querySelector('.sidebar');
-function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTop=0;const style=document.getElementById('openingStyle').value;if(style==='envelope'){LumaEnvelope.show({name:document.getElementById('contentCoupleNames').value||currentEventMeta().name,date:eventDate,appearance:LumaEnvelope.readEditor(),onOpen:playInvitationMusic});}else{playInvitationMusic()}}
-function closeInvitation(){LumaEnvelope.close();invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
+function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTo({top:0,behavior:'instant'});LumaVisualLayers.refresh();const style=document.getElementById('openingStyle').value;if(style==='envelope'){LumaEnvelope.show({name:document.getElementById('contentCoupleNames').value||currentEventMeta().name,date:eventDate,appearance:LumaEnvelope.readEditor(),onOpen:playInvitationMusic});}else{playInvitationMusic()}}
+function closeInvitation(){LumaVisualLayers.context?.revert();LumaVisualLayers.context=null;LumaVisualLayers.motionReady=false;LumaEnvelope.close();invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
 document.getElementById('previewBtn').onclick=openInvitation;document.getElementById('closeInvite').onclick=closeInvitation;document.getElementById('openInvite').onclick=openInvitation;
-document.getElementById('menuBtn').onclick=()=>sidebar.classList.toggle('open');
+const menuButton=document.getElementById('menuBtn'),sidebarBackdrop=document.getElementById('sidebarBackdrop');
+function setSidebarOpen(open,{restoreFocus=false}={}){
+  sidebar.classList.toggle('open',open);
+  sidebarBackdrop.hidden=!open;
+  menuButton.setAttribute('aria-expanded',String(open));
+  document.body.classList.toggle('sidebar-open',open);
+  if(!open&&restoreFocus)menuButton.focus();
+}
+menuButton.onclick=()=>setSidebarOpen(!sidebar.classList.contains('open'));
+sidebarBackdrop.onclick=()=>setSidebarOpen(false,{restoreFocus:true});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&sidebar.classList.contains('open'))setSidebarOpen(false,{restoreFocus:true})});
+window.addEventListener('resize',()=>{if(window.innerWidth>1050)setSidebarOpen(false)});
 
 const labels={invite:['Davetiye','Temanızı, içerikleri ve müziği canlı önizleme ile düzenleyin.'],guests:['Misafirler','Katılım cevaplarını ve toplam kişi sayısını tek yerden yönetin.'],gallery:['Galeri','Misafirlerinizin yüklediği fotoğraf ve videolar burada toplanır.'],guestbook:['Anı Defteri','Sevdiklerinizin bıraktığı yazılı, sesli ve görüntülü mesajları okuyun.'],qr:['QR Kodlar','Fotoğraf yükleme QR kodunuzu indirin ve baskıya hazırlayın.'],settings:['Ayarlar','Hesap, etkinlik tercihleri ve planınızı yönetin.']};
 function showView(view){
@@ -28,7 +39,7 @@ function showView(view){
   if(view==='profile'){renderProfileEvents();if(window._lumaContacts)renderContactList();loadContacts().catch(()=>{})}
   if(view==='qr')LumaQr.render();
   if(!['overview','invite','guests','gallery','guestbook','settings','profile'].includes(view)){document.getElementById('emptyTitle').textContent=labels[view][0];document.getElementById('emptyText').textContent=labels[view][1];document.getElementById('openInvite').style.display='none'}
-  sidebar.classList.remove('open');
+  setSidebarOpen(false);
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));document.getElementById('backOverview').onclick=()=>showView('overview');
 
@@ -442,7 +453,7 @@ function openModal(type){
 }
 window.closeModal=function(){const wasMediaViewer=modal.dataset.viewer==='media';modal.classList.add('hidden');document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;if(wasMediaViewer&&!document.getElementById('galleryView').classList.contains('hidden'))LumaGallery.renderAdminGallery()};
 document.querySelectorAll('[data-modal]').forEach(b=>b.onclick=()=>openModal(b.dataset.modal));document.querySelectorAll('[data-close-modal]').forEach(b=>b.onclick=closeModal);
-document.getElementById('newEventBtn').onclick=()=>openModal('event');
+document.querySelectorAll('[data-new-event]').forEach(button=>button.onclick=()=>{setSidebarOpen(false);openModal('event')});
 function adminAccount(){return sessionStorage.getItem('lumaAdminSession')?{email:sessionStorage.getItem('lumaAdminSession')}:null}
 function formatNameFromEmail(email){if(!email)return 'Yönetici';const local=email.split('@')[0].replace(/[._-]+/g,' ').trim();if(!local)return 'Yönetici';return local.split(/\s+/).map(part=>part.charAt(0).toLocaleUpperCase('tr-TR')+part.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
 function adminInitials(name){const parts=String(name||'').trim().split(/\s+/).filter(Boolean);if(parts.length>=2)return (parts[0][0]+parts[1][0]).toLocaleUpperCase('tr-TR');const compact=String(name||'LU').replace(/\s+/g,'');return (compact.slice(0,2)||'LU').toLocaleUpperCase('tr-TR')}
@@ -493,7 +504,7 @@ function initializeAccess(){
 document.getElementById('authForm').onsubmit=async e=>{
   e.preventDefault();showAuthFeedback('');
   const emailInput=document.getElementById('authEmail'),passwordInput=document.getElementById('authPassword');
-  const email=emailInput.value.trim().toLocaleLowerCase('tr-TR'),password=passwordInput.value,button=document.getElementById('authSubmitBtn');
+  const email=emailInput.value.trim().toLowerCase(),password=passwordInput.value,button=document.getElementById('authSubmitBtn');
   const displayName=(document.getElementById('authDisplayName').value||'').trim();
   if(!emailInput.validity.valid){showAuthFeedback('Lütfen geçerli bir e-posta adresi girin.');emailInput.focus();return}
   if(password.length<8){showAuthFeedback('Şifre en az 8 karakter olmalıdır.');passwordInput.focus();return}
@@ -637,8 +648,13 @@ document.getElementById('savedContactSelect').onchange=e=>{const contact=contact
 document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('contactName').value.trim(),email=normalizedEmail(document.getElementById('contactEmail').value);const button=e.currentTarget.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Kaydediliyor...'}try{const created=await LumaEventData.createContact({name,email});upsertContact(created);form.reset();toast('Kişi rehbere kaydedildi.')}catch(err){toast(err.message||'Kişi kaydedilemedi.')}finally{if(button){button.disabled=false;button.textContent='Kişiyi Kaydet'}}};
 function ensureMemoryCopyFields(){if(document.getElementById('contentMemoryTitle'))return;const grid=document.querySelector('.memory-preset-grid');grid.closest('.editor-panel').querySelector('h2').textContent='Anı bölümü';const fields=document.createElement('div');fields.className='content-fields';fields.innerHTML='<label class="editor-field full"><span>ANI BÖLÜMÜ BAŞLIĞI</span><input id="contentMemoryTitle" maxlength="255" placeholder="Örn. Gözünden bu güzel gece"></label><label class="editor-field full"><span>ANI BÖLÜMÜ AÇIKLAMASI</span><textarea id="contentMemoryText" maxlength="2000" placeholder="Fotoğraf paylaşım çağrınızı yazın"></textarea></label>';grid.before(fields)}
 ensureMemoryCopyFields();
-function invitationContentFromForm(){return {...Object.fromEntries(['address','transport_notes','contact_info','schedule'].map(key=>[key,document.getElementById('content_'+key).value.trim()])),...LumaEnvelope.readEditor(),opening_style:document.getElementById('openingStyle').value,names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),signatureText:document.getElementById('contentSignature').value.trim(),memoryTitle:document.getElementById('contentMemoryTitle').value.trim(),memoryText:document.getElementById('contentMemoryText').value.trim(),language:document.getElementById('contentLanguage').value,designTheme:document.getElementById('contentTheme').value,venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
+LumaInvitationColors.init();
+LumaVisualLayers.init();
+LumaPresentation.init();
+LumaEditorPreview.init();
+function invitationContentFromForm(){return {presentation:LumaPresentation.readEditor(),visual_layers:LumaVisualLayers.readEditor(),palette:LumaInvitationColors.readEditor(),...Object.fromEntries(['address','transport_notes','contact_info','schedule'].map(key=>[key,document.getElementById('content_'+key).value.trim()])),...LumaEnvelope.readEditor(),opening_style:document.getElementById('openingStyle').value,names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),signatureText:document.getElementById('contentSignature').value.trim(),memoryTitle:document.getElementById('contentMemoryTitle').value.trim(),memoryText:document.getElementById('contentMemoryText').value.trim(),language:document.getElementById('contentLanguage').value,designTheme:document.getElementById('contentTheme').value,venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
 function applyInvitationContent(data){
+  LumaVisualLayers.apply(data.visual_layers||[],pendingCover);
   const meta=currentEventMeta();
   const names=(data.names||meta.name||'').trim();
   const tagline=(data.tagline||'').trim();
@@ -660,11 +676,12 @@ function applyInvitationContent(data){
   document.getElementById('inviteHeroPlace').classList.toggle('hidden',!heroPlace);
   document.getElementById('inviteStoryTitle').textContent=storyTitle;
   document.getElementById('inviteStoryText').textContent=storyText;
-  document.getElementById('story').classList.toggle('hidden',!storyTitle&&!storyText&&!signatureText);
+  document.getElementById('story').classList.toggle('hidden',!storyTitle&&!storyText&&!signatureText&&!data.visual_layers?.some(layer=>layer.position==='sticker-story'));
   const signature=document.querySelector('.signature');
   signature.textContent=signatureText;
   signature.classList.toggle('hidden',!signatureText);
   invitation.dataset.theme=data.designTheme||'romantic';
+  LumaInvitationColors.apply(invitation,data.palette||{},data.designTheme||'romantic');
   document.documentElement.lang=data.language||'tr';
   applyInvitationLanguage(data.language||'tr');
   const venueArticle=document.getElementById('detailVenueArticle');
@@ -687,10 +704,11 @@ function applyInvitationContent(data){
     footerName.classList.toggle('hidden',!names);
   }
   if(footerDate&&!footerDate.textContent&&eventDate&&!Number.isNaN(eventDate.getTime()))footerDate.textContent=trDate(eventDate,{day:'numeric',month:'long',year:'numeric'});
+  LumaPresentation.apply(data.presentation||{});
 }
 function loadInvitationContentEditor(){
   const meta=currentEventMeta(),inv=LumaEventData.cache.invitation;
-  if(!inv&&!meta.id)return;
+  if(!inv&&!meta.id){LumaPresentation.fillEditor({});LumaPresentation.apply({});LumaVisualLayers.fillEditor([]);LumaVisualLayers.apply([],defaultCover);return;}
   const data={
     names:inv?.name||meta.name||'',
     tagline:inv?.tagline||'',
@@ -703,10 +721,16 @@ function loadInvitationContentEditor(){
     memoryTitle:inv?.memory_title||'Gözünden bizim hikâyemiz.',
     memoryText:inv?.memory_text||'',
     language:inv?.language||'tr',
-    designTheme:inv?.design_theme||'romantic'
+    designTheme:inv?.design_theme||'romantic',
+    presentation:inv?.presentation||{},
+    visual_layers:inv?.visual_layers||[],
+    palette:inv?.palette||{}
   };
   document.getElementById('openingStyle').value=inv?.opening_style||'classic';
   LumaEnvelope.fillEditor(inv||{});
+  LumaVisualLayers.fillEditor(data.visual_layers);
+  LumaPresentation.fillEditor(data.presentation);
+  LumaInvitationColors.fillEditor(data.palette,data.designTheme);
   for(const key of ['address','transport_notes','contact_info','schedule']){data[key]=inv?.[key]||'';document.getElementById('content_'+key).value=data[key];}
   document.getElementById('contentCoupleNames').value=data.names;
   document.getElementById('contentTagline').value=data.tagline;
@@ -723,7 +747,7 @@ function loadInvitationContentEditor(){
   applyInvitationContent(data);
   if(inv?.event_date){dateInput.value=LumaDates.toLocalInput(inv.event_date);eventDate=LumaDates.parse(inv.event_date);updateDateContent(eventDate)}
   else if(meta.date){dateInput.value=LumaDates.toLocalInput(meta.date);eventDate=LumaDates.parse(meta.date);updateDateContent(eventDate)}
-  if(inv?.cover_url){pendingCover=inv.cover_url;coverPreview.src=pendingCover;document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`}
+  if(inv?.cover_url){pendingCover=inv.cover_url;coverPreview.src=pendingCover;if(!data.visual_layers.some(layer=>['hero-background','invitation-background'].includes(layer.position)))document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`}
   const memorySrc=inv?.memory_cover_url||defaultCover;memoryCoverPreview.src=memorySrc;document.getElementById('publicMemoryFallback').src=memorySrc;
 }
 function applyInvitationLanguage(language){
@@ -793,6 +817,7 @@ document.getElementById('inviteEditorForm').onsubmit=async e=>{
       token=created.private_token;
       setupEventSwitcher();
     }
+    contentData.visual_layers=await LumaVisualLayers.persist(token);
     const savePayload={...contentData,event_date:date.toISOString(),city:contentData.location};
     if(!savePayload.names)savePayload.names=currentEventMeta().name||'';
     await LumaEventData.saveInvitation(token,savePayload);

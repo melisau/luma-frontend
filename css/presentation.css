@@ -1,0 +1,44 @@
+.presentation-panel{grid-column:1/-1}.paper-sample{width:min(100%,340px);margin:22px auto 0;text-align:center;padding:70px 28px!important}.paper-sample p{font-family:var(--serif,serif);font-size:30px;margin:0 0 12px}.paper-sample small{font-size:12px}
+.invitation-paper{position:relative;isolation:isolate;filter:drop-shadow(0 9px 12px #17271925);color:var(--paper-ink,#354634)}
+.invitation-paper::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--paper-color,#f5f0e6) url('/assets/images/paper/cotton-paper.png') center/420px 420px;background-blend-mode:luminosity;pointer-events:none;clip-path:var(--paper-cut,none)}
+.invitation-paper[data-paper-texture=floral]::before{background-image:url('/assets/images/opening/embossed-paper.png');background-size:cover}
+.invitation-paper[data-paper=arch]{--paper-cut:ellipse(72% 90% at 50% 90%);border-radius:50% 50% 0 0 / 70px 70px 0 0}
+.invitation-paper[data-paper=arch]::before{clip-path:none;border-radius:inherit}
+.invitation-paper[data-paper=wave]{--paper-cut:polygon(0 2%,5% 0,10% 2%,15% 0,20% 2%,25% 0,30% 2%,35% 0,40% 2%,45% 0,50% 2%,55% 0,60% 2%,65% 0,70% 2%,75% 0,80% 2%,85% 0,90% 2%,95% 0,100% 2%,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%)}
+.invitation-paper[data-paper=deckle]{--paper-cut:polygon(1% 1%,9% .3%,18% 1.1%,27% .2%,35% 1%,46% .4%,55% 1%,63% .1%,74% .8%,85% .2%,98% 1%,99.3% 11%,98.7% 24%,99.6% 37%,99% 49%,99.7% 64%,98.8% 77%,99.5% 88%,98.7% 99%,87% 99.6%,75% 98.8%,61% 99.7%,50% 99%,38% 99.8%,25% 98.8%,12% 99.7%,.7% 99%,1.4% 86%,.3% 74%,1.1% 60%,.4% 47%,1.2% 34%,.2% 22%,1% 12%)}
+.invitation .invitation-paper:is(.details-section,.story-section,.logistics-section){background:transparent;max-width:900px;width:calc(100% - 40px);margin:45px auto;padding:76px 44px}
+.invitation .hero-copy.invitation-paper{width:min(88%,650px);padding:65px 30px;margin-inline:auto;text-shadow:none}
+.invitation .invitation-paper :is(h1,h2,h3,p,.signature,.invite-kicker){color:var(--paper-ink)!important;text-shadow:none}
+.invitation .logistics-section.invitation-paper:not(:has(article:not(.hidden))){display:none}
+.visual-slot[data-layout=grid]{display:grid;grid-template-columns:repeat(var(--exhibition-columns,2),minmax(0,1fr));align-items:center;gap:32px 24px;padding:50px 24px;max-width:1040px;margin:auto;overflow:visible}.visual-slot[data-layout=grid] .visual-photo{width:100%;min-width:0}.visual-slot[data-layout=grid] .visual-frame img{max-height:420px}.visual-slot[data-layout=grid] .visual-photo-caption{font-size:18px}.visual-slot[data-layout=grid] .visual-photo:nth-child(3n+1){align-self:start}
+.visual-frame[data-frame=baroque]{position:relative;padding:15%;aspect-ratio:1;filter:drop-shadow(0 5px 4px #35271035)}.visual-frame[data-frame=baroque]::after{content:"";position:absolute;inset:0;background:url('/assets/images/paper/baroque-frame.png') center/100% 100%;pointer-events:none}.visual-frame[data-frame=baroque] img{width:100%;height:100%;aspect-ratio:1;object-fit:cover}
+@media(max-width:600px){.invitation .invitation-paper:is(.details-section,.story-section,.logistics-section){width:calc(100% - 24px);padding:60px 25px;margin-block:28px}.invitation .hero-copy.invitation-paper{padding:58px 22px}.visual-slot[data-layout=grid]{gap:22px 14px;padding:32px 16px;grid-template-columns:repeat(var(--exhibition-columns,2),minmax(0,1fr))}.visual-slot[data-layout=grid] .visual-photo-caption{font-size:15px}}
+
+.invitation-paper[data-paper=wave]::before{clip-path:none;mask:url("/assets/images/paper/wave-cut.svg") center/100% 100% no-repeat}
+.invitation-paper[data-paper=ticket]::before{mask:url("/assets/images/paper/ticket-cut.svg") center/100% 100% no-repeat}
+
+.visual-slot[data-layout=hidden]{display:none}
+
+.section-paper-transition{position:relative;z-index:5;pointer-events:none;height:64px;margin-block:-32px;filter:drop-shadow(0 -3px 3px #22302720);background:var(--transition-paper,#f5f0e6) url('/assets/images/paper/cotton-paper.png') center/420px;background-blend-mode:luminosity;clip-path:polygon(0 15%,3% 19%,6% 10%,9% 17%,12% 8%,16% 21%,19% 11%,22% 15%,26% 6%,29% 14%,32% 9%,36% 19%,39% 11%,43% 17%,46% 7%,49% 14%,53% 9%,57% 18%,60% 8%,64% 13%,67% 5%,71% 19%,74% 10%,78% 14%,81% 8%,84% 20%,88% 12%,91% 17%,95% 8%,98% 16%,100% 10%,100% 88%,96% 95%,92% 89%,89% 98%,85% 91%,81% 96%,78% 87%,74% 97%,70% 89%,66% 95%,63% 88%,59% 98%,55% 91%,51% 96%,47% 87%,43% 95%,39% 90%,35% 98%,31% 89%,27% 96%,23% 88%,19% 97%,15% 90%,11% 98%,7% 88%,3% 95%,0 90%)}
+.section-paper-transition[data-cut=wave]{clip-path:none;mask:url('/assets/images/paper/wave-cut.svg') center/100% 100% no-repeat}
+
+/* Compact logistics cards distribute the program alongside the other details. */
+.invitation .logistics-section .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 36px;margin:0;border:0}
+.invitation .logistics-section .detail-grid article{min-width:0;padding:18px 0;border:0;border-top:1px solid #35463424}
+.invitation .logistics-section .detail-grid h3{margin:0 0 12px}
+.invitation .logistics-section .detail-grid p{margin:0;line-height:1.75}
+.invitation .logistics-section.invitation-paper{padding:40px 44px}
+.invitation .logistics-section .detail-grid article:nth-last-child(1 of :not(.hidden)):nth-child(odd of :not(.hidden)){grid-column:1/-1}
+.invitation[data-button-radius] :is(button,.detail-grid a){border-radius:var(--invite-button-radius)}
+body:has(#invitation:not(.hidden)) #modal[data-button-radius] :is(.submit-btn,.choice-row label,.media-download){border-radius:var(--invite-button-radius)}
+@media(max-width:600px){.invitation .logistics-section .detail-grid{grid-template-columns:1fr;gap:14px}.invitation .logistics-section.invitation-paper{padding:30px 25px}.invitation .logistics-section .detail-grid article{padding:14px 0}}
+
+.visual-slot[data-layout=grid] .visual-photo-caption{overflow-wrap:anywhere}
+@media(max-width:600px){.visual-slot[data-layout=grid][data-columns="4"]{gap:18px 8px;padding-inline:12px}.visual-slot[data-layout=grid][data-columns="4"] .visual-photo-caption{font-size:12px;margin-top:12px}.visual-slot[data-layout=grid][data-columns="4"] .visual-frame[data-frame=gold]{border-width:4px;padding:2px}}
+
+/* Each group of four follows 1/4 + 3/4, then 3/4 + 1/4. */
+.visual-slot[data-layout=asymmetric]{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:28px 20px;padding:44px 24px;max-width:1040px;margin:auto;overflow:visible}
+.visual-slot[data-layout=asymmetric] .visual-photo{width:100%;min-width:0;grid-column:span 1}
+.visual-slot[data-layout=asymmetric] .visual-photo:nth-child(4n+2 of .visual-photo),.visual-slot[data-layout=asymmetric] .visual-photo:nth-child(4n+3 of .visual-photo){grid-column:span 3}
+.visual-slot[data-layout=asymmetric] .visual-photo-caption{overflow-wrap:anywhere;font-size:18px}
+@media(max-width:600px){.visual-slot[data-layout=asymmetric]{gap:22px 10px;padding:28px 12px}.visual-slot[data-layout=asymmetric] .visual-photo-caption{font-size:13px;margin-top:12px}.visual-slot[data-layout=asymmetric] .visual-frame[data-frame=gold]{border-width:4px;padding:2px}}

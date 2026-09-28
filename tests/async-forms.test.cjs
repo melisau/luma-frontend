@@ -32,7 +32,7 @@ for(const scenario of ['recover','empty','expired','unavailable']){
    pendingCover:'cover-url',pendingMusicFile:undefined,removePendingMusic:false,defaultCover:'default',
    ensureEventToken:async()=>['empty','unavailable'].includes(scenario)?'':'recovered-token',currentEventMeta:()=>({name:'Test'}),
    eventSyncError:scenario==='unavailable'?'Bağlantı kurulamadı':'',LumaEventData:{createEvent:async()=>({id:'new',private_token:'created-token'}),saveInvitation:async(...args)=>saved.push(args)},
-   loadSavedMusic:async()=>{},updateDateContent(){},applyInvitationContent(){},updateStorageCard(){},updateDashboard(){},toast:m=>messages.push(m)};
+   LumaVisualLayers:{persist:async()=>[]},loadSavedMusic:async()=>{},updateDateContent(){},applyInvitationContent(){},updateStorageCard(){},updateDashboard(){},toast:m=>messages.push(m)};
   vm.runInNewContext(handler,context);
   await form.onsubmit({preventDefault(){},currentTarget:form});
   assert.equal(button.disabled,false);

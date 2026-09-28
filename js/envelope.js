@@ -1,8 +1,8 @@
 window.LumaEnvelope={
   timer:null,layer:null,
-  defaults:{envelope_color:'#e9dcc4',seal_color:'#873f43',paper_color:'#fffdf7',envelope_texture:'linen',envelope_pattern:'plain',seal_motif:'botanical'},
+  defaults:{envelope_color:'#25463B',seal_color:'#C9AA78',paper_color:'#fffdf7',ribbon_color:'#718CA2',envelope_texture:'linen',envelope_pattern:'plain',seal_motif:'original'},
   readEditor(){return Object.fromEntries(Object.entries(this.defaults).map(([key,value])=>[key,document.getElementById(key)?.value||value]));},
-  fillEditor(settings){for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input)input.value=settings[key]||value;}},
+  fillEditor(settings){for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input){input.value=key==='seal_motif'?(settings[key]==='monogram'?'monogram':'original'):(settings[key]||value);window.LumaInvitationColors?.syncHex(input);}}},
   laceArtwork(){
     let stitches='';
     for(let i=0;i<32;i++){
@@ -13,7 +13,7 @@ window.LumaEnvelope={
   },
   applyAppearance(layer,settings,name){
     const options={...this.defaults,...settings};
-    for(const [key,variable] of [['envelope_color','--paper'],['seal_color','--wax'],['paper_color','--card']]){
+    for(const [key,variable] of [['envelope_color','--paper'],['seal_color','--wax'],['paper_color','--card'],['ribbon_color','--ribbon']]){
       const value=/^#[0-9a-f]{6}$/i.test(options[key])?options[key]:this.defaults[key];
       layer.style.setProperty(variable,value);
     }
@@ -23,12 +23,13 @@ window.LumaEnvelope={
     layer.dataset.texture=options.envelope_texture;
     layer.dataset.pattern=options.envelope_pattern;
     if(options.envelope_pattern==='lace'){for(const selector of ['.envelope-flap','.envelope-pocket']){const part=layer.querySelector(selector);if(part)part.innerHTML=this.laceArtwork();}}
-    const motif=options.seal_motif==='heart'?'♡':options.seal_motif==='monogram'?String(name||'L').split(/\s*(?:&|ve|and)\s*|\s+/i).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join('').toLocaleUpperCase('tr-TR'):'❦';
+    const motif=options.seal_motif==='monogram'?String(name||'').split(/\s*(?:&|ve|and)\s*|\s+/i).filter(Boolean).slice(0,2).map(part=>Array.from(part)[0]).join('').toLocaleUpperCase('tr-TR'):'';
     layer.querySelector('.wax-seal>span').textContent=motif;
-    layer.querySelector('.wax-seal').dataset.motif=options.seal_motif;
+    layer.querySelector('.wax-seal').dataset.motif=options.seal_motif==='monogram'?'monogram':'original';
   },
-  close(){clearTimeout(this.timer);this.layer?.remove();this.layer=null;document.documentElement.classList.remove('envelope-locked');document.getElementById('invitation').inert=false;},
+  close(){window.LumaCeremony?.close();clearTimeout(this.timer);this.layer?.remove();this.layer=null;document.documentElement.classList.remove('envelope-locked');document.getElementById('invitation').inert=false;},
   show({name,date,appearance,onOpen}){
+    if(window.LumaCeremony&&window.gsap&&window.ScrollTrigger)return window.LumaCeremony.show(this,{name,date,appearance,onOpen});
     this.close();
     const invitation=document.getElementById('invitation');
     invitation.inert=true;
