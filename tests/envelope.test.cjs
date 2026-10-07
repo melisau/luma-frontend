@@ -9,6 +9,18 @@ test('appearance settings round-trip through editor controls',()=>{
  api.fillEditor({envelope_color:'#123456',seal_motif:'original'});
  assert.equal(api.readEditor().envelope_color,'#123456');assert.equal(api.readEditor().seal_motif,'original');assert.equal(api.readEditor().paper_color,'#fffdf7');
 });
+test('unsupported old envelope patterns become the plain option',()=>{
+ const {api,inputs}=setup();for(const key of Object.keys(api.defaults))inputs[key]={value:''};
+ api.fillEditor({envelope_pattern:'lace'});
+ assert.equal(inputs.envelope_pattern.value,'plain');
+});
+test('hidden envelope texture keeps an existing invitation value',()=>{
+ const {api,inputs}=setup();for(const key of Object.keys(api.defaults).filter(key=>key!=='envelope_texture'))inputs[key]={value:''};
+ api.fillEditor({envelope_texture:'grain'});
+ assert.equal(api.readEditor().envelope_texture,'grain');
+ api.fillEditor({});
+ assert.equal(api.readEditor().envelope_texture,'linen');
+});
 test('monogram, dark paper contrast and invalid color fallback',()=>{
  const {api}=setup();const values={};const seal={dataset:{}},text={};
  const layer={dataset:{},style:{setProperty:(key,value)=>values[key]=value},querySelector:selector=>selector==='.wax-seal'?seal:text};

@@ -1,0 +1,46 @@
+.visual-select-trigger {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #dcdcd6;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  padding: 0 32px 0 13px;
+  text-align: left;
+  font-size: 12px;
+  position: relative;
+}
+.visual-select-trigger::after {
+  content: "⌄";
+  position: absolute;
+  right: 13px;
+  top: 10px;
+  font-size: 18px;
+}
+.visual-select-trigger:disabled { color: #999; background: #f8f8f6; }
+.visual-select-trigger:focus-visible { outline: 2px solid #9f7567; outline-offset: 2px; }
+.visual-select-menu {
+  position: fixed;
+  z-index: 1000;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  border: 1px solid #bdbdb8;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px #0002;
+  padding: 4px;
+}
+.visual-select-option {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: #fff;
+  color: var(--ink);
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.3;
+}
+.visual-select-option:hover,
+.visual-select-option:focus-visible,
+.visual-select-option[aria-selected=true] { background: #e8eee9; outline: none; }

@@ -1,5 +1,5 @@
 .presentation-panel{grid-column:1/-1}.paper-sample{width:min(100%,340px);margin:22px auto 0;text-align:center;padding:70px 28px!important}.paper-sample p{font-family:var(--serif,serif);font-size:30px;margin:0 0 12px}.paper-sample small{font-size:12px}
-.invitation-paper{position:relative;isolation:isolate;filter:drop-shadow(0 9px 12px #17271925);color:var(--paper-ink,#354634)}
+.invitation-paper{position:relative;isolation:isolate;color:var(--paper-ink,#354634)}
 .invitation-paper::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--paper-color,#f5f0e6) url('/assets/images/paper/cotton-paper.png') center/420px 420px;background-blend-mode:luminosity;pointer-events:none;clip-path:var(--paper-cut,none)}
 .invitation-paper[data-paper-texture=floral]::before{background-image:url('/assets/images/opening/embossed-paper.png');background-size:cover}
 .invitation-paper[data-paper=arch]{--paper-cut:ellipse(72% 90% at 50% 90%);border-radius:50% 50% 0 0 / 70px 70px 0 0}
@@ -19,7 +19,7 @@
 
 .visual-slot[data-layout=hidden]{display:none}
 
-.section-paper-transition{position:relative;z-index:5;pointer-events:none;height:64px;margin-block:-32px;filter:drop-shadow(0 -3px 3px #22302720);background:var(--transition-paper,#f5f0e6) url('/assets/images/paper/cotton-paper.png') center/420px;background-blend-mode:luminosity;clip-path:polygon(0 15%,3% 19%,6% 10%,9% 17%,12% 8%,16% 21%,19% 11%,22% 15%,26% 6%,29% 14%,32% 9%,36% 19%,39% 11%,43% 17%,46% 7%,49% 14%,53% 9%,57% 18%,60% 8%,64% 13%,67% 5%,71% 19%,74% 10%,78% 14%,81% 8%,84% 20%,88% 12%,91% 17%,95% 8%,98% 16%,100% 10%,100% 88%,96% 95%,92% 89%,89% 98%,85% 91%,81% 96%,78% 87%,74% 97%,70% 89%,66% 95%,63% 88%,59% 98%,55% 91%,51% 96%,47% 87%,43% 95%,39% 90%,35% 98%,31% 89%,27% 96%,23% 88%,19% 97%,15% 90%,11% 98%,7% 88%,3% 95%,0 90%)}
+.section-paper-transition{position:relative;z-index:5;pointer-events:none;height:64px;margin-block:-32px;background:var(--transition-paper,#f5f0e6) url('/assets/images/paper/cotton-paper.png') center/420px;background-blend-mode:luminosity;clip-path:polygon(0 15%,3% 19%,6% 10%,9% 17%,12% 8%,16% 21%,19% 11%,22% 15%,26% 6%,29% 14%,32% 9%,36% 19%,39% 11%,43% 17%,46% 7%,49% 14%,53% 9%,57% 18%,60% 8%,64% 13%,67% 5%,71% 19%,74% 10%,78% 14%,81% 8%,84% 20%,88% 12%,91% 17%,95% 8%,98% 16%,100% 10%,100% 88%,96% 95%,92% 89%,89% 98%,85% 91%,81% 96%,78% 87%,74% 97%,70% 89%,66% 95%,63% 88%,59% 98%,55% 91%,51% 96%,47% 87%,43% 95%,39% 90%,35% 98%,31% 89%,27% 96%,23% 88%,19% 97%,15% 90%,11% 98%,7% 88%,3% 95%,0 90%)}
 .section-paper-transition[data-cut=wave]{clip-path:none;mask:url('/assets/images/paper/wave-cut.svg') center/100% 100% no-repeat}
 
 /* Compact logistics cards distribute the program alongside the other details. */

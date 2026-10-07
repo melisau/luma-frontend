@@ -1,8 +1,8 @@
 window.LumaEnvelope={
-  timer:null,layer:null,
+  timer:null,layer:null,envelopeTexture:'linen',
   defaults:{envelope_color:'#25463B',seal_color:'#C9AA78',paper_color:'#fffdf7',ribbon_color:'#718CA2',envelope_texture:'linen',envelope_pattern:'plain',seal_motif:'original'},
-  readEditor(){return Object.fromEntries(Object.entries(this.defaults).map(([key,value])=>[key,document.getElementById(key)?.value||value]));},
-  fillEditor(settings){for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input){input.value=key==='seal_motif'?(settings[key]==='monogram'?'monogram':'original'):(settings[key]||value);window.LumaInvitationColors?.syncHex(input);}}},
+  readEditor(){return Object.fromEntries(Object.entries(this.defaults).map(([key,value])=>[key,key==='envelope_texture'?this.envelopeTexture:document.getElementById(key)?.value||value]));},
+  fillEditor(settings){this.envelopeTexture=['smooth','linen','grain'].includes(settings?.envelope_texture)?settings.envelope_texture:this.defaults.envelope_texture;for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input){const saved=settings[key]||value;input.value=key==='seal_motif'?(saved==='monogram'?'monogram':'original'):key==='envelope_pattern'&&!['plain','pinstripe','botanical','floral_cut'].includes(saved)?'plain':saved;window.LumaInvitationColors?.syncHex(input);}}},
   laceArtwork(){
     let stitches='';
     for(let i=0;i<32;i++){

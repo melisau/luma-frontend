@@ -3,8 +3,46 @@ document.querySelectorAll('[data-icon]').forEach(el=>{el.outerHTML=`<svg viewBox
 
 const { escapeHtml, trDate, toast } = Luma;
 const dashboard=document.getElementById('dashboard'), invitation=document.getElementById('invitation'), sidebar=document.querySelector('.sidebar');
-function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTo({top:0,behavior:'instant'});LumaVisualLayers.refresh();const style=document.getElementById('openingStyle').value;if(style==='envelope'){LumaEnvelope.show({name:document.getElementById('contentCoupleNames').value||currentEventMeta().name,date:eventDate,appearance:LumaEnvelope.readEditor(),onOpen:playInvitationMusic});}else{playInvitationMusic()}}
-function closeInvitation(){LumaVisualLayers.context?.revert();LumaVisualLayers.context=null;LumaVisualLayers.motionReady=false;LumaEnvelope.close();invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
+let guestDraftSnapshot=null,guestDraftPending=false;
+let reviewedEditorSignature=null,activeEditorPreviewSignature=null;
+function isGuestDraft(){return !LumaConfig.publicEventToken()&&!sessionStorage.getItem('lumaAdminJwt')}
+function captureGuestDraft(){
+  const form=document.getElementById('inviteEditorForm');
+  return {fields:[...form.querySelectorAll('input,textarea,select')].filter(field=>field.id&&field.type!=='file').map(field=>[field.id,field.type==='checkbox'?field.checked:field.value]),layers:LumaVisualLayers.items.map(item=>({...item})),palette:LumaInvitationColors.readEditor(),confirmations:{...LumaPresentation.confirmations},cover:pendingCover,memoryCover:pendingMemoryCover,music:pendingMusicFile};
+}
+function restoreGuestDraft(snapshot){
+  if(!snapshot)return;
+  for(const [id,value] of snapshot.fields){const field=document.getElementById(id);if(!field)continue;if(field.type==='checkbox')field.checked=value;else field.value=value}
+  LumaVisualLayers.items=snapshot.layers.map(item=>{
+    if(!item.file)return item;
+    const src=URL.createObjectURL(item.file);LumaVisualLayers.urls.push(src);return {...item,src};
+  });LumaVisualLayers.renderEditor();
+  LumaInvitationColors.fillEditor(snapshot.palette,document.getElementById('contentTheme').value);
+  LumaPresentation.confirmations={...snapshot.confirmations};
+  pendingCover=snapshot.cover;coverPreview.src=pendingCover;
+  pendingMemoryCover=snapshot.memoryCover;pendingMusicFile=snapshot.music;
+  if(pendingMemoryCover)memoryCoverPreview.src=pendingMemoryCover;
+  if(pendingMusicFile)showMusicPreview(pendingMusicFile,pendingMusicFile.name);
+  if(dateInput.value)updateDateContent(new Date(dateInput.value));
+  LumaInvitationProgress.render();LumaEditorPreview.schedule();
+}
+function showGuestDraft(){
+  document.body.classList.add('guest-draft');document.getElementById('authScreen').classList.add('hidden');dashboard.classList.remove('hidden');
+  showView('invite');
+  document.querySelector('#inviteEditorForm .editor-actions span').textContent='Davetiyeni önizle, ardından son adıma geç.';
+  document.querySelector('#inviteEditorForm button[type="submit"]').textContent='Davetiyeyi kaydetmek için devam et';
+  document.querySelector('.invitation-progress-note').textContent='Adımları tamamlayıp davetiyeni önizleyebilirsin.';
+}
+function beginGuestAuth(mode='register'){
+  guestDraftSnapshot=captureGuestDraft();guestDraftPending=true;document.body.classList.remove('guest-draft');dashboard.classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');document.getElementById('backToDraftBtn').classList.remove('hidden');setAuthMode(mode);
+  document.getElementById('authEmail').focus();
+}
+document.getElementById('backToDraftBtn').onclick=()=>{document.getElementById('authPassword').value='';showGuestDraft();restoreGuestDraft(guestDraftSnapshot)};
+document.getElementById('guestDraftLoginBtn').onclick=()=>beginGuestAuth('login');
+document.getElementById('guestDraftRegisterBtn').onclick=()=>beginGuestAuth('register');
+function openInvitation(){invitation.classList.remove('hidden');invitation.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';invitation.scrollTo({top:0,behavior:'instant'});if(isGuestDraft())invitation.querySelectorAll('#memories [data-modal]').forEach(button=>{if(!button.disabled){button.disabled=true;button.dataset.guestPreviewDisabled='true'}button.title='Davetiye kaydedildikten sonra kullanılabilir'});LumaVisualLayers.refresh();const style=document.getElementById('openingStyle').value;if(style==='envelope'){LumaEnvelope.show({name:document.getElementById('contentCoupleNames').value||currentEventMeta().name,date:eventDate,appearance:LumaEnvelope.readEditor(),onOpen:playInvitationMusic});}else{playInvitationMusic()}}
+function closeInvitation(){if(activeEditorPreviewSignature&& !invitation.classList.contains('hidden'))reviewedEditorSignature=activeEditorPreviewSignature;activeEditorPreviewSignature=null;invitation.querySelectorAll('#memories [data-modal][data-guest-preview-disabled]').forEach(button=>{button.disabled=false;delete button.dataset.guestPreviewDisabled;button.removeAttribute('title')});LumaVisualLayers.context?.revert();LumaVisualLayers.context=null;LumaVisualLayers.motionReady=false;LumaEnvelope.close();invitation.classList.add('hidden');invitation.setAttribute('aria-hidden','true');document.body.style.overflow='';if(typeof invitationAudio!=='undefined')invitationAudio.pause()}
 document.getElementById('previewBtn').onclick=openInvitation;document.getElementById('closeInvite').onclick=closeInvitation;document.getElementById('openInvite').onclick=openInvitation;
 const menuButton=document.getElementById('menuBtn'),sidebarBackdrop=document.getElementById('sidebarBackdrop');
 function setSidebarOpen(open,{restoreFocus=false}={}){
@@ -41,6 +79,7 @@ function showView(view){
   if(!['overview','invite','guests','gallery','guestbook','settings','profile'].includes(view)){document.getElementById('emptyTitle').textContent=labels[view][0];document.getElementById('emptyText').textContent=labels[view][1];document.getElementById('openInvite').style.display='none'}
   setSidebarOpen(false);
 }
+document.querySelector('#adminSidebar .brand').addEventListener('click',event=>{if(!sessionStorage.getItem('lumaAdminJwt')||LumaConfig.publicEventToken())return;event.preventDefault();showView('overview');document.querySelector('.main').scrollTop=0;window.scrollTo(0,0)});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));document.getElementById('backOverview').onclick=()=>showView('overview');
 
 const modal=document.getElementById('modal'), content=document.getElementById('modalContent');
@@ -395,6 +434,7 @@ function openGuestUploadEntry(){
   openModal('upload');
 }
 function openModal(type){
+  if(isGuestDraft()&&!invitation.classList.contains('hidden')&&type!=='event')return;
   if(type==='upload'&&!LumaEventData.uploadsEnabled()){toast('Bu etkinlik için fotoğraf yükleme kapalı.');return}
   document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;content.innerHTML=modalTemplates[type];content.querySelectorAll('[data-icon]').forEach(el=>{el.outerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${icons[el.dataset.icon]}</svg>`});modal.classList.remove('hidden');
   const form=content.querySelector('form');if(type==='rsvp'){const email=form.querySelector('input[type="email"]');email.required=true;email.value=LumaRsvpAccess.email();email.previousElementSibling.textContent='E-POSTA';}
@@ -496,8 +536,11 @@ function initializeAccess(){
   const publicToken=LumaConfig.publicEventToken();
   const loggedIn=Boolean(sessionStorage.getItem('lumaAdminJwt'));
   if(publicToken){document.getElementById('authScreen').classList.add('hidden');dashboard.classList.add('hidden');return}
-  document.getElementById('authScreen').classList.toggle('hidden',loggedIn);
-  dashboard.classList.toggle('hidden',!loggedIn);
+  document.getElementById('authScreen').classList.toggle('hidden',loggedIn||isGuestDraft());
+  dashboard.classList.toggle('hidden',!loggedIn&&!isGuestDraft());
+  if(isGuestDraft()){showGuestDraft();return}
+  document.body.classList.remove('guest-draft');
+  document.querySelector('#mobilePreviewSection option[value="memories"]').hidden=false;
   if(loggedIn)applyAdminProfile({email:sessionStorage.getItem('lumaAdminSession')||'',display_name:sessionStorage.getItem('lumaAdminDisplayName')||''});
   if(loggedIn){window._lumaPendingView=sessionStorage.getItem('lumaAdminView')||'overview'}
 }
@@ -523,7 +566,8 @@ document.getElementById('authForm').onsubmit=async e=>{
     initializeAccess();
     await refreshAdminProfile();
     await loadContacts();
-    showView(window._lumaPendingView||'overview');
+    if(guestDraftPending){showView('invite');restoreGuestDraft(guestDraftSnapshot);document.querySelector('#inviteEditorForm button[type="submit"]').textContent='Değişiklikleri Kaydet';document.querySelector('#inviteEditorForm .editor-actions span').textContent='Kaydettiğinde davetiyen hesabında yeni etkinlik olarak oluşturulur.';document.querySelector('.invitation-progress-note').textContent='İlerleme, “Değişiklikleri Kaydet” düğmesine bastığında hesabında saklanır.';toast('Taslağın hazır. Kaydettiğinde etkinlik hesabında oluşturulacak.');}
+    else showView(window._lumaPendingView||'overview');
     await syncPhotoCount();
     updateDashboard();
     renderGuestTable();
@@ -532,7 +576,7 @@ document.getElementById('authForm').onsubmit=async e=>{
   finally{button.disabled=false;button.textContent=isRegister?'Kayıt Ol':'Giriş Yap'}
 };
 document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);form.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
-function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');sessionStorage.removeItem('lumaActiveEventSlug');window._lumaEvents=[];location.reload()}
+function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');sessionStorage.removeItem('lumaActiveEventSlug');sessionStorage.removeItem('lumaAdminView');window._lumaEvents=[];location.assign('/')}
 document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('adminProfileForm').onsubmit=async e=>{e.preventDefault();const displayName=document.getElementById('settingsDisplayName').value.trim();if(!displayName){toast('Görünen ad boş bırakılamaz.');return}try{const profile=await LumaEventData.updateAdminProfile({display_name:displayName});applyAdminProfile(profile);toast('Profiliniz kaydedildi.');}catch(err){toast(err?.message||'Profil kaydedilemedi.')}};
 const userPopup=document.getElementById('userPopupMenu'),userMenuButton=document.getElementById('userMenuBtn');userMenuButton.onclick=e=>{e.stopPropagation();userPopup.classList.toggle('hidden');userMenuButton.setAttribute('aria-expanded',!userPopup.classList.contains('hidden'))};document.getElementById('profileBtn').onclick=()=>showView('profile');document.querySelector('[data-profile-action]').onclick=()=>{userPopup.classList.add('hidden');showView('profile')};document.querySelector('[data-logout-action]').onclick=logout;document.addEventListener('click',e=>{if(!document.getElementById('userCard').contains(e.target)){userPopup.classList.add('hidden');userMenuButton.setAttribute('aria-expanded','false')}});
@@ -652,11 +696,12 @@ LumaInvitationColors.init();
 LumaVisualLayers.init();
 LumaPresentation.init();
 LumaEditorPreview.init();
+LumaInvitationProgress.init();
 function invitationContentFromForm(){return {presentation:LumaPresentation.readEditor(),visual_layers:LumaVisualLayers.readEditor(),palette:LumaInvitationColors.readEditor(),...Object.fromEntries(['address','transport_notes','contact_info','schedule'].map(key=>[key,document.getElementById('content_'+key).value.trim()])),...LumaEnvelope.readEditor(),opening_style:document.getElementById('openingStyle').value,names:document.getElementById('contentCoupleNames').value.trim(),tagline:document.getElementById('contentTagline').value.trim(),storyTitle:document.getElementById('contentStoryTitle').value.trim(),storyText:document.getElementById('contentStoryText').value.trim(),signatureText:document.getElementById('contentSignature').value.trim(),memoryTitle:document.getElementById('contentMemoryTitle').value.trim(),memoryText:document.getElementById('contentMemoryText').value.trim(),language:document.getElementById('contentLanguage').value,designTheme:document.getElementById('contentTheme').value,venue:document.getElementById('contentVenue').value.trim(),location:document.getElementById('contentLocation').value.trim(),guestNote:document.getElementById('contentGuestNote').value.trim()}}
 function applyInvitationContent(data){
   LumaVisualLayers.apply(data.visual_layers||[],pendingCover);
   const meta=currentEventMeta();
-  const names=(data.names||meta.name||'').trim();
+  const names=(data.names||(isGuestDraft()?'Davetiyenizin adı':meta.name)||'').trim();
   const tagline=(data.tagline||'').trim();
   const storyTitle=(data.storyTitle||'').trim();
   const storyText=(data.storyText||'').trim();
@@ -703,12 +748,13 @@ function applyInvitationContent(data){
     footerName.textContent=names?`${names} · `:'';
     footerName.classList.toggle('hidden',!names);
   }
-  if(footerDate&&!footerDate.textContent&&eventDate&&!Number.isNaN(eventDate.getTime()))footerDate.textContent=trDate(eventDate,{day:'numeric',month:'long',year:'numeric'});
+  if(footerDate&&isGuestDraft()&&!dateInput.value)footerDate.textContent='';
+  else if(footerDate&&!footerDate.textContent&&eventDate&&!Number.isNaN(eventDate.getTime()))footerDate.textContent=trDate(eventDate,{day:'numeric',month:'long',year:'numeric'});
   LumaPresentation.apply(data.presentation||{});
 }
 function loadInvitationContentEditor(){
   const meta=currentEventMeta(),inv=LumaEventData.cache.invitation;
-  if(!inv&&!meta.id){LumaPresentation.fillEditor({});LumaPresentation.apply({});LumaVisualLayers.fillEditor([]);LumaVisualLayers.apply([],defaultCover);return;}
+  if(!inv&&!meta.id){LumaPresentation.fillEditor({});LumaPresentation.apply({});LumaVisualLayers.fillEditor([]);LumaVisualLayers.apply([],defaultCover);LumaInvitationProgress.markSaved();return;}
   const data={
     names:inv?.name||meta.name||'',
     tagline:inv?.tagline||'',
@@ -749,6 +795,7 @@ function loadInvitationContentEditor(){
   else if(meta.date){dateInput.value=LumaDates.toLocalInput(meta.date);eventDate=LumaDates.parse(meta.date);updateDateContent(eventDate)}
   if(inv?.cover_url){pendingCover=inv.cover_url;coverPreview.src=pendingCover;if(!data.visual_layers.some(layer=>['hero-background','invitation-background'].includes(layer.position)))document.getElementById('inviteCoverImage').src=pendingCover;document.querySelector('.event-thumb').style.backgroundImage=`url("${pendingCover}")`}
   const memorySrc=inv?.memory_cover_url||defaultCover;memoryCoverPreview.src=memorySrc;document.getElementById('publicMemoryFallback').src=memorySrc;
+  LumaInvitationProgress.markSaved();
 }
 function applyInvitationLanguage(language){
   const english=language==='en';
@@ -794,9 +841,30 @@ function hideMusicPreview(){clearMusicPreviewUrl();musicFileName.textContent='M�
 async function loadSavedMusic(){const inv=LumaEventData.cache.invitation;if(inv?.music_url)showMusicFromUrl(inv.music_url,inv.music_filename||'Davetiye müziği');else hideMusicPreview()}
 musicInput.onchange=()=>{const file=musicInput.files[0];if(!file)return;if(file.size>15*1024*1024){toast('Müzik dosyası en fazla 15 MB olabilir.');musicInput.value='';return}pendingMusicFile=file;removePendingMusic=false;showMusicPreview(file,file.name)};
 document.getElementById('removeMusicBtn').onclick=()=>{pendingMusicFile=undefined;removePendingMusic=true;musicInput.value='';hideMusicPreview();toast('Müzik kaldırılmak üzere işaretlendi.')};
-document.getElementById('editorPreviewBtn').onclick=async()=>{document.getElementById('inviteCoverImage').src=pendingCover;updateDateContent(new Date(dateInput.value));applyInvitationContent(invitationContentFromForm());await refreshPublicMemories();openInvitation()};
+function editorStateSignature(){
+  const {visual_layers,...content}=invitationContentFromForm();
+  const layers=LumaVisualLayers.items.map(({file,src,...item})=>({...item,src:file?`file:${file.name}:${file.size}:${file.lastModified}`:src}));
+  const fileKey=file=>file?`${file.name||''}:${file.size||0}:${file.lastModified||0}`:'';
+  return JSON.stringify({content,layers,date:dateInput.value,cover:pendingCover,memoryCover:fileKey(pendingMemoryCover),music:fileKey(pendingMusicFile),removePendingMemoryCover,removePendingMusic,confirmations:LumaPresentation.confirmations});
+}
+async function previewEditorInvitation(){
+  const signature=editorStateSignature();
+  document.getElementById('inviteCoverImage').src=pendingCover;
+  if(dateInput.value)updateDateContent(new Date(dateInput.value));
+  applyInvitationContent(invitationContentFromForm());
+  if(!isGuestDraft())await refreshPublicMemories();
+  activeEditorPreviewSignature=signature;
+  openInvitation();
+}
+document.getElementById('editorPreviewBtn').onclick=previewEditorInvitation;
 document.getElementById('inviteEditorForm').onsubmit=async e=>{
   e.preventDefault();
+  if(reviewedEditorSignature!==editorStateSignature()){
+    toast('Önce davetiyenin son hâlini incele. Önizlemeyi kapattıktan sonra kaydetmeye devam edebilirsin.');
+    await previewEditorInvitation();
+    return;
+  }
+  if(isGuestDraft()){beginGuestAuth('register');return}
   const form=e.currentTarget,button=form.querySelector('button[type="submit"]');
   if(button?.disabled)return;
   const contentData=invitationContentFromForm(),date=new Date(dateInput.value);
@@ -806,13 +874,13 @@ document.getElementById('inviteEditorForm').onsubmit=async e=>{
   if(button){button.disabled=true;button.textContent='Kaydediliyor...'}
   try{
     if(!sessionStorage.getItem('lumaAdminJwt'))throw new Error('Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.');
-    let token=await ensureEventToken();
+    let token=guestDraftPending?'':await ensureEventToken();
     if(!token){
       if(eventSyncError)throw new Error(eventSyncError);
-      if(eventList().length)throw new Error('Etkinlik bilgileri eksik. Sayfayı yenileyip tekrar deneyin.');
+      if(eventList().length&&!guestDraftPending)throw new Error('Etkinlik bilgileri eksik. Sayfayı yenileyip tekrar deneyin.');
       if(!contentData.names)throw new Error('Lütfen etkinlik veya ev sahibi adını girin.');
       const created=await LumaEventData.createEvent({name:contentData.names,event_date:date.toISOString(),venue:contentData.venue,city:contentData.location});
-      window._lumaEvents=[created];
+      window._lumaEvents=[...eventList(),created];
       sessionStorage.setItem('lumaActiveEventSlug',created.id);
       token=created.private_token;
       setupEventSwitcher();
@@ -828,7 +896,7 @@ document.getElementById('inviteEditorForm').onsubmit=async e=>{
     await loadSavedMusic();
     eventDate=date;updateDateContent(date);
     applyInvitationContent(contentData);
-    pendingMusicFile=undefined;removePendingMusic=false;pendingMemoryCover=undefined;removePendingMemoryCover=false;document.getElementById('publicMemoryFallback').src=LumaEventData.cache.invitation?.memory_cover_url||defaultCover;updateStorageCard();updateDashboard();toast('Davetiye içeriği ve görünümü kaydedildi.');
+    pendingMusicFile=undefined;removePendingMusic=false;pendingMemoryCover=undefined;removePendingMemoryCover=false;guestDraftPending=false;guestDraftSnapshot=null;document.getElementById('publicMemoryFallback').src=LumaEventData.cache.invitation?.memory_cover_url||defaultCover;LumaInvitationProgress.markSaved();updateStorageCard();updateDashboard();toast('Davetiye içeriği ve görünümü kaydedildi.');
   }catch(err){toast(err?.message||'Davetiye ayarları kaydedilemedi.')}
   finally{if(button){button.disabled=false;button.textContent=originalLabel}}
 };

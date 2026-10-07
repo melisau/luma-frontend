@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F8F5EF">
+  <meta name="description" content="Make every celebration personal. Create a digital invitation, collect RSVPs, and keep your guests’ photos and messages together with Luma.">
+  <title>Luma — Every celebration begins with something personal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/landing.css?v=2">
+  <script src="js/landing-i18n.js?v=1" defer></script>
+  <script src="js/landing.js?v=2" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a href="#top" class="wordmark" aria-label="Luma home">Luma</a>
+    <nav aria-label="Main navigation"><a href="#how-it-works">How it works</a><a href="#moments">Made for your moment</a><a href="#questions">Questions</a></nav>
+    <div class="language-switch" role="group" aria-label="Dil seçimi / Language selection"><button type="button" data-language="tr" aria-pressed="false">TR</button><button type="button" data-language="en" aria-pressed="true">EN</button></div>
+    <a class="button header-cta" href="/app.html">Create your invitation</a>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile navigation" hidden><a href="#how-it-works">How it works</a><a href="#moments">Made for your moment</a><a href="#questions">Questions</a><a href="/app.html">Create your invitation</a></nav>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Every celebration<br>begins with<br><em>something personal.</em></h1>
+        <p>A beautiful invitation. A thoughtful RSVP. A place for every photo and message. Bring your people together with Luma.</p>
+        <div class="hero-actions"><a class="button" href="/app.html">Create your invitation</a><a class="text-link" href="#moments">Explore an invitation <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></a></div>
+        <small>Make it yours. Share it with everyone.</small>
+      </div>
+      <img class="hero-image" src="assets/images/landing/hero-stationery.webp" width="1536" height="1024" alt="An ivory invitation, forest-green wax seal, sage silk ribbon, and a framed wedding photograph" fetchpriority="high">
+    </section>
+    <div class="occasions wrap" aria-label="For every kind of celebration"><span>Weddings</span><span>Engagements</span><span>Birthdays</span><span>Just because</span></div>
+    <section class="how wrap" id="how-it-works" aria-labelledby="how-title">
+      <h2 id="how-title">A little magic. A lot less planning.</h2>
+      <div class="steps">
+        <article><span class="step-number">01</span><h3>Make it yours</h3><p>Choose your colors, add your photos, and create an invitation that feels like you.</p></article>
+        <article><span class="step-number">02</span><h3>Send a little joy</h3><p>Share one link. Your guests open their invitation and RSVP in a few taps.</p></article>
+        <article><span class="step-number">03</span><h3>Keep it all together</h3><p>Responses, photos, and heartfelt messages — all in your dashboard.</p></article>
+      </div>
+    </section>
+    <section class="moments wrap" id="moments" aria-labelledby="moments-title">
+      <div class="moments-copy"><h2 id="moments-title">Made for<br>your moment.</h2><p>From the big yes to another trip around the sun, make every gathering feel special.</p>
+        <div class="event-tabs" role="tablist" aria-label="Celebration type"><button id="tab-wedding" role="tab" aria-selected="true" aria-controls="invitation-preview" data-event="wedding">Wedding</button><button id="tab-engagement" role="tab" aria-selected="false" aria-controls="invitation-preview" tabindex="-1" data-event="engagement">Engagement</button><button id="tab-birthday" role="tab" aria-selected="false" aria-controls="invitation-preview" tabindex="-1" data-event="birthday">Birthday</button><button id="tab-party" role="tab" aria-selected="false" aria-controls="invitation-preview" tabindex="-1" data-event="party">Party</button></div>
+        <div class="swatches" role="group" aria-label="Invitation color"><button class="swatch forest" aria-label="Forest green" aria-pressed="true" data-color="forest"></button><button class="swatch sage" aria-label="Sage" aria-pressed="false" data-color="sage"></button><button class="swatch rose" aria-label="Muted rose" aria-pressed="false" data-color="rose"></button></div>
+        <small>Your event. Your palette.</small>
+      </div>
+      <div id="invitation-preview" class="invitation-preview" role="tabpanel" aria-labelledby="tab-wedding">
+        <img src="assets/images/landing/preview-stationery.webp" width="1024" height="1024" alt="Textured invitation paper with white flowers, silk ribbon, and a wedding photograph" loading="lazy">
+        <div class="paper-content"><p class="invite-intro">Together with our favorite people</p><h3 id="invite-names">Elif <em>&amp;</em> Deniz</h3><span class="paper-rule"></span><p class="invite-date">20 June 2027</p><p id="invite-message">We would love to celebrate<br>with you.</p><button class="button preview-open" type="button">Open invitation <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+      </div>
+    </section>
+    <section class="faq wrap" id="questions" aria-labelledby="faq-title"><h2 id="faq-title">A few things you<br>might be wondering.</h2><div class="faq-list"><details open><summary>Can I make the invitation match my event?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg></summary><p>Yes. Personalize the colors, photos, and details for your celebration. Every event can have its own look.</p></details><details><summary>Do my guests need an account?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg></summary><p>No. Your guests can open your invitation from a shared link, RSVP, and share photos and messages without creating an account.</p></details><details><summary>Where do photos and messages go?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg></summary><p>They stay together in your event’s gallery and guestbook. You can view and manage them from your organizer dashboard.</p></details></div></section>
+    <section class="closing" aria-labelledby="closing-title"><svg class="flower" viewBox="0 0 60 80" fill="none" aria-hidden="true"><path d="M30 74V30m0 29C13 58 9 46 9 46c16-1 21 13 21 13m0-10c16-5 20-19 20-19-14 1-20 19-20 19M30 30c-19-7-18-17-11-17 5 0 8 6 11 17Zm0 0c-8-16-2-25 3-22 5 3 0 15-3 22Zm0 0c2-19 15-22 16-15 0 5-10 12-16 15Zm0 0c17-11 24-4 18 1-5 4-13 0-18-1Zm0 0c10 7 8 17 2 15-5-2-3-10-2-15Z"/></svg><h2 id="closing-title">Make the first impression<br>a lasting one.</h2><p>Your celebration starts with a little Luma.</p><a class="button button-light" href="/app.html">Create your invitation</a></section>
+  </main>
+  <footer class="site-footer wrap"><a href="#top" class="wordmark" aria-label="Luma home">Luma</a><p>For the moments that bring us together.</p><a class="text-link" href="#top">Back to top <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a></footer>
+  <dialog id="demo-dialog" aria-labelledby="demo-title"><button class="dialog-close" aria-label="Close invitation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button><div class="demo-inner"><p class="demo-label">You’re invited</p><h2 id="demo-title">Elif &amp; Deniz</h2><p id="demo-date">20 June 2027</p><p id="demo-message">We would love to celebrate with you.</p><form id="demo-rsvp"><label for="demo-name">Your name</label><input id="demo-name" name="name" autocomplete="name" maxlength="80" required placeholder="Your name"><fieldset><legend>Will you be joining us?</legend><label><input type="radio" name="attending" value="yes" required> Joyfully accept</label><label><input type="radio" name="attending" value="no"> Kindly decline</label></fieldset><button class="button" type="submit">Send RSVP</button></form><p id="demo-result" role="status" hidden></p><small class="demo-note">A little preview of the guest experience.<br>Demo responses are not saved or sent.</small></div></dialog>
+</body>
+</html>

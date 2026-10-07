@@ -27,7 +27,8 @@ for(const scenario of ['recover','empty','expired','unavailable']){
   const button={disabled:false,textContent:'Kaydet'},form={querySelector:()=>button};
   const start=source.indexOf("document.getElementById('inviteEditorForm').onsubmit=");
   const handler=source.slice(start,source.indexOf('\nfunction eventDateFor',start));
-  const context={document:{getElementById:()=>form},sessionStorage:{getItem:()=>scenario==='expired'?null:'jwt',setItem(){}},window:{},eventList:()=>[],setupEventSwitcher(){},
+  const context={document:{getElementById:()=>form},sessionStorage:{getItem:()=>scenario==='expired'?null:'jwt',setItem(){}},window:{},eventList:()=>[],setupEventSwitcher(){},isGuestDraft:()=>false,guestDraftPending:false,
+   reviewedEditorSignature:'current',editorStateSignature:()=> 'current',previewEditorInvitation:async()=>{},
    invitationContentFromForm:()=>({names:'Test',location:'İstanbul'}),dateInput:{value:'2026-10-01T18:00'},
    pendingCover:'cover-url',pendingMusicFile:undefined,removePendingMusic:false,defaultCover:'default',
    ensureEventToken:async()=>['empty','unavailable'].includes(scenario)?'':'recovered-token',currentEventMeta:()=>({name:'Test'}),
@@ -40,3 +41,16 @@ for(const scenario of ['recover','empty','expired','unavailable']){
   else{assert.equal(saved.length,0);assert.match(messages[0],scenario==='unavailable'?/Bağlantı/:/giriş/)}
  });
 }
+
+test('guest save requires a preview of the latest draft before registration',async()=>{
+ const form={},messages=[],modes=[];let previews=0,version='draft-1';
+ const start=source.indexOf("document.getElementById('inviteEditorForm').onsubmit=");
+ const handler=source.slice(start,source.indexOf('\nfunction eventDateFor',start));
+ const context={document:{getElementById:()=>form},reviewedEditorSignature:null,editorStateSignature:()=>version,
+  previewEditorInvitation:async()=>{previews++},toast:message=>messages.push(message),isGuestDraft:()=>true,beginGuestAuth:mode=>modes.push(mode)};
+ vm.runInNewContext(handler,context);
+ const submit=()=>form.onsubmit({preventDefault(){},currentTarget:form});
+ await submit();assert.equal(previews,1);assert.deepEqual(modes,[]);assert.match(messages[0],/Önce davetiyenin son hâlini/);
+ context.reviewedEditorSignature='draft-1';await submit();assert.deepEqual(modes,['register']);
+ version='draft-2';await submit();assert.equal(previews,2);assert.deepEqual(modes,['register']);
+});

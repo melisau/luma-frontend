@@ -2,6 +2,27 @@
 
 İlk kapsam ve mevcut kod karşılaştırılarak hazırlandı. Bu dosya proje içi görev listesidir.
 
+## Davetiye özelleştirme ilerlemesi (7 Ekim 2026)
+
+**Durum: uygulandı.** Dört adımlı ilerleme, etkinliğin varlığına değil davetiye editöründe kaydedilmiş seçimlere göre hesaplanır. Varsayılan görünüm ve renkler adım kartında açıkça seçilebilir.
+
+`Davetiye özelleştir` ekranının üstünde, mevcut tasarımı kaplamayan ince bir ilerleme çubuğu ve küçük adım listesi göster. Amaç kullanıcıya sıradaki işi hatırlatmak; puan, rozet veya zorunlu bir sihirbaz akışı eklemek değil. Kullanıcı bölümler arasında serbestçe dolaşabilmeli. Tamamlanan adım işaretlenmeli, ilerleme nazik bir animasyonla artmalı ve sonraki eksik adıma tıklanınca ilgili editör alanına gidilmeli.
+
+Önerilen temel adımlar ve tamamlanma ölçütleri:
+
+1. **Davetiye görünümü:** Açılış veya kâğıt görünümü değiştirilip kaydedilmiş ya da kullanıcı adım kartında varsayılan görünümü seçtiğini belirtmiş olmalı.
+2. **Davetiye renkleri:** Tema veya renk paleti değiştirilip kaydedilmiş ya da kullanıcı adım kartında mevcut renkleri seçtiğini belirtmiş olmalı.
+3. **Tarih ve saat:** Geçerli bir etkinlik tarihi ve saati kaydedilmiş olmalı.
+4. **Temel davetiye bilgileri:** Etkinlik/ev sahibi adı ve davetiye için gerekli mekân/konum bilgisi kaydedilmiş olmalı. Slogan, hikâye, müzik, sticker ve sergi fotoğrafları isteğe bağlı kalmalı.
+
+İlerleme **etkinlik bazında** ve **davetiye editöründe kaydedilmiş veriye göre** gösterilir; formda henüz kaydedilmemiş değişiklikler geçici önizleme olarak ayrılır. Tarih ve içerik adımları ancak editörden kaydedilmiş dolu alanlarla tamamlanır. Sayfa yenilendiğinde veya başka cihazda açıldığında ilerleme korunur; tarih veya temel bilgi sonradan boşaltılırsa ilgili adım yeniden eksik görünür.
+
+Görsel yaklaşım: sayfanın başında tek satırlık yüzde/`4 adımdan 2'si tamamlandı` metni, ince çubuk ve kısa adım etiketleri. Tamamlanma durumunu yalnızca renkle anlatma; metin ve ikon da kullan. Dar ekranda etiketler alt alta veya yatay kaydırılabilir biçimde yerleşsin. İlerleme çubuğu mevcut formu, kaydetme düğmesini veya mobil önizlemeyi örtmesin. %100 durumunda kısa bir kutlama mesajı olabilir; mevcut düzenleme akışı açık kalır.
+
+- [x] LUMA-21: Adımların son adlarını ve zorunlu alanlarını netleştir; varsayılan görünüm/renk onayının nasıl verileceğini tasarla.
+- [x] LUMA-22: Kaydedilmiş etkinlik verisi ile görünüm/renk onay durumundan ilerlemeyi hesapla ve backend'de etkinlik bazında koru.
+- [x] LUMA-23: Hafif ilerleme çubuğunu ve adım bağlantılarını ekle; masaüstü/mobil görünümü doğrula.
+
 ## Bu çalışma: temel akış ve eksikler
 - [x] LUMA-01: Tarih/saat düzenleyicisindeki tekrar kayıtta saat kaymasını düzelt; farklı saat dilimlerinde test et.
 - [x] LUMA-02: Misafir bağlantısını yönetici oturumundan bağımsız yükle; yanlış etkinlik/özel kayıt karışmasını önle.

@@ -13,7 +13,7 @@ const root=path.resolve(__dirname,'..');
    if(!file.startsWith(root+path.sep))return route.abort();
    try{await route.fulfill({body:await fs.readFile(file),contentType:({'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png'})[path.extname(file)]||'application/octet-stream'});}catch{await route.fulfill({status:404,body:''});}
   });
-  await page.goto('http://luma.test');
+  await page.goto('http://luma.test/app.html');
   const show=()=>page.evaluate(()=>{document.getElementById('invitation').classList.remove('hidden');LumaEnvelope.show({name:'Melisa & Deniz',date:'2027-06-28',appearance:{envelope_color:'#25463B',seal_color:'#C9AA78'},onOpen:()=>window.openCalls=(window.openCalls||0)+1});});
   await show();assert(await page.evaluate(()=>document.getElementById('invitation').inert));
   assert.equal(await page.locator('.s1-stage .opening-hand').count(),0);

@@ -1,0 +1,16 @@
+body.guest-draft .sidebar,body.guest-draft .topbar,body.guest-draft #sidebarBackdrop{display:none!important}
+body.guest-draft .main{margin-left:0}
+body.guest-draft #inviteEditorView{max-width:1480px;margin:0 auto}
+.guest-draft-home{display:none}
+body.guest-draft .guest-draft-home{display:inline-flex;align-items:center;gap:10px;margin:0 0 25px;color:#25463b;text-decoration:none;font-family:'Cormorant Garamond',Georgia,serif;font-size:29px;line-height:1}
+body.guest-draft .guest-draft-home .brand-mark{font-size:17px}
+.editor-heading-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.guest-draft-auth-actions{display:none;align-items:center;gap:8px}
+body.guest-draft .guest-draft-auth-actions{display:flex}
+.guest-draft-auth-actions button{min-height:36px;padding:7px 13px;border:1px solid #25463b40;border-radius:8px;background:#fff;color:#25463b;font:600 11px Manrope,sans-serif;cursor:pointer}
+.guest-draft-auth-actions button:last-child{background:#25463b;color:#fff}
+@media(max-width:700px){.editor-heading-actions{width:100%}.guest-draft-auth-actions button{min-height:40px}}
+@media(max-width:700px){body.guest-draft .guest-draft-home{margin-bottom:19px;font-size:26px}}
+body.guest-draft #invitation [data-modal="rsvp"],body.guest-draft #invitation #calendarBtn{display:none!important}
+body.guest-draft #memories [data-modal]:disabled{opacity:.65;cursor:not-allowed}
+body.guest-draft #invitation::before{content:'ÖN İZLEME · Paylaşmak için davetiyeni kaydet';position:sticky;top:0;z-index:100;display:block;padding:9px 16px;text-align:center;background:#fff7e8;color:#614c2e;font:600 11px Manrope,sans-serif;letter-spacing:.05em}
