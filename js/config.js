@@ -19,7 +19,7 @@ function appLocation() {
 
 window.LumaConfig = {
   apiBase: resolveApiBase(),
-  defaultCover: '/assets/images/wedding-hero.png',
+  defaultCover: '/assets/images/wedding-hero.webp',
 
   /** @type {() => string} */
   getEventToken: () => '',

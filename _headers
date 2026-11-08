@@ -1,6 +1,26 @@
+# Same rules as the backend's site_headers in luma-backend/app/main.py; keep them in sync.
 /*
-  X-Robots-Tag: noindex, nofollow, noarchive, noimageindex, nosnippet
-  Referrer-Policy: no-referrer
+  Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
+# Private pages: guest invitations and the admin editor stay out of search engines.
+/e/*
+  X-Robots-Tag: noindex, nofollow, noarchive, noimageindex, nosnippet
+  Referrer-Policy: no-referrer
   Cache-Control: private, no-store, max-age=0
+
+/app.html
+  X-Robots-Tag: noindex, nofollow, noarchive, noimageindex, nosnippet
+  Cache-Control: private, no-cache
+
+# Images rarely change; CSS/JS carry ?v= version params.
+/assets/*
+  Cache-Control: public, max-age=2592000
+
+/css/*
+  Cache-Control: public, max-age=86400
+
+/js/*
+  Cache-Control: public, max-age=86400
