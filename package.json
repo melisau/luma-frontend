@@ -1,0 +1,11 @@
+{
+  "name": "luma-frontend",
+  "private": true,
+  "description": "Luma static frontend. No build step; this file only holds the test command.",
+  "scripts": {
+    "test": "node --test \"tests/*.test.cjs\""
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -14,7 +14,7 @@
 .s1-envelope{position:absolute;left:14%;top:4%;width:72%;height:66%;background-color:var(--paper);background-image:var(--texture),var(--pattern);border:1px solid #ffffff12;box-shadow:0 24px 50px #0006,inset 0 0 40px #0002}
 .s1-flap{position:absolute;inset:0 0 18%;clip-path:polygon(0 0,100% 0,100% 6%,50% 80%,0 6%);background:linear-gradient(170deg,color-mix(in srgb,var(--paper),white 13%),var(--paper) 75%);filter:drop-shadow(0 5px 5px #0005)}
 .s1-folds{position:absolute;inset:0;background:linear-gradient(35deg,transparent 49.8%,#ffffff20 50%,transparent 50.25%) left bottom/50% 75% no-repeat,linear-gradient(-35deg,transparent 49.8%,#ffffff20 50%,transparent 50.25%) right bottom/50% 75% no-repeat;pointer-events:none}
-.opening-hand{position:absolute;bottom:0;width:50%;height:100%;background-image:url('/assets/images/opening/gloved-hands.png');background-repeat:no-repeat;background-size:200% auto;pointer-events:none;z-index:4}
+.opening-hand{position:absolute;bottom:0;width:50%;height:100%;background-image:url('/assets/images/opening/gloved-hands.webp');background-repeat:no-repeat;background-size:200% auto;pointer-events:none;z-index:4}
 .opening-hand-left{left:0;background-position:left bottom}.opening-hand-right{right:0;background-position:right bottom}
 .luxury-opening .ceremonial-seal{position:absolute;width:clamp(64px,9vw,92px);height:clamp(64px,9vw,92px);border-radius:48% 52% 49% 51%;border:2px solid color-mix(in srgb,var(--wax),white 30%);background:radial-gradient(ellipse at 28% 20%,color-mix(in srgb,var(--wax),white 40%),var(--wax) 50%,color-mix(in srgb,var(--wax),black 40%));box-shadow:0 5px 12px #0007,inset 1px 1px 3px #fff8,inset -2px -3px 5px #0006;color:color-mix(in srgb,var(--wax),black 65%);display:grid;place-items:center;cursor:pointer;padding:7px;z-index:7;transition:none;transform:none}
 .luxury-opening .ceremonial-seal>span{display:grid;place-items:center;width:100%;height:100%;border:1px solid color-mix(in srgb,var(--wax),black 30%);border-radius:50%;font-family:var(--serif);font-size:30px;box-shadow:inset 0 1px 2px #0005;text-shadow:0 1px 0 #fff5;color:inherit}
@@ -25,7 +25,7 @@
 .gatefold-inside{position:absolute;inset:0;background:var(--card);color:var(--card-ink);padding:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;border:1px solid #BFAF934D}
 .gatefold-inside>span{font-size:10px;letter-spacing:.14em}.gatefold-inside>strong{font-family:var(--serif);font-size:clamp(26px,4vw,45px);font-weight:500}.gatefold-inside>p{font-size:13px}
 .gatefold-door{position:absolute;top:0;bottom:0;width:50%;background:var(--card);border:1px solid #B6AA9650;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform}
-.gatefold-door:before{content:'';position:absolute;inset:0;background-image:url('/assets/images/opening/embossed-paper.png');background-repeat:no-repeat;background-size:200% 100%;mix-blend-mode:luminosity;opacity:.72;pointer-events:none}
+.gatefold-door:before{content:'';position:absolute;inset:0;background-image:url('/assets/images/opening/embossed-paper.webp');background-repeat:no-repeat;background-size:200% 100%;mix-blend-mode:luminosity;opacity:.72;pointer-events:none}
 .gatefold-left{left:0;transform-origin:left center;border-radius:3px 0 0 3px}.gatefold-right{right:0;transform-origin:right center;border-radius:0 3px 3px 0}
 .gatefold-left:before{background-position:left center}.gatefold-right:before{background-position:right center}
 .s2-plaque{position:absolute;top:14%;left:20%;width:60%;padding:16px 8px;color:var(--card-ink);background:none;border:0;z-index:4;text-align:center}
@@ -45,13 +45,13 @@
 .luxury-opening[data-pattern=embossed]{--pattern:none;--relief:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='260'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.7' stroke-width='1.8'%3E%3Cpath d='M55 260Q80 110 52 0M66 200Q24 173 27 134M66 176Q102 158 104 107M68 145Q33 121 30 87M65 103Q95 76 91 45M60 67Q30 43 36 17M62 221Q98 212 105 184'/%3E%3C/g%3E%3C/svg%3E")}
 /* Photographic paper avoids a synthetic linen grid on the outer envelope. */
 .s1-envelope{background-image:var(--pattern)}
-.s1-envelope:before{content:'';position:absolute;inset:0;background:url('/assets/images/opening/forest-envelope.png') center/100% 100% no-repeat;mix-blend-mode:luminosity;opacity:.8;pointer-events:none}
+.s1-envelope:before{content:'';position:absolute;inset:0;background:url('/assets/images/opening/forest-envelope.webp') center/100% 100% no-repeat;mix-blend-mode:luminosity;opacity:.8;pointer-events:none}
 .s1-flap,.s1-folds{opacity:0}
 .s2-plaque{border-radius:45% 45% 40% 40% / 18% 18% 18% 18%}
 
 /* The envelope edges align with the inner thumb positions of the paired hands. */
 .s1-envelope{left:23%;top:22%;width:54%;height:52%;transform:rotate(-3deg);transform-origin:50% 70%;box-shadow:0 12px 22px #0005,inset 0 0 24px #0002}
-.s2-bow{background:var(--ribbon,#718CA2);mask:url('/assets/images/opening/satin-bow.png') center/100% 100% no-repeat;isolation:isolate}
+.s2-bow{background:var(--ribbon,#718CA2);mask:url('/assets/images/opening/satin-bow.webp') center/100% 100% no-repeat;isolation:isolate}
 .s2-bow img{filter:grayscale(1);mix-blend-mode:luminosity;opacity:.7}
 
 /* Rotate around the grip, so wrists extend toward the side edges. */
@@ -66,7 +66,7 @@
 .s1-envelope{left:8%;top:8%;width:84%;height:76%;transform:none;background-color:color-mix(in srgb,var(--paper),black 28%)}
 .s1-envelope:before{clip-path:polygon(0 0,50% 54%,100% 0,100% 100%,0 100%)}
 .s1-flap{inset:0;opacity:1;clip-path:polygon(0 0,100% 0,50% 54%);background:var(--paper);transform-origin:center top;backface-visibility:visible;z-index:2}
-.s1-flap:before{content:'';position:absolute;inset:0;background:url('/assets/images/opening/forest-envelope.png') center/100% 100%;mix-blend-mode:luminosity;opacity:.8}
+.s1-flap:before{content:'';position:absolute;inset:0;background:url('/assets/images/opening/forest-envelope.webp') center/100% 100%;mix-blend-mode:luminosity;opacity:.8}
 .gatefold-card{container-type:inline-size}
 .gatefold-card>.opening-hand{width:80%;height:auto;aspect-ratio:1;top:calc(38% + 35cqw);bottom:auto;translate:0 -50%;z-index:6}
 .gatefold-card>.opening-hand-left{left:-50%}.gatefold-card>.opening-hand-right{right:-50%}
@@ -84,7 +84,7 @@
 .satin-shade{stop-color:color-mix(in srgb,var(--ribbon,#718CA2),black 38%)}
 .s2-bow.bow-knot{left:0;z-index:7;pointer-events:auto;height:30cqw;aspect-ratio:auto;background:none;mask:none;clip-path:none;border:0}
 .s2-bow.bow-knot svg{position:absolute;top:0;left:0;height:66.7cqw;pointer-events:none}
-.door-ribbon{position:absolute;width:100%;height:10.5cqw;top:calc(38% + 14cqw);z-index:2;background:linear-gradient(180deg,#ffffff50,#00000017 35%,#ffffff17 70%,#00000035),url("/assets/images/opening/satin-texture.png"),linear-gradient(var(--ribbon,#718CA2),var(--ribbon,#718CA2));background-size:auto,400px 400px,auto;background-blend-mode:normal,luminosity,normal;box-shadow:inset 0 1px #ffffff55,inset 0 -1px #0004,0 2px 3px #0002}
+.door-ribbon{position:absolute;width:100%;height:10.5cqw;top:calc(38% + 14cqw);z-index:2;background:linear-gradient(180deg,#ffffff50,#00000017 35%,#ffffff17 70%,#00000035),url("/assets/images/opening/satin-texture.webp"),linear-gradient(var(--ribbon,#718CA2),var(--ribbon,#718CA2));background-size:auto,400px 400px,auto;background-blend-mode:normal,luminosity,normal;box-shadow:inset 0 1px #ffffff55,inset 0 -1px #0004,0 2px 3px #0002}
 .gatefold-left .door-ribbon,.gatefold-left .door-tail{left:0}
 .gatefold-right .door-ribbon,.gatefold-right .door-tail{right:0}
 .ribbon-pull{position:absolute;inset:0;z-index:6;pointer-events:none}
@@ -100,7 +100,7 @@
 .luxury-opening .opening-track{height:calc(100svh + 240px)}
 .luxury-opening .opening-scene{position:fixed;inset:0;height:100%;width:100%}
 
-.luxury-opening[data-hand=witch] .opening-hand{background-image:url('/assets/images/opening/witch-hands.png')}
+.luxury-opening[data-hand=witch] .opening-hand{background-image:url('/assets/images/opening/witch-hands.webp')}
 .luxury-opening[data-hand=witch] .opening-hand::before{background:repeating-linear-gradient(105deg,#141817 0 1px,#1d2422 1px 3px)}
 
 /* The supplied photograph provides all wax edges, depth and texture. */

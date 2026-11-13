@@ -498,7 +498,19 @@ function adminAccount(){return sessionStorage.getItem('lumaAdminSession')?{email
 function formatNameFromEmail(email){if(!email)return 'Yönetici';const local=email.split('@')[0].replace(/[._-]+/g,' ').trim();if(!local)return 'Yönetici';return local.split(/\s+/).map(part=>part.charAt(0).toLocaleUpperCase('tr-TR')+part.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
 function adminInitials(name){const parts=String(name||'').trim().split(/\s+/).filter(Boolean);if(parts.length>=2)return (parts[0][0]+parts[1][0]).toLocaleUpperCase('tr-TR');const compact=String(name||'LU').replace(/\s+/g,'');return (compact.slice(0,2)||'LU').toLocaleUpperCase('tr-TR')}
 function applyAdminProfile(profile){const email=profile?.email||sessionStorage.getItem('lumaAdminSession')||'';const name=(profile?.display_name||'').trim()||formatNameFromEmail(email);if(email)sessionStorage.setItem('lumaAdminSession',email);if(profile?.display_name)sessionStorage.setItem('lumaAdminDisplayName',profile.display_name);else sessionStorage.removeItem('lumaAdminDisplayName');const greeting=document.getElementById('dashboardGreetingName');if(greeting)greeting.textContent=name;const sidebarName=document.getElementById('sidebarUserName');if(sidebarName)sidebarName.textContent=name;const settingsEmail=document.getElementById('settingsEmail');if(settingsEmail)settingsEmail.textContent=email;const settingsEmailDisplay=document.getElementById('settingsEmailDisplay');if(settingsEmailDisplay)settingsEmailDisplay.value=email;const settingsDisplayName=document.getElementById('settingsDisplayName');if(settingsDisplayName)settingsDisplayName.value=profile?.display_name||'';const initials=adminInitials(name);const sidebarAvatar=document.getElementById('sidebarAvatar');if(sidebarAvatar)sidebarAvatar.textContent=initials;const settingsAvatar=document.getElementById('settingsAvatar');if(settingsAvatar)settingsAvatar.textContent=initials}
-async function refreshAdminProfile(){if(!sessionStorage.getItem('lumaAdminJwt'))return;try{applyAdminProfile(await LumaEventData.fetchAdminProfile())}catch{applyAdminProfile({email:sessionStorage.getItem('lumaAdminSession')||''})}}
+async function refreshAdminProfile(){if(!sessionStorage.getItem('lumaAdminJwt'))return;try{const profile=await LumaEventData.fetchAdminProfile();applyAdminProfile(profile);renderVerifyBanner(profile)}catch{applyAdminProfile({email:sessionStorage.getItem('lumaAdminSession')||''})}}
+// Unverified owners can't publish invitations in production; tell them why and let them resend the link.
+function renderVerifyBanner(profile){
+  let banner=document.getElementById('verifyEmailBanner');
+  if(!profile||!('email_verified_at' in profile)||profile.email_verified_at){banner?.remove();return}
+  if(!banner){
+    banner=document.createElement('div');banner.id='verifyEmailBanner';banner.className='verify-banner';banner.setAttribute('role','status');
+    banner.innerHTML='<span>E-posta adresinizi doğrulayana kadar davetiyeniz misafirlere açılmaz ve e-posta gönderilmez.</span><button type="button" class="text-btn">Bağlantıyı tekrar gönder</button>';
+    document.body.prepend(banner);
+  }
+  const button=banner.querySelector('button');
+  button.onclick=async()=>{button.disabled=true;try{const response=await fetch(`${LumaConfig.apiBase}/api/admin/email-verification/request`,{method:'POST',headers:LumaConfig.adminAuthHeaders()});toast(response.ok?'Doğrulama bağlantısı e-postanıza gönderildi.':'Bağlantı gönderilemedi.')}catch{toast('Bağlantı gönderilemedi.')}finally{button.disabled=false}};
+}
 function updatePlanUI(){const plan=localStorage.getItem('lumaPlan')||'free';document.getElementById('sidebarPlanName').textContent=plan==='premium'?'Premium Plan':'Free Plan';document.querySelectorAll('[data-plan]').forEach(button=>button.classList.toggle('active',button.dataset.plan===plan))}
 function showAuthFeedback(message){const box=document.getElementById('authFeedback');box.textContent=message;box.classList.toggle('hidden',!message)}
 let authMode='login';
