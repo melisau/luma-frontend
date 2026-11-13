@@ -370,7 +370,7 @@ function ensureAdvancedEventSettings(){
   const form=document.getElementById('eventSettingsForm');if(document.getElementById('eventSettingsPublishAt'))return;
   const wrap=document.createElement('div');wrap.className='advanced-event-settings';wrap.innerHTML='<label><span>YAYIN TARİHİ (İSTEĞE BAĞLI)</span><input id="eventSettingsPublishAt" type="datetime-local"></label><p>Boşsa hemen yayınlanır.</p><label><span>RSVP HATIRLATMA TARİHİ (İSTEĞE BAĞLI)</span><input id="eventSettingsReminderAt" type="datetime-local"></label><p id="eventReminderStatus"></p>';form.querySelector('button[type="submit"]').before(wrap);
   const card=document.createElement('section');card.className='settings-card';card.id='eventTeamCard';card.innerHTML='<h2>Etkinlik ekibi</h2><p>Sahip, düzenleyici ve yalnızca görüntüleyen rollerini yönetin.</p><form id="eventTeamForm" class="contact-form"><label><span>YÖNETİCİ E-POSTASI</span><input id="eventTeamEmail" type="email" required></label><label><span>ROL</span><select id="eventTeamRole"><option value="editor">Düzenleyici</option><option value="viewer">Görüntüleyen</option></select></label><button class="create-btn" type="submit">Ekibe Ekle</button></form><div id="eventTeamList" class="contact-list"></div>';
-  document.querySelector('#settingsView .settings-grid').appendChild(card);card.querySelector('form').onsubmit=async e=>{e.preventDefault();try{await LumaEventData.addMember(currentEventToken(),{email:document.getElementById('eventTeamEmail').value.trim(),role:document.getElementById('eventTeamRole').value});e.currentTarget.reset();await renderEventTeam();toast('Ekip üyesi eklendi.')}catch(err){toast(err.message)}};
+  {const grid=document.querySelector('#settingsView .settings-grid');grid.insertBefore(card,grid.querySelector('.account-delete-card'))};card.querySelector('form').onsubmit=async e=>{e.preventDefault();try{await LumaEventData.addMember(currentEventToken(),{email:document.getElementById('eventTeamEmail').value.trim(),role:document.getElementById('eventTeamRole').value});e.currentTarget.reset();await renderEventTeam();toast('Ekip üyesi eklendi.')}catch(err){toast(err.message)}};
 }
 async function renderEventTeam(){const list=document.getElementById('eventTeamList');if(!list)return;const meta=currentEventMeta();try{const members=await LumaEventData.listMembers(currentEventToken());list.innerHTML=members.map(m=>`<div class="contact-row"><div><strong>${escapeHtml(m.display_name||m.email)}</strong><small>${escapeHtml(m.email)} · ${m.role==='owner'?'Sahip':m.role==='editor'?'Düzenleyici':'Görüntüleyen'}</small></div>${m.role!=='owner'&&meta.role==='owner'?`<button type="button" data-remove-member="${m.id}">Kaldır</button>`:''}</div>`).join('');list.querySelectorAll('[data-remove-member]').forEach(b=>b.onclick=async()=>{await LumaEventData.removeMember(currentEventToken(),b.dataset.removeMember);await renderEventTeam()});document.getElementById('eventTeamForm').classList.toggle('hidden',meta.role!=='owner')}catch{list.textContent='Ekip bilgileri yüklenemedi.'}}
 function formatIcsDate(date){
@@ -588,6 +588,18 @@ document.getElementById('authForm').onsubmit=async e=>{
   finally{button.disabled=false;button.textContent=isRegister?'Kayıt Ol':'Giriş Yap'}
 };
 document.getElementById('passwordChangeForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const current=e.currentTarget.currentPassword.value,next=e.currentTarget.newPassword.value,confirm=e.currentTarget.confirmPassword.value;if(next!==confirm){toast('Yeni şifreler eşleşmiyor.');return}if(next.length<8){toast('Yeni şifre en az 8 karakter olmalı.');return}try{await LumaEventData.changePassword(current,next);form.reset();toast('Şifreniz başarıyla güncellendi.')}catch(err){toast(typeof err.message==='string'?err.message:'Şifre güncellenemedi.')}};
+// Account deletion: typed "SİL" + password, then one last browser confirmation.
+document.getElementById('accountDeleteForm').onsubmit=async e=>{
+  e.preventDefault();const form=e.currentTarget,button=form.querySelector('button');
+  if(form.confirmWord.value.trim().toLocaleUpperCase('tr-TR')!=='SİL'){toast('Onaylamak için kutuya SİL yazın.');return}
+  if(!window.confirm('Hesabınız ve tüm etkinlikleriniz kalıcı olarak silinecek. Bu işlem geri alınamaz. Devam edilsin mi?'))return;
+  button.disabled=true;
+  try{
+    await LumaEventData.deleteAccount(form.password.value);
+    try{Object.keys(localStorage).filter(key=>key.startsWith('luma')).forEach(key=>localStorage.removeItem(key))}catch{}
+    toast('Hesabınız silindi.');setTimeout(logout,1500);
+  }catch(err){toast(typeof err.message==='string'?err.message:'Hesap silinemedi.');button.disabled=false}
+};
 function logout(){sessionStorage.removeItem('lumaAdminSession');sessionStorage.removeItem('lumaAdminJwt');sessionStorage.removeItem('lumaAdminDisplayName');sessionStorage.removeItem('lumaActiveEventSlug');sessionStorage.removeItem('lumaAdminView');window._lumaEvents=[];location.assign('/')}
 document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('adminProfileForm').onsubmit=async e=>{e.preventDefault();const displayName=document.getElementById('settingsDisplayName').value.trim();if(!displayName){toast('Görünen ad boş bırakılamaz.');return}try{const profile=await LumaEventData.updateAdminProfile({display_name:displayName});applyAdminProfile(profile);toast('Profiliniz kaydedildi.');}catch(err){toast(err?.message||'Profil kaydedilemedi.')}};
