@@ -595,6 +595,20 @@ window.LumaEventData = {
     if (!response.ok) throw new Error('Şifre değiştirilemedi.');
   },
 
+  async deleteAccount(password) {
+    const response = await fetch(`${LumaConfig.apiBase}/api/admin/me`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...LumaConfig.adminAuthHeaders() },
+      body: JSON.stringify({ password }),
+    });
+    if (response.status === 401) throw new Error('Oturum süresi doldu. Lütfen tekrar giriş yapın.');
+    if (response.status === 400 || response.status === 429) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || 'Hesap silinemedi.');
+    }
+    if (!response.ok) throw new Error('Hesap silinemedi. Lütfen tekrar deneyin.');
+  },
+
   async migrateLegacyEventsOnce() {
     if (localStorage.getItem('lumaEventsMigrated') === '1') return;
     let legacy = [];
