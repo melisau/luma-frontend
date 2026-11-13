@@ -595,6 +595,17 @@ window.LumaEventData = {
     if (!response.ok) throw new Error('Şifre değiştirilemedi.');
   },
 
+  async exportAccount() {
+    const response = await fetch(`${LumaConfig.apiBase}/api/admin/me/export`, {
+      headers: LumaConfig.adminAuthHeaders(),
+    });
+    if (response.status === 401) throw new Error('Oturum süresi doldu. Lütfen tekrar giriş yapın.');
+    if (!response.ok) throw new Error('Veriler indirilemedi. Lütfen tekrar deneyin.');
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="([^"]+)"/);
+    return { blob: await response.blob(), filename: match ? match[1] : 'luma-event-verilerim.json' };
+  },
+
   async deleteAccount(password) {
     const response = await fetch(`${LumaConfig.apiBase}/api/admin/me`, {
       method: 'DELETE',

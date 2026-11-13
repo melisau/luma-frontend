@@ -185,3 +185,7 @@ html.envelope-locked,html.envelope-locked body{overflow:hidden!important;overscr
 .account-delete-card{grid-column:1/-1;border-color:#e6caca}
 .account-delete-card form{max-width:420px}
 .account-delete-card .danger-outline{width:100%;height:43px}
+
+/* Veri indirme kartı (Ayarlar) */
+.account-export-card{grid-column:1/-1}
+.account-export-card .create-btn{margin-top:18px;max-width:420px;width:100%;height:43px}
