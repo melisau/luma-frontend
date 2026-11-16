@@ -189,3 +189,5 @@ html.envelope-locked,html.envelope-locked body{overflow:hidden!important;overscr
 /* Veri indirme kartı (Ayarlar) */
 .account-export-card{grid-column:1/-1}
 .account-export-card .create-btn{margin-top:18px;max-width:420px;width:100%;height:43px}
+.field-hint{font-size:9px;line-height:1.5;color:#8a8a82}.consent-check{display:flex;gap:9px;align-items:flex-start;font-size:9px!important;line-height:1.55;letter-spacing:0!important;color:#5f625b!important;cursor:pointer}.consent-check input{flex:none;width:16px;height:16px;margin:1px 0 0;padding:0}
+.plan-current{display:flex;flex-direction:column;gap:3px;margin-top:14px;padding:12px 14px;border:1px solid #e3ded4;border-radius:6px;background:#faf8f3}.plan-current span{font-size:9px;letter-spacing:.6px;color:#8a8a82}.plan-current strong{font-size:14px}
