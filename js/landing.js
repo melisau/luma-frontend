@@ -1,5 +1,10 @@
 (() => {
   'use strict';
+  // E-mailed account links sent before they pointed at /app.html: pass them on.
+  if (/[?&](verify|reset)_token=/.test(location.search)) {
+    location.replace('/app.html' + location.search);
+    return;
+  }
   const events = {
     wedding: { names: 'Elif & Deniz', date: '20 June 2027', intro: 'Together with our favorite people', message: 'We would love to celebrate with you.' },
     engagement: { names: 'Elif & Deniz', date: '14 February 2027', intro: 'The beginning of our forever', message: 'Join us for our engagement celebration.' },

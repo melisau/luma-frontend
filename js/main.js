@@ -533,13 +533,13 @@ async function handleAccountLinks(){
   const params=new URLSearchParams(location.search),verify=params.get('verify_token'),reset=params.get('reset_token');
   if(verify){
     const response=await fetch(`${LumaConfig.apiBase}/api/admin/email-verification/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:verify})});
-    showAuthFeedback(response.ok?'E-posta adresiniz doğrulandı.':'Doğrulama bağlantısı geçersiz veya süresi dolmuş.');history.replaceState({},'',location.pathname);
+    const verifyMessage=response.ok?'E-posta adresiniz doğrulandı.':'Doğrulama bağlantısı geçersiz veya süresi dolmuş.';showAuthFeedback(verifyMessage);toast(verifyMessage);history.replaceState({},'',location.pathname);
   }
   if(reset){
     document.querySelector('.modal-card').classList.remove('media-viewer-card');content.innerHTML='<h2>Yeni parola belirle</h2><form id="resetPasswordForm" class="form-grid"><div class="field full"><label>YENİ PAROLA</label><input name="password" type="password" minlength="8" required></div><button class="submit-btn">Parolayı güncelle</button></form>';modal.classList.remove('hidden');
     document.getElementById('resetPasswordForm').onsubmit=async e=>{
       e.preventDefault();const response=await fetch(`${LumaConfig.apiBase}/api/admin/password-reset/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:reset,new_password:e.currentTarget.password.value})});
-      if(response.ok){history.replaceState({},'',location.pathname);modal.classList.add('hidden');showAuthFeedback('Parolanız güncellendi. Giriş yapabilirsiniz.')}else toast('Bağlantı geçersiz veya süresi dolmuş.');
+      if(response.ok){history.replaceState({},'',location.pathname);modal.classList.add('hidden');showAuthFeedback('Parolanız güncellendi. Giriş yapabilirsiniz.');toast('Parolanız güncellendi. Giriş yapabilirsiniz.')}else toast('Bağlantı geçersiz veya süresi dolmuş.');
     };
   }
 }
