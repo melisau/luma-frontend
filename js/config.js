@@ -71,7 +71,10 @@ window.LumaConfig = {
 
   uploadUrl(token) {
     const resolved = token || this.getEventToken();
-    return `${location.origin}/e/${encodeURIComponent(resolved)}/upload`;
+    // Personal-link events: the venue QR link carries the upload key (upload only, event days).
+    const meta = (window._lumaEvents || []).find(event => event.private_token === resolved);
+    const key = meta && meta.invite_mode === 'personal' && meta.upload_key ? `#k=${encodeURIComponent(meta.upload_key)}` : '';
+    return `${location.origin}/e/${encodeURIComponent(resolved)}/upload${key}`;
   },
 
   slugFromName(name) {

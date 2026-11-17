@@ -21,5 +21,5 @@ test('other errors and repeated limits are not retried forever',async()=>{
  await assert.rejects(upload.uploadWithRetry(async()=>{calls++;const e=new Error('too big');e.status=413;throw e},null,async()=>{}),/too big/);
  assert.equal(calls,1);calls=0;
  await assert.rejects(upload.uploadWithRetry(async()=>{calls++;throw busy(1)},null,async()=>{}),/busy/);
- assert.equal(calls,4);
+ assert.equal(calls,6);
 });

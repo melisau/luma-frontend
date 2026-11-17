@@ -71,17 +71,84 @@ window.LumaUpload = {
 
   // A busy venue (everyone on one Wi-Fi) can hit the server's per-minute limit; wait as the
   // server asks and try again instead of failing the guest's upload.
-  async uploadWithRetry(send, onWait, wait = ms => new Promise(resolve => setTimeout(resolve, ms)), attempts = 4) {
+  async uploadWithRetry(send, onWait, wait = ms => new Promise(resolve => setTimeout(resolve, ms)), attempts = 6) {
     for (let attempt = 1; ; attempt++) {
       try {
         return await send();
       } catch (error) {
-        if (error.status !== 429 || attempt >= attempts) throw error;
+        // 429: per-minute limit; 503: the server is busy processing other guests' photos.
+        if (![429, 503].includes(error.status) || attempt >= attempts) throw error;
         const seconds = Math.min(30, Math.max(3, error.retryAfter || 5));
         if (onWait) onWait(seconds);
         await wait(seconds * 1000);
       }
     }
+  },
+
+  // Phones take 12-48 MP photos of 3-10 MB. Sending a 2560 px JPEG instead cuts the venue Wi-Fi
+  // and server load about 4x with no visible loss in the album. Re-encoding also drops EXIF (and
+  // with it the GPS location). Anything the browser cannot decode (HEIC on Chrome) goes as is.
+  maxSide: 2560,
+  jpegQuality: 0.85,
+  async shrinkImage(file, env = globalThis) {
+    try {
+      if (typeof env.createImageBitmap !== 'function') return file;
+      const bitmap = await env.createImageBitmap(file, { imageOrientation: 'from-image' });
+      const longest = Math.max(bitmap.width, bitmap.height);
+      if (longest <= this.maxSide && file.size <= 1.5 * 1024 * 1024) { bitmap.close?.(); return file; }
+      const scale = Math.min(1, this.maxSide / longest);
+      const width = Math.round(bitmap.width * scale), height = Math.round(bitmap.height * scale);
+      const canvas = typeof env.OffscreenCanvas === 'function'
+        ? new env.OffscreenCanvas(width, height)
+        : Object.assign(env.document.createElement('canvas'), { width, height });
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, width, height);
+      context.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close?.();
+      const blob = canvas.convertToBlob
+        ? await canvas.convertToBlob({ type: 'image/jpeg', quality: this.jpegQuality })
+        : await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', this.jpegQuality));
+      if (!blob || blob.size >= file.size) return file;
+      const name = (file.name || 'foto').replace(/\.[^.]+$/, '') + '.jpg';
+      return new env.File([blob], name, { type: 'image/jpeg', lastModified: file.lastModified });
+    } catch {
+      return file;
+    }
+  },
+
+  // One photo per request, a few at a time: a stuck photo is retried alone, progress moves photo
+  // by photo, and the server spreads the work across guests. Failures do not stop the others.
+  async uploadMany(token, files, uploaderName, caption, { onProgress, onWait, concurrency = 2, send } = {}) {
+    send = send || ((file, progress) => this.uploadPhotos(token, [file], uploaderName, caption, progress));
+    const total = files.length, partial = new Array(total).fill(0);
+    const result = { uploaded: [], duplicates_skipped: 0, failed: [], failedFiles: [] };
+    let next = 0, firstError = null;
+    const report = () => onProgress && onProgress(Math.round(partial.reduce((a, b) => a + b, 0) / total), result.uploaded.length + result.duplicates_skipped + result.failed.length, total);
+    const worker = async () => {
+      while (next < total) {
+        const index = next++;
+        const original = files[index];
+        try {
+          const file = await this.shrinkImage(original);
+          const response = await this.uploadWithRetry(
+            () => send(file, percent => { partial[index] = percent; report(); }),
+            seconds => onWait && onWait(seconds)
+          );
+          result.uploaded.push(...(response.uploaded || []));
+          result.duplicates_skipped += response.duplicates_skipped || 0;
+        } catch (error) {
+          firstError = firstError || error;
+          result.failed.push(original.name || 'foto');
+          result.failedFiles.push(original);
+        }
+        partial[index] = 100;
+        report();
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(concurrency, total) }, worker));
+    if (!result.uploaded.length && !result.duplicates_skipped && firstError) throw firstError;
+    return result;
   },
 
   bindUploadForm(form, onComplete) {
@@ -192,27 +259,26 @@ window.LumaUpload = {
       progressBar.style.width = '0%';
 
       try {
-        const result = await this.uploadWithRetry(
-          () => this.uploadPhotos(token, files, uploaderName, caption, percent => {
+        const result = await this.uploadMany(token, files, uploaderName, caption, {
+          onProgress: (percent, done, total) => {
             progressBar.style.width = `${percent}%`;
-            statusBox.textContent = `Yükleniyor... ${percent}%`;
-          }),
-          seconds => {
-            progressBar.style.width = '0%';
+            statusBox.textContent = total > 1 ? `Yükleniyor... ${done}/${total} fotoğraf` : `Yükleniyor... ${percent}%`;
+          },
+          onWait: seconds => {
             statusBox.textContent = `Şu an çok sayıda fotoğraf yükleniyor; ${seconds} saniye sonra kendiliğinden yeniden denenecek...`;
           }
-        );
-        const resultMessage=`${result.uploaded.length} fotoğraf gönderildi.${result.duplicates_skipped ? ` ${result.duplicates_skipped} yinelenen fotoğraf atlandı.` : ''}`;
+        });
+        const resultMessage=`${result.uploaded.length} fotoğraf gönderildi.${result.duplicates_skipped ? ` ${result.duplicates_skipped} yinelenen fotoğraf atlandı.` : ''}${result.failed.length ? ` ${result.failed.length} fotoğraf gönderilemedi; seçili bıraktık, Gönder'e yeniden basabilirsin.` : ''}`;
         progressBar.style.width = '100%';
         statusBox.classList.add('hidden');
         successBox.textContent = `✓ ${resultMessage} Onaylandıktan sonra albümde görünecek.${guestUploadEntry ? ' Dilersen daha fazla ekleyebilirsin.' : ''}`;
         successBox.classList.remove('hidden');
         await onComplete(result, uploaderName);
 
-        selectedFiles = [];
+        // Keep only the photos that did not go, so the guest can simply press Gönder again.
+        selectedFiles = result.failedFiles;
         this.syncInputFiles(fileInput, selectedFiles);
-        form.querySelector('#selectedFiles').classList.add('hidden');
-        updateDropzoneLabel();
+        showSelectedFiles();
 
         if (guestUploadEntry) {
           await new Promise(resolve => setTimeout(resolve, 1200));
