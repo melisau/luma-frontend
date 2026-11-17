@@ -123,7 +123,7 @@ gizlilik = "\n".join([
         ["Oturum depolaması (sessionStorage)", "Etkinlik sahibinin giriş oturumu", "Tarayıcı sekmesi kapanınca silinir"],
         ["Yerel depolama (localStorage)", "Dil ve görünüm tercihleri, misafirin kendi yanıtını düzenleyebilmesi", "Siz silene kadar"],
     ]),
-    f"    <p>Sayfaların yazı tipleri Google Fonts'tan yüklenir; bu sırada IP adresiniz Google'a (ABD) iletilir. {TODO('[Yazı tipleri kendi sunucumuzdan sunulunca bu paragraf kaldırılacak.]')}</p>",
+    "    <p>Sayfaların yazı tipleri kendi sunucumuzdan yüklenir; yazı tipi için Google Fonts gibi dış bir hizmete istek gönderilmez.</p>",
     '    <h2 id="cocuklar">4. Çocuklar</h2>',
     "    <p>Hesap açmak için 18 yaşını doldurmuş olmak gerekir. Misafirlerin yüklediği fotoğraflarda çocuklar yer alabilir; bu fotoğrafları paylaşırken velilerinin rızasını gözetmenizi rica ederiz. Bir fotoğrafın kaldırılmasını etkinlik sahibinden veya bizden isteyebilirsiniz.</p>",
     '    <h2 id="degisiklikler">5. Bu politikadaki değişiklikler</h2>',
