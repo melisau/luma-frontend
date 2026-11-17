@@ -3,3 +3,5 @@ Allow: /
 Disallow: /e/
 Disallow: /app.html
 Disallow: /api/
+
+Sitemap: https://luma.melisauyar.com/sitemap.xml
