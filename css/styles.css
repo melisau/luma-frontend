@@ -221,3 +221,5 @@ html.envelope-locked,html.envelope-locked body{overflow:hidden!important;overscr
 .watch-slideshow.hidden{display:none}
 @media(max-width:700px){.slideshow-settings{grid-template-columns:1fr}}
 .slideshow-note{background:#fbf3e3;border:1px solid #ecdcb9;border-radius:6px;padding:8px 10px;margin-top:10px}.slideshow-note.hidden{display:none}
+/* Phones with automatic dark mode must not invert the invitation colours the owner chose. */
+:root{color-scheme:light only}
