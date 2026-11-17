@@ -45,8 +45,10 @@ window.LumaInvitationColors={
   },
   init(){
     const section=document.createElement('section');section.className='editor-panel invitation-colors-panel';
-    section.innerHTML='<div class="editor-panel-head"><span>◌</span><div><h2>Davetiye renkleri</h2><p>Etkinliğine uygun renkleri seç. Değişiklikleri canlı önizlemede görebilir, Kaydet ile etkinliğine uygulayabilirsin.</p></div></div><div class="invitation-color-grid">'+Object.entries(this.labels).map(([key,label])=>'<label class="editor-field"><span>'+label+'</span><input type="color" id="palette_'+key+'" data-palette-color="'+key+'"></label>').join('')+'</div><button type="button" class="text-btn" id="resetInvitationColors">Tema renklerine dön</button>';
-    document.querySelector('.opening-style-panel').after(section);
+    section.innerHTML='<div class="editor-panel-head"><span>2</span><div><h2>Davetiye renkleri</h2><p>Zarf açıldıktan sonra görünen davetiyenin renkleri. Yandaki önizleme bu bölümde davetiyeyi gösterir; Kaydet ile etkinliğine uygulanır.</p></div></div><div class="invitation-color-grid">'+Object.entries(this.labels).map(([key,label])=>'<label class="editor-field"><span>'+label+'</span><input type="color" id="palette_'+key+'" data-palette-color="'+key+'"></label>').join('')+'</div><button type="button" class="text-btn" id="resetInvitationColors">Tema renklerine dön</button>';
+    const divider=document.createElement('div');divider.className='editor-stage-divider';divider.dataset.stage='2';
+    divider.innerHTML='<span>2. AŞAMA</span><strong>Davetiyenin kendisi</strong><p>Zarf açıldıktan sonra misafirin gördüğü sayfa: renkler, tarih, kapak görseli, içerik ve konum.</p>';
+    document.querySelector('.opening-style-panel').after(divider);divider.after(section);
     section.querySelectorAll('[data-palette-color]').forEach(input=>input.addEventListener('input',()=>{this.overrides[input.dataset.paletteColor]=input.value;this.apply(document.getElementById('invitation'),this.overrides,document.getElementById('contentTheme').value);}));
     document.getElementById('resetInvitationColors').onclick=()=>{this.fillEditor({},document.getElementById('contentTheme').value);this.apply(document.getElementById('invitation'),{},document.getElementById('contentTheme').value);};
     document.getElementById('contentTheme').addEventListener('change',()=>{const theme=document.getElementById('contentTheme').value;this.refreshEditor(theme);this.apply(document.getElementById('invitation'),this.overrides,theme);});

@@ -1,8 +1,8 @@
 /* Invitation checklist: saved progress comes from the event, never from browser storage. */
 window.LumaInvitationProgress={
   steps:[
-    {key:'appearance',title:'Davetiye görünümü',help:'Görünümü incele, bölümün sonundaki “Bu adımı tamamla” düğmesine bas ve davetiyeyi kaydet.',target:'.opening-style-panel'},
-    {key:'colors',title:'Davetiye renkleri',help:'Renkleri incele, bölümün sonundaki “Bu adımı tamamla” düğmesine bas ve davetiyeyi kaydet.',target:'.invitation-colors-panel'},
+    {key:'appearance',title:'1. aşama · Zarf ve açılış',help:'Zarfı ve kurdeleli kapağı incele, bölümün sonundaki “Bu adımı tamamla” düğmesine bas ve davetiyeyi kaydet.',target:'.opening-style-panel'},
+    {key:'colors',title:'2. aşama · Davetiye renkleri',help:'Renkleri incele, bölümün sonundaki “Bu adımı tamamla” düğmesine bas ve davetiyeyi kaydet.',target:'.invitation-colors-panel'},
     {key:'date',title:'Tarih ve saat',help:'Etkinlik tarihini ve saatini seç. Bu bilgi geri sayımda ve davetiyede görünür.',target:'#eventDateInput'},
     {key:'details',title:'Temel bilgiler',help:'Etkinlik / ev sahibi adını ve mekân ya da şehir/konum alanlarından en az birini doldur.',target:'.content-editor-panel'}
   ],

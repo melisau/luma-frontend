@@ -1,8 +1,12 @@
 window.LumaEnvelope={
   timer:null,layer:null,envelopeTexture:'linen',
   defaults:{envelope_color:'#25463B',seal_color:'#C9AA78',paper_color:'#fffdf7',ribbon_color:'#718CA2',envelope_texture:'linen',envelope_pattern:'plain',seal_motif:'original'},
-  readEditor(){return Object.fromEntries(Object.entries(this.defaults).map(([key,value])=>[key,key==='envelope_texture'?this.envelopeTexture:document.getElementById(key)?.value||value]));},
-  fillEditor(settings){this.envelopeTexture=['smooth','linen','grain'].includes(settings?.envelope_texture)?settings.envelope_texture:this.defaults.envelope_texture;for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input){const saved=settings[key]||value;input.value=key==='seal_motif'?(saved==='monogram'?'monogram':'original'):key==='envelope_pattern'&&!['plain','pinstripe','botanical','floral_cut'].includes(saved)?'plain':saved;window.LumaInvitationColors?.syncHex(input);}}},
+  // Texture and pattern have no control (the photographic envelope covers them); saved values are kept.
+  readEditor(){return Object.fromEntries(Object.entries(this.defaults).map(([key,value])=>[key,key==='envelope_texture'?this.envelopeTexture:key==='envelope_pattern'?(this.envelopePattern||value):document.getElementById(key)?.value||value]));},
+  // The seal is a photograph: its colour setting only colours the initials, so it shows only then.
+  // (The envelope pattern was dropped from the editor: the photographic envelope covers it.)
+  syncSealColorField(){const motif=document.getElementById('seal_motif'),field=document.getElementById('seal_color')?.closest?.('.editor-field');if(field)field.classList.toggle('hidden',motif?.value!=='monogram');},
+  fillEditor(settings){this.envelopeTexture=['smooth','linen','grain'].includes(settings?.envelope_texture)?settings.envelope_texture:this.defaults.envelope_texture;this.envelopePattern=['plain','pinstripe','botanical','floral_cut'].includes(settings?.envelope_pattern)?settings.envelope_pattern:'plain';for(const [key,value] of Object.entries(this.defaults)){const input=document.getElementById(key);if(input){const saved=settings[key]||value;input.value=key==='seal_motif'?(saved==='monogram'?'monogram':'original'):key==='envelope_pattern'&&!['plain','pinstripe','botanical','floral_cut'].includes(saved)?'plain':saved;window.LumaInvitationColors?.syncHex(input);}};this.syncSealColorField();},
   laceArtwork(){
     let stitches='';
     for(let i=0;i<32;i++){
@@ -48,3 +52,5 @@ window.LumaEnvelope={
     document.body.appendChild(layer);layer.querySelector('.envelope-touch').focus();
   }
 };
+
+document.getElementById('seal_motif')?.addEventListener('change',()=>window.LumaEnvelope.syncSealColorField());
