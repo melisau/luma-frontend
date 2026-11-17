@@ -2,7 +2,7 @@ function apiErrorMessage(body, fallback) {
   if (!body || body.detail == null) return fallback;
   if (typeof body.detail === 'string') return body.detail;
   if (Array.isArray(body.detail)) {
-    return body.detail.map(item => item.msg || item.message || JSON.stringify(item)).join(', ');
+    return body.detail.map(item => String(item.msg || item.message || JSON.stringify(item)).replace(/^Value error, /, '')).join(', ');
   }
   return fallback;
 }
