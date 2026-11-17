@@ -49,7 +49,7 @@ window.LumaEditorPreview={
     const data=invitationContentFromForm();applyInvitationContent(data);
     if(dateInput.value){const date=new Date(dateInput.value);if(!Number.isNaN(date.getTime()))updateDateContent(date)}
     const doc=this.frame.contentDocument,old=doc.getElementById('invitation'),scroll=old?.scrollTop||0,clone=original.cloneNode(true);clone.classList.remove('hidden');clone.removeAttribute('inert');clone.setAttribute('aria-hidden','false');clone.querySelectorAll('audio,#closeInvite,#musicBtn,.background-motion-viewport').forEach(el=>el.remove());
-    if(document.body.classList.contains('guest-draft'))clone.querySelectorAll('.rsvp-nav,.hero-rsvp,[data-modal],#memories,#calendarBtn,.invite-nav a[href="#memories"]').forEach(el=>el.remove());
+    if(document.body.classList.contains('guest-draft'))clone.querySelectorAll('.rsvp-nav,.hero-rsvp,#calendarBtn,#uploadDisabledNote,#watchSlideshowBtn').forEach(el=>el.remove());
     clone.querySelectorAll('*').forEach(el=>{for(const attribute of [...el.attributes])if(attribute.name.startsWith('on'))el.removeAttribute(attribute.name)});
     const section=document.getElementById('mobilePreviewSection').value;
     if(section.startsWith('opening-')){
