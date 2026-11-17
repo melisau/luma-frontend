@@ -1,0 +1,27 @@
+:root{--bg:#f8f5ef;--ink:#292a25;--muted:#6f726a;--line:#ddd6c8;--accent:#8d6953;--card:#fff;--todo:#fff1a8}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1f1b;--ink:#ece8df;--muted:#a9aba2;--line:#3a3d36;--accent:#d2a98d;--card:#262923;--todo:#5c5220}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.legal-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;max-width:860px;margin:0 auto;padding:22px 16px;border-bottom:1px solid var(--line)}
+.legal-brand{font-family:Georgia,serif;font-style:italic;font-size:24px;text-decoration:none;color:var(--ink)}
+.legal-top nav{display:flex;flex-wrap:wrap;gap:6px 16px;margin-left:auto;font-size:14px}
+.legal-top nav a{text-decoration:none}
+.legal-top nav a[aria-current=page]{color:var(--ink);font-weight:600}
+.legal{max-width:860px;margin:0 auto;padding:28px 16px 56px}
+.legal h1{font-family:Georgia,serif;font-weight:500;font-size:clamp(30px,6vw,42px);line-height:1.15;margin:8px 0 4px}
+.legal h2{font-size:20px;margin:36px 0 8px}
+.legal h3{font-size:16px;margin:22px 0 6px}
+.updated{color:var(--muted);font-size:14px;margin-top:0}
+.draft-note{background:var(--todo);color:inherit;border-radius:8px;padding:10px 14px;font-size:14px;margin:0 0 18px}
+mark.todo{background:var(--todo);color:inherit;padding:0 3px;border-radius:3px}
+.legal ul{padding-left:22px}
+.legal li{margin:6px 0}
+.table-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.55}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.3px;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+@media(max-width:600px){table.wide{min-width:560px}th,td{padding:9px 10px}}
+.legal-footer{max-width:860px;margin:0 auto;padding:18px 16px 40px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
