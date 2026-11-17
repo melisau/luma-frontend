@@ -167,6 +167,7 @@ async function loginBackendAdmin(email,password){
   try{
     const response=await fetch(`${LumaConfig.apiBase}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     if(response.status===401)return {ok:false,reason:'invalid'};
+    if(response.status===403)return {ok:false,reason:'unverified'};
     if(response.status===429)return {ok:false,reason:'rate_limit'};
     if(!response.ok)return {ok:false,reason:'server'};
     const data=await response.json();
@@ -183,6 +184,8 @@ async function registerBackendAdmin(email,password,displayName){
     const payload={email,password};
     if(displayName)payload.display_name=displayName;
     const response=await fetch(`${LumaConfig.apiBase}/api/admin/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    // Production: the same answer for new and existing addresses; the account opens after the e-mail link.
+    if(response.status===202)return {ok:false,reason:'check_email'};
     if(response.status===409)return {ok:false,reason:'exists'};
     if(response.status===429)return {ok:false,reason:'rate_limit'};
     if(response.status===422)return {ok:false,reason:'invalid'};
@@ -512,7 +515,7 @@ function renderVerifyBanner(profile){
   const button=banner.querySelector('button');
   button.onclick=async()=>{button.disabled=true;try{const response=await fetch(`${LumaConfig.apiBase}/api/admin/email-verification/request`,{method:'POST',headers:LumaConfig.adminAuthHeaders()});toast(response.ok?'Doğrulama bağlantısı e-postanıza gönderildi.':'Bağlantı gönderilemedi.')}catch{toast('Bağlantı gönderilemedi.')}finally{button.disabled=false}};
 }
-function showAuthFeedback(message){const box=document.getElementById('authFeedback');box.textContent=message;box.classList.toggle('hidden',!message)}
+function showAuthFeedback(message,info=false){const box=document.getElementById('authFeedback');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('info',Boolean(info));box.setAttribute('role',info?'status':'alert')}
 let authMode='login';
 function setAuthMode(mode){
   authMode=mode;
@@ -533,7 +536,7 @@ async function handleAccountLinks(){
   const params=new URLSearchParams(location.search),verify=params.get('verify_token'),reset=params.get('reset_token');
   if(verify){
     const response=await fetch(`${LumaConfig.apiBase}/api/admin/email-verification/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:verify})});
-    const verifyMessage=response.ok?'E-posta adresiniz doğrulandı.':'Doğrulama bağlantısı geçersiz veya süresi dolmuş.';showAuthFeedback(verifyMessage);toast(verifyMessage);history.replaceState({},'',location.pathname);
+    const verifyMessage=response.ok?'E-posta adresiniz doğrulandı. Artık giriş yapabilirsiniz.':'Doğrulama bağlantısı geçersiz veya süresi dolmuş.';showAuthFeedback(verifyMessage,response.ok);toast(verifyMessage);history.replaceState({},'',location.pathname);
   }
   if(reset){
     document.querySelector('.modal-card').classList.remove('media-viewer-card');content.innerHTML='<h2>Yeni parola belirle</h2><form id="resetPasswordForm" class="form-grid"><div class="field full"><label>YENİ PAROLA</label><input name="password" type="password" minlength="8" required></div><button class="submit-btn">Parolayı güncelle</button></form>';modal.classList.remove('hidden');
@@ -569,6 +572,8 @@ document.getElementById('authForm').onsubmit=async e=>{
     const result=isRegister?await registerBackendAdmin(email,password,displayName):await loginBackendAdmin(email,password);
     if(!result.ok){
       if(result.reason==='invalid')showAuthFeedback(isRegister?'Lütfen geçerli bilgiler girin.':'E-posta veya şifre hatalı.');
+      else if(result.reason==='check_email'){setAuthMode('login');emailInput.value=email;passwordInput.value='';showAuthFeedback('E-posta adresinize bir bağlantı gönderdik. Bağlantıya tıklayıp adresinizi doğrulayın, sonra bu sayfaya dönüp giriş yapın. Hazırladığınız taslak bu sekmede bekliyor.',true)}
+      else if(result.reason==='unverified')showAuthFeedback('Giriş için önce e-posta adresinizi doğrulayın. Size yeni bir doğrulama bağlantısı gönderdik.');
       else if(result.reason==='exists')showAuthFeedback('Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.');
       else if(result.reason==='rate_limit')showAuthFeedback('Çok fazla deneme. Lütfen bir dakika bekleyin.');
       else if(result.reason==='network')showAuthFeedback('Sunucuya bağlanılamadı. Backend çalışıyor mu?');
