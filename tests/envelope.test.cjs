@@ -9,10 +9,12 @@ test('appearance settings round-trip through editor controls',()=>{
  api.fillEditor({envelope_color:'#123456',seal_motif:'original'});
  assert.equal(api.readEditor().envelope_color,'#123456');assert.equal(api.readEditor().seal_motif,'original');assert.equal(api.readEditor().paper_color,'#fffdf7');
 });
-test('unsupported old envelope patterns become the plain option',()=>{
- const {api,inputs}=setup();for(const key of Object.keys(api.defaults))inputs[key]={value:''};
+test('envelope pattern has no control but a saved one is kept; unsupported ones become plain',()=>{
+ const {api,inputs}=setup();for(const key of Object.keys(api.defaults).filter(key=>key!=='envelope_pattern'))inputs[key]={value:''};
+ api.fillEditor({envelope_pattern:'botanical'});
+ assert.equal(api.readEditor().envelope_pattern,'botanical');
  api.fillEditor({envelope_pattern:'lace'});
- assert.equal(inputs.envelope_pattern.value,'plain');
+ assert.equal(api.readEditor().envelope_pattern,'plain');
 });
 test('hidden envelope texture keeps an existing invitation value',()=>{
  const {api,inputs}=setup();for(const key of Object.keys(api.defaults).filter(key=>key!=='envelope_texture'))inputs[key]={value:''};

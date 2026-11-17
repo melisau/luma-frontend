@@ -37,6 +37,6 @@ test('slide show is reachable from the panel, the invitation and its own address
  assert.match(app,/id="openSlideshowEditor"/);assert.match(app,/id="watchSlideshowBtn"/);
  assert.ok(app.indexOf('/js/slideshow-editor.js')<app.indexOf('/js/main.js'));
  assert.match(main,/LumaSlideshowEditor\.open\(token\)/);
- assert.match(read('_redirects').split('\n')[0],/^\/e\/\*\/slayt\s+\/slideshow\.html\s+200$/);
+ assert.match(read('_redirects').split(/\r?\n/)[0],/^\/e\/\*\/slayt\s+\/slideshow\.html\s+200$/);
  const page=read('slideshow.html');assert.match(page,/\/js\/slideshow\.js/);assert.match(page,/noindex/);
 });
