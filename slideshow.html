@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#111311" />
+  <title>Slayt gösterisi · Luma</title>
+  <link rel="stylesheet" href="/css/fonts.css?v=1" />
+  <link rel="stylesheet" href="/css/slideshow.css?v=1" />
+</head>
+<body>
+  <main id="show" class="show" aria-live="off">
+    <div class="slide" data-layer="a"><div class="slide-backdrop"></div><img alt="" /></div>
+    <div class="slide" data-layer="b"><div class="slide-backdrop"></div><img alt="" /></div>
+    <section id="titleCard" class="title-card" aria-hidden="true"><p class="title-kicker">ANILARIMIZ</p><h1 id="showTitle"></h1><p id="showCount"></p></section>
+    <p id="caption" class="caption" aria-live="polite"></p>
+    <section id="message" class="message hidden" role="status"><h1 id="messageTitle"></h1><p id="messageText"></p></section>
+    <nav id="controls" class="controls" aria-label="Slayt kontrolleri">
+      <button type="button" id="prevBtn" aria-label="Önceki fotoğraf">‹</button>
+      <button type="button" id="playBtn" aria-label="Duraklat">❚❚</button>
+      <button type="button" id="nextBtn" aria-label="Sonraki fotoğraf">›</button>
+      <span id="position" class="position"></span>
+      <button type="button" id="fullscreenBtn" class="fullscreen-btn">Tam ekran</button>
+    </nav>
+  </main>
+  <script src="/js/config.runtime.js?v=1"></script>
+  <script src="/js/config.js?v=8"></script>
+  <script src="/js/slideshow.js?v=1"></script>
+</body>
+</html>

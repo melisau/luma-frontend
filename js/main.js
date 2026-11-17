@@ -257,6 +257,7 @@ async function refreshPublicMemories(){
   await syncPhotoCounts();
   const token=currentEventToken()||LumaConfig.publicEventToken();
   if(token)await LumaGallery.renderPublicCollage(token);
+  if(token&&!sessionStorage.getItem('lumaAdminJwt'))showSlideshowLink(token);
   applyUploadVisibility();
   updateDashboard();
 }
@@ -496,7 +497,7 @@ function openModal(type){
     if(type!=='event'){updateDashboard();renderGuestTable()}modal.classList.add('hidden');
   }
 }
-window.closeModal=function(){const wasMediaViewer=modal.dataset.viewer==='media';modal.classList.add('hidden');document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;if(wasMediaViewer&&!document.getElementById('galleryView').classList.contains('hidden'))LumaGallery.renderAdminGallery()};
+window.closeModal=function(){const wasMediaViewer=modal.dataset.viewer==='media';modal.classList.add('hidden');document.querySelector('.modal-card').classList.remove('media-viewer-card','slideshow-editor-card');delete modal.dataset.viewer;if(wasMediaViewer&&!document.getElementById('galleryView').classList.contains('hidden'))LumaGallery.renderAdminGallery()};
 document.querySelectorAll('[data-modal]').forEach(b=>b.onclick=()=>openModal(b.dataset.modal));document.querySelectorAll('[data-close-modal]').forEach(b=>b.onclick=closeModal);
 document.querySelectorAll('[data-new-event]').forEach(button=>button.onclick=()=>{setSidebarOpen(false);openModal('event')});
 function adminAccount(){return sessionStorage.getItem('lumaAdminSession')?{email:sessionStorage.getItem('lumaAdminSession')}:null}
@@ -1076,6 +1077,18 @@ async function openPersonalLink(guest){
   };
   try{render(await LumaGuestAccess.adminLink(token,guest.id))}catch(error){body.textContent=error.message}
 }
+
+// Guests: the owner's slide show, when shared and not empty.
+async function showSlideshowLink(token){
+  const link=document.getElementById('watchSlideshowBtn');if(!link||LumaGuestAccess.uploadOnly)return;
+  try{
+    const response=await fetch(`${LumaConfig.apiBase}/api/events/${encodeURIComponent(token)}/slideshow`);
+    const data=response.ok?await response.json():null;
+    link.href=`/e/${encodeURIComponent(token)}/slayt`;
+    link.classList.toggle('hidden',!(data&&data.slides&&data.slides.length));
+  }catch{link.classList.add('hidden')}
+}
+document.getElementById('openSlideshowEditor').onclick=async()=>{const token=await ensureEventToken();if(!token){toast('Önce bir etkinlik seçin.');return}LumaSlideshowEditor.open(token)};
 
 document.getElementById('eventUnlockForm').onsubmit=async e=>{
   e.preventDefault();const button=e.currentTarget.querySelector('button'),feedback=document.getElementById('eventUnlockFeedback');button.disabled=true;feedback.textContent='';

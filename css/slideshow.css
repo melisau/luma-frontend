@@ -1,0 +1,37 @@
+:root{--bg:#111311;--ink:#f6f2ea;--muted:#b9b4aa;--accent:#d8bf8f;--fade:1.4s}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
+.show{position:fixed;inset:0;cursor:none}
+.show.pointer{cursor:default}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity var(--fade) ease,transform var(--fade) ease;will-change:opacity,transform}
+.slide.active{opacity:1;z-index:2}
+.slide-backdrop{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(36px) brightness(.45) saturate(1.1);transform:scale(1.1)}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform-origin:center;transition:transform linear}
+/* slide: incoming from the right, outgoing to the left */
+.show[data-transition=slide] .slide{opacity:1;transform:translateX(100%)}
+.show[data-transition=slide] .slide.active{transform:none}
+.show[data-transition=slide] .slide.leaving{transform:translateX(-100%);z-index:1}
+/* zoom: slow Ken Burns push on top of the cross-fade */
+.show[data-transition=zoom] .slide img{transform:scale(1)}
+.show[data-transition=zoom] .slide.active img{transform:scale(1.12)}
+.title-card{position:absolute;inset:0;z-index:5;display:grid;place-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 40%,#2a2f29,#111311 70%);opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.title-card.visible{opacity:1}
+.title-kicker{letter-spacing:.4em;font-size:clamp(11px,1.3vw,15px);color:var(--accent);margin:0 0 18px}
+.title-card h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-style:italic;font-size:clamp(44px,8vw,120px);line-height:1.05;margin:0}
+.title-card #showCount{color:var(--muted);font-size:clamp(13px,1.4vw,18px);margin-top:20px}
+.caption{position:absolute;z-index:4;left:50%;bottom:clamp(20px,5vh,56px);transform:translateX(-50%);margin:0;max-width:min(90vw,900px);text-align:center;font-size:clamp(14px,1.8vw,24px);line-height:1.4;padding:10px 20px;border-radius:999px;background:rgba(17,19,17,.55);backdrop-filter:blur(6px);opacity:0;transition:opacity .8s ease}
+.caption.visible{opacity:1}
+.caption:empty{display:none}
+.caption em{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.15em}
+.message{position:absolute;inset:0;z-index:6;display:grid;place-content:center;text-align:center;padding:24px;background:var(--bg)}
+.message.hidden{display:none}
+.message h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:clamp(32px,5vw,56px);margin:0 0 12px}
+.message p{color:var(--muted);max-width:560px;margin:0 auto;line-height:1.6}
+.controls{position:absolute;z-index:7;top:16px;right:16px;display:flex;align-items:center;gap:8px;padding:6px;border-radius:999px;background:rgba(17,19,17,.6);backdrop-filter:blur(6px);opacity:0;transition:opacity .4s ease}
+.show.pointer .controls,.controls:focus-within{opacity:1}
+.controls button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:18px;min-width:40px;height:40px;border-radius:999px;cursor:pointer}
+.controls button:hover,.controls button:focus-visible{background:rgba(255,255,255,.12);outline:none}
+.controls .fullscreen-btn{font-size:13px;padding:0 14px}
+.position{font-size:12px;color:var(--muted);min-width:56px;text-align:center}
+@media (prefers-reduced-motion:reduce){:root{--fade:.01s}.show[data-transition=zoom] .slide.active img{transform:none}}
+@media (max-width:600px){.controls{top:auto;bottom:12px;right:50%;transform:translateX(50%)}.caption{bottom:72px}}
