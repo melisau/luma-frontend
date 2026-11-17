@@ -302,7 +302,7 @@ function renderGuestTable(){
   const counts={all:data.guests.length,attending:0,declined:0,pending:0,external:0};data.guests.forEach(g=>{counts[g.status]++;if(g.source==='external')counts.external++});
   ['All','Attending','Declined','Pending','External'].forEach(key=>document.getElementById(`filter${key}Count`).textContent=counts[key.toLowerCase()]);
   const visible=data.guests.filter(g=>(activeGuestFilter==='all'||g.status===activeGuestFilter||activeGuestFilter==='external'&&g.source==='external')&&(!query||`${g.name} ${g.email} ${g.group_name||''} ${g.table_name||''}`.toLocaleLowerCase('tr-TR').includes(query)));
-  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small>${g.dietary_requirements?`<small>Beslenme: ${escapeHtml(g.dietary_requirements)}</small>`:''}${g.notes?`<small>Not: ${escapeHtml(g.notes)}</small>`:''}</div></td><td>${escapeHtml(g.group_name||'—')}<br><small>${escapeHtml(g.table_name||'—')}</small></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions"><button type="button" class="guest-edit" data-rsvp-link="${g.id}">Kişisel link</button><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
+  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small>${g.dietary_requirements?`<small>Beslenme: ${escapeHtml(g.dietary_requirements)}</small>`:''}${g.notes?`<small>Not: ${escapeHtml(g.notes)}</small>`:''}</div></td><td>${escapeHtml(g.group_name||'—')}<br><small>${escapeHtml(g.table_name||'—')}</small></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions"><button type="button" class="guest-edit" data-rsvp-link="${g.id}">Kişisel link${currentEventMeta().invite_mode==='personal'&&g.device_count?` · ${g.device_count} cihaz`:''}</button><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
   body.querySelectorAll('[data-rsvp-link]').forEach(button=>button.onclick=()=>openRsvpLink(readData().guests.find(g=>g.id===button.dataset.rsvpLink)));
   body.querySelectorAll('[data-edit-guest]').forEach(button=>button.onclick=()=>openGuestEditor(readData().guests.find(guest=>guest.id===button.dataset.editGuest)));
   body.querySelectorAll('[data-delete-guest]').forEach(button=>button.onclick=async()=>{try{await LumaEventData.deleteGuest(currentEventToken(),button.dataset.deleteGuest);await refreshGuestViews();toast('Misafir listeden kaldırıldı.')}catch{toast('Misafir silinemedi.')}});
@@ -361,6 +361,7 @@ function loadEventSettingsForm(){
   document.getElementById('eventSettingsRetentionConfirm').checked=false;
   document.getElementById('eventSettingsAccessCode').value='';
   document.getElementById('eventSettingsRemoveCode').checked=false;
+  const inviteMode=meta.invite_mode||'open';document.querySelectorAll('input[name="eventInviteMode"]').forEach(input=>{input.checked=input.value===inviteMode});document.getElementById('eventSettingsResetUploadKey').checked=false;document.getElementById('eventInviteModeStatus').textContent=inviteMode==='personal'?'Misafirlerin bağlantılarını Misafirler sayfasında her misafirin "Kişisel link" düğmesinden alın.':'Herkese açık bağlantı Misafirler sayfasındaki "Davet bağlantısını kopyala" düğmesinde.';
   document.getElementById('eventAccessCodeStatus').textContent=meta.access_code_enabled?'Erişim kodu etkin. Yeni kod, önceki erişimleri kapatır.':'Erişim kodu kapalı.';
   ensureAdvancedEventSettings();
   document.getElementById('eventSettingsPublishAt').value=meta.publish_at?LumaDates.toLocalInput(meta.publish_at):'';
@@ -410,7 +411,7 @@ function downloadCalendarEvent(){
 document.getElementById('addGuestForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('guestNameInput').value.trim(),email=normalizedEmail(document.getElementById('guestEmailInput').value);const token=await ensureEventToken();if(!token){toast('Misafir eklemek için önce giriş yapın ve üstten bir etkinlik seçin.');return}try{await LumaEventData.createGuest(token,{name,email,status:'pending',people:1,source:'admin',group_name:document.getElementById('guestGroupInput').value.trim(),table_name:document.getElementById('guestTableInput').value.trim()});form.reset();await refreshGuestViews();await refreshActivities();toast('Misafir eklendi ve cevap bekleniyor listesine alındı.')}catch(err){toast(err.message||'Misafir eklenemedi.')}};
 document.querySelectorAll('#guestFilters [data-filter]').forEach(button=>button.onclick=()=>{activeGuestFilter=button.dataset.filter;document.querySelectorAll('#guestFilters button').forEach(x=>x.classList.toggle('active',x===button));renderGuestTable()});
 document.getElementById('guestSearchInput').addEventListener('input',renderGuestTable);
-document.getElementById('copyInviteLinkBtn').onclick=async()=>{const link=LumaConfig.inviteUrl(currentEventToken());try{await navigator.clipboard.writeText(link);toast('Bu etkinliğe özel davet bağlantısı kopyalandı.')}catch{window.prompt('Etkinliğe özel davet bağlantısını kopyalayın:',link)}};
+document.getElementById('copyInviteLinkBtn').onclick=async()=>{if(currentEventMeta().invite_mode==='personal'){toast('Bu davetiye kişiye özel: her misafirin bağlantısını listedeki "Kişisel link" düğmesinden kopyalayın.');return}const link=LumaConfig.inviteUrl(currentEventToken());try{await navigator.clipboard.writeText(link);toast('Bu etkinliğe özel davet bağlantısı kopyalandı.')}catch{window.prompt('Etkinliğe özel davet bağlantısını kopyalayın:',link)}};
 window.onGalleryPhotoDeleted=async()=>{readData._uploads=Math.max(0,(readData._uploads||0)-1);readData._approvedUploads=Math.max(0,(readData._approvedUploads||0)-1);updateDashboard();if(!invitation.classList.contains('hidden'))await LumaGallery.renderPublicCollage(currentEventToken()||LumaConfig.publicEventToken())};
 window.onGalleryPhotoUpdated=async()=>{await syncPhotoCounts();updateDashboard();if(!invitation.classList.contains('hidden'))await LumaGallery.renderPublicCollage(currentEventToken()||LumaConfig.publicEventToken())};
 function openMessageDetail(id){const item=readData().messages.find(message=>message.id===id);if(!item)return;document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;content.innerHTML=`<div class="message-detail"><div class="message-detail-mark">“</div><blockquote>${escapeHtml(item.message)}</blockquote><div class="message-detail-meta"><strong>${escapeHtml(item.name)}</strong><small>${trDate(new Date(item.created_at||item.createdAt),{dateStyle:'long',timeStyle:'short'})}</small></div></div>`;modal.classList.remove('hidden')}
@@ -440,7 +441,7 @@ function openModal(type){
   if(isGuestDraft()&&!invitation.classList.contains('hidden')&&type!=='event')return;
   if(type==='upload'&&!LumaEventData.uploadsEnabled()){toast('Bu etkinlik için fotoğraf yükleme kapalı.');return}
   document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;content.innerHTML=modalTemplates[type];content.querySelectorAll('[data-icon]').forEach(el=>{el.outerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${icons[el.dataset.icon]}</svg>`});modal.classList.remove('hidden');
-  const form=content.querySelector('form');if(type==='rsvp'){const email=form.querySelector('input[type="email"]');email.required=true;email.value=LumaRsvpAccess.email();email.previousElementSibling.textContent='E-POSTA';}
+  const form=content.querySelector('form');if(type==='rsvp'){const email=form.querySelector('input[type="email"]');email.required=true;email.value=LumaRsvpAccess.email();email.previousElementSibling.textContent='E-POSTA';const linkGuest=LumaGuestAccess.guest;if(linkGuest){form.elements.guestName.value=linkGuest.name||'';email.value=linkGuest.email||'';email.readOnly=true;email.title='Davetiye bu e-posta adresine özeldir.';if(linkGuest.people)form.elements.people.value=linkGuest.people}}
   if(type==='event')form.querySelector('[name="eventDate"]').value=LumaDates.toLocalInput(new Date(Date.now()+30*864e5));
   if(type==='upload'){
     form.insertAdjacentHTML('afterbegin','<div class="field full"><label>AD SOYAD</label><input name="uploaderName" required placeholder="Adınız ve soyadınız"></div>');
@@ -483,7 +484,7 @@ function openModal(type){
         feedback.textContent='Katılım yanıtınız kaydedildi. Teşekkür ederiz!'+(LumaDietaryConsent.wasDropped(dietaryTyped,dietaryConsented,receipt)?' '+LumaDietaryConsent.droppedText:'');
         button.textContent='Yanıt kaydedildi';
         form.querySelectorAll('input,textarea').forEach(input=>input.disabled=true);
-        LumaRsvpAccess.showLink(feedback,token,payload.email,receipt.edit_token);
+        if(receipt.edit_token)LumaRsvpAccess.showLink(feedback,token,payload.email,receipt.edit_token);
         if(sessionStorage.getItem('lumaAdminJwt')){refreshGuestViews().catch(()=>{});refreshActivities().catch(()=>{})}
       }catch(err){feedback.textContent=err.message||'Katılım yanıtı gönderilemedi. Lütfen tekrar deneyin.';button.disabled=false;button.textContent='Yanıtımı Gönder'}
       return;
@@ -636,6 +637,8 @@ document.getElementById('eventSettingsForm').onsubmit=async e=>{
     const retention=memoryRetentionPayload();
     await LumaEventData.updateEvent(token,{
       ...retention,
+      invite_mode:document.querySelector('input[name="eventInviteMode"]:checked')?.value||undefined,
+      reset_upload_key:document.getElementById('eventSettingsResetUploadKey').checked||undefined,
       is_active:document.getElementById('eventSettingsActive').checked,
       uploads_enabled:document.getElementById('eventSettingsUploads').checked,
       album_public:document.getElementById('eventSettingsAlbumPublic').checked,
@@ -949,6 +952,8 @@ initializeAccess();
 (async()=>{
   try{
   if(LumaConfig.publicEventToken()){
+    const access=await LumaGuestAccess.prepare(LumaConfig.publicEventToken());
+    if(!access.ok){showGuestAccessProblem(access);return}
     const loaded=await refreshEventData();
     if(!loaded){showPublicLoadError();return}
     hydrateEventUI();
@@ -980,8 +985,34 @@ function showPublicLoadError(){
   document.getElementById('publicLoadError').classList.remove('hidden');
   document.getElementById('publicLoadErrorText').textContent=LumaEventData.lastError||'Davetiye şu anda yüklenemedi.';
   document.getElementById('eventUnlockForm').classList.toggle('hidden',!LumaEventData.accessRequired);
-  document.getElementById('retryPublicLoad').classList.toggle('hidden',LumaEventData.accessRequired);
+  document.getElementById('retryPublicLoad').classList.toggle('hidden',LumaEventData.accessRequired||LumaEventData.personalRequired);
 }
+// Personal links: a further device asks for the code sent to the guest's e-mail.
+function showGuestAccessProblem(result){
+  const box=document.getElementById('publicLoadError'),form=document.getElementById('guestCodeForm');
+  box.classList.remove('hidden');
+  box.querySelector('h1').textContent=result.codeRequired?'Davetiyenizi doğrulayın':'Davetiye açılamadı';
+  document.getElementById('publicLoadErrorText').textContent=result.codeRequired?`${result.message} Kod ${result.emailHint} adresine gönderildi.`:result.error;
+  form.classList.toggle('hidden',!result.codeRequired);
+  document.getElementById('eventUnlockForm').classList.add('hidden');
+  document.getElementById('retryPublicLoad').classList.toggle('hidden',Boolean(result.codeRequired));
+  if(result.codeRequired)document.getElementById('guestCode').focus();
+}
+document.getElementById('guestCodeForm').onsubmit=async e=>{
+  e.preventDefault();
+  const button=e.currentTarget.querySelector('button[type="submit"]'),feedback=document.getElementById('guestCodeFeedback'),token=LumaConfig.publicEventToken();
+  button.disabled=true;feedback.textContent='';
+  const result=await LumaGuestAccess.open(token,LumaGuestAccess.link,document.getElementById('guestCode').value.trim());
+  if(result.ok){location.replace(location.pathname+location.search);return}
+  feedback.textContent=result.message||result.error||'Kod doğrulanamadı.';button.disabled=false;
+};
+document.getElementById('guestCodeResend').onclick=async e=>{
+  const button=e.currentTarget;button.disabled=true;
+  const result=await LumaGuestAccess.open(LumaConfig.publicEventToken(),LumaGuestAccess.link);
+  document.getElementById('guestCodeFeedback').textContent=result.ok?'':'Yeni bir kod istendi. E-postanızı kontrol edin; bir dakika içinde gelmezse tekrar deneyin.';
+  if(result.ok){location.replace(location.pathname+location.search);return}
+  setTimeout(()=>{button.disabled=false},60000);
+};
 document.getElementById('retryPublicLoad').onclick=()=>location.reload();
 document.getElementById('exportGuestsBtn').onclick=async e=>{
   const button=e.currentTarget;button.disabled=true;
@@ -996,6 +1027,7 @@ document.getElementById('exportGuestsBtn').onclick=async e=>{
 };
 
 function openRsvpLink(guest){
+  if(currentEventMeta().invite_mode==='personal')return openPersonalLink(guest);
   document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;
   content.innerHTML='<h2>Kişisel RSVP bağlantısı</h2><p>Yeni bağlantı oluşturmak, bu misafirin önceki RSVP bağlantısını geçersiz kılar.</p><button type="button" id="issueRsvpLink">Yeni kişisel bağlantı oluştur</button><div id="rsvpLinkResult" role="status"></div>';
   modal.classList.remove('hidden');
@@ -1021,6 +1053,27 @@ document.getElementById('downloadAlbumBtn').onclick=async e=>{
     const url=URL.createObjectURL(await response.blob()),link=document.createElement('a');link.href=url;link.download='luma-album.zip';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }catch(error){toast(error.message)}finally{button.disabled=false;button.textContent='Albümü indir (ZIP)'}
 };
+
+// Personal-link events: the guest's own link (stable until reset) and the devices that opened it.
+async function openPersonalLink(guest){
+  document.querySelector('.modal-card').classList.remove('media-viewer-card');delete modal.dataset.viewer;
+  content.innerHTML='<h2 id="personalLinkTitle"></h2><p>Bu bağlantı yalnızca bu misafir içindir. İlk açıldığı cihazlara bağlanır; başka biri açmaya çalışırsa misafirin e-postasına gelen kod gerekir.</p><div id="personalLinkBody" role="status">Bağlantı hazırlanıyor...</div>';
+  document.getElementById('personalLinkTitle').textContent=`${guest.name} · Kişisel davet bağlantısı`;
+  modal.classList.remove('hidden');
+  const token=await ensureEventToken(),body=document.getElementById('personalLinkBody');
+  const render=data=>{
+    body.innerHTML='<input id="personalLinkUrl" readonly aria-label="Kişisel davet bağlantısı" style="width:100%"><p id="personalLinkDevices"></p><div class="personal-link-actions"><button type="button" id="copyPersonalLink" class="create-btn">Bağlantıyı kopyala</button><button type="button" id="resetPersonalLink" class="ghost-btn">Bağlantıyı yenile</button></div><p class="personal-link-note">Yenilerseniz eski bağlantı ve onunla açılmış cihazlar hemen çalışmaz; misafire yeni bağlantıyı göndermeniz gerekir.</p>';
+    document.getElementById('personalLinkUrl').value=data.url;
+    document.getElementById('personalLinkDevices').textContent=`${data.device_count?`${data.device_count} cihazda açıldı.`:'Henüz açılmadı.'} İlk ${data.device_allowance} cihaz bağlantıyla doğrudan açılır; sonrası misafirin e-postasına gelen kodla.`;
+    document.getElementById('copyPersonalLink').onclick=async e=>{try{await navigator.clipboard.writeText(data.url);e.currentTarget.textContent='Kopyalandı'}catch{document.getElementById('personalLinkUrl').select();e.currentTarget.textContent='Seçip kopyalayın'}};
+    document.getElementById('resetPersonalLink').onclick=async e=>{
+      if(!confirm(`${guest.name} için yeni bağlantı oluşturulsun mu? Eski bağlantı hemen çalışmaz.`))return;
+      e.currentTarget.disabled=true;
+      try{render(await LumaGuestAccess.adminLink(token,guest.id,true));toast('Yeni bağlantı oluşturuldu. Misafire gönderin.');refreshGuestViews().catch(()=>{})}catch(error){toast(error.message);e.currentTarget.disabled=false}
+    };
+  };
+  try{render(await LumaGuestAccess.adminLink(token,guest.id))}catch(error){body.textContent=error.message}
+}
 
 document.getElementById('eventUnlockForm').onsubmit=async e=>{
   e.preventDefault();const button=e.currentTarget.querySelector('button'),feedback=document.getElementById('eventUnlockFeedback');button.disabled=true;feedback.textContent='';
