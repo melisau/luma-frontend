@@ -10,7 +10,7 @@
   <meta name="referrer" content="no-referrer" />
   <title>Luma — Anılarınız tek bir yerde</title>
   <link rel="stylesheet" href="/css/fonts.css?v=2">
-  <link rel="stylesheet" href="/css/styles.css?v=80" />
+  <link rel="stylesheet" href="/css/styles.css?v=82" />
   <link rel="stylesheet" href="/css/visual-select.css?v=1" />
   <link rel="stylesheet" href="/css/visual-editor.css?v=2" />
   <link rel="stylesheet" href="/css/invitation-progress.css?v=4" />
@@ -29,7 +29,7 @@
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <section id="authScreen" class="auth-screen hidden">
-    <div class="auth-card"><a class="brand auth-brand" href="/" aria-label="Luma ana sayfaya dön"><span class="brand-mark">L</span><span>Luma</span></a><p class="eyebrow">DAVETİYENİ TAMAMLA</p><h1 id="authTitle">Giriş yap</h1><p id="authDescription">Davetiyeni kaydetmek ve paylaşmak için giriş yap.</p><form id="authForm"><div id="authFeedback" class="auth-feedback hidden" role="alert"></div><label id="authDisplayNameWrap" class="hidden"><span>GÖRÜNEN AD</span><input id="authDisplayName" type="text" autocomplete="name" placeholder="Adınız (isteğe bağlı)"></label><label><span>E-POSTA</span><input id="authEmail" type="email" required autocomplete="email" placeholder="ornek@email.com"></label><label><span>ŞİFRE</span><input id="authPassword" type="password" required minlength="8" autocomplete="current-password" placeholder="En az 8 karakter"></label><button id="authSubmitBtn" class="create-btn" type="submit">Giriş Yap</button></form><p class="auth-switch"><span id="authSwitchText">Hesabınız yok mu?</span> <button type="button" id="authSwitchBtn">Kayıt olun</button></p><button id="backToDraftBtn" class="text-btn hidden" type="button">← Taslağa dön</button><small>Yönetim bilgileri misafir davetiyesinde gösterilmez.</small></div>
+    <div class="auth-card"><a class="brand auth-brand" href="/" aria-label="Luma ana sayfaya dön"><span class="brand-mark">L</span><span>Luma</span></a><p class="eyebrow">DAVETİYENİ TAMAMLA</p><h1 id="authTitle">Giriş yap</h1><p id="authDescription">Davetiyeni kaydetmek ve paylaşmak için giriş yap.</p><form id="authForm"><div id="authFeedback" class="auth-feedback hidden" role="alert"></div><label id="authDisplayNameWrap" class="hidden"><span>GÖRÜNEN AD</span><input id="authDisplayName" type="text" autocomplete="name" placeholder="Adınız (isteğe bağlı)"></label><label><span>E-POSTA</span><input id="authEmail" type="email" required autocomplete="email" placeholder="ornek@email.com"></label><label><span>ŞİFRE</span><input id="authPassword" type="password" required minlength="8" autocomplete="current-password" placeholder="En az 8 karakter"></label><label id="authTermsWrap" class="auth-terms hidden"><input id="authTerms" type="checkbox"><span><a href="/kosullar" target="_blank" rel="noopener">Kullanım Koşulları</a>'nı okudum ve kabul ediyorum. Kişisel verilerimin <a href="/aydinlatma" target="_blank" rel="noopener">Aydınlatma Metni</a> kapsamında işleneceğini biliyorum.</span></label><button id="authSubmitBtn" class="create-btn" type="submit">Giriş Yap</button></form><p class="auth-switch"><span id="authSwitchText">Hesabınız yok mu?</span> <button type="button" id="authSwitchBtn">Kayıt olun</button></p><button id="backToDraftBtn" class="text-btn hidden" type="button">← Taslağa dön</button><small>Yönetim bilgileri misafir davetiyesinde gösterilmez.</small><nav class="legal-links" aria-label="Yasal metinler"><a href="/gizlilik">Gizlilik</a> · <a href="/aydinlatma">Aydınlatma Metni</a> · <a href="/kosullar">Kullanım Koşulları</a> · İletişim: <a href="mailto:kvkk@melisauyar.com">kvkk@melisauyar.com</a></nav></div>
   </section>
 
   <section id="dashboard" class="app-shell hidden">
@@ -54,7 +54,7 @@
           <p id="sidebarDaysRemaining">Etkinlik tarihi hesaplanıyor.</p>
           <div class="progress"><span id="storageProgress"></span></div>
           <small id="storageUsageLabel">Depolama hesaplanıyor...</small>
-        </div>
+        </div><nav class="legal-links sidebar-legal" aria-label="Yasal metinler"><a href="/gizlilik">Gizlilik</a> · <a href="/aydinlatma">Aydınlatma</a> · <a href="/kosullar">Koşullar</a></nav>
         <div class="user-card" id="userCard">
           <button id="profileBtn" class="profile-trigger" aria-label="Profilime git"><span id="sidebarAvatar" class="avatar">LU</span><span><strong id="sidebarUserName">Yönetici</strong><small>Etkinlik sahibi</small></span></button>
           <button id="userMenuBtn" aria-label="Kullanıcı menüsü" aria-expanded="false">•••</button>
@@ -249,7 +249,7 @@
     <section class="invite-section logistics-section"><div class="detail-grid"><article class="hidden"><h3>Tam Adres</h3><p class="logistics-text" id="detail_address"></p></article><article class="hidden"><h3>Ulaşım ve Otopark</h3><p class="logistics-text" id="detail_transport_notes"></p></article><article class="hidden"><h3>İletişim Bilgileri</h3><p class="logistics-text" id="detail_contact_info"></p></article><article class="hidden"><h3>Etkinlik Programı</h3><p class="logistics-text" id="detail_schedule"></p></article></div></section>
     <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><p id="memoryPolicyNotice" class="hidden" role="status"></p><div class="memory-actions"><button type="button" data-modal="upload" data-upload-action><i data-icon="upload"></i>Fotoğraf Yükle</button><button type="button" data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button><a id="watchSlideshowBtn" class="watch-slideshow hidden" href="#">▶ Slayt gösterisini izle</a><p id="uploadDisabledNote" class="upload-disabled-note hidden">Bu etkinlik için fotoğraf yükleme geçici olarak kapalı.</p></div></div><div class="memory-collage" id="publicMemoryCollage"><img id="publicMemoryFallback" class="memory-collage-fallback" src="/assets/images/wedding-hero.webp" alt="Düğün anısı"><div id="publicPhotoGrid" class="public-photo-grid hidden" aria-live="polite"></div><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
 
-    <footer class="invite-footer"><span class="invite-brand">Luma</span><p><span id="footerEventName"></span><span id="footerDate"></span></p><small>Sevgiyle hazırlandı.</small></footer>
+    <footer class="invite-footer"><span class="invite-brand">Luma</span><p><span id="footerEventName"></span><span id="footerDate"></span></p><small>Sevgiyle hazırlandı.</small><nav class="legal-links" aria-label="Yasal metinler"><a href="/gizlilik">Gizlilik</a> · <a href="/aydinlatma">Aydınlatma Metni</a> · <a href="/kosullar">Kullanım Koşulları</a> · İletişim: <a href="mailto:kvkk@melisauyar.com">kvkk@melisauyar.com</a></nav></footer>
   </section>
 
   <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -270,7 +270,7 @@
   <script src="/js/rsvp-access.js?v=1"></script>
   <script src="/js/guest-access.js?v=1"></script>
   <script src="/js/slideshow-editor.js?v=3"></script>
-  <script src="/js/dietary-consent.js?v=1"></script>
+  <script src="/js/dietary-consent.js?v=2"></script>
   <script src="/js/invitation-colors.js?v=3"></script>
   <script src="/js/visual-layers.js?v=11"></script>
   <script src="/js/visual-editor.js?v=2"></script>
@@ -280,5 +280,5 @@
   <script src="/js/looks.js?v=1"></script>
   <script src="/js/wording.js?v=1"></script>
   <script src="/js/invite-sender.js?v=1"></script>
-  <script src="/js/main.js?v=whatsapp-1"></script></body>
+  <script src="/js/main.js?v=legal-9"></script></body>
 </html>

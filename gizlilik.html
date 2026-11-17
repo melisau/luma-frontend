@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gizlilik Politikası · Luma Event</title>
+  <meta name="description" content="Luma Event verileri ne kadar saklar, nasıl korur ve hangi tarayıcı depolamasını kullanır." />
+  <link rel="stylesheet" href="/css/legal.css?v=2" />
+</head>
+<body>
+  <header class="legal-top">
+    <a class="legal-brand" href="/">Luma</a>
+    <nav aria-label="Yasal metinler"><a href="/aydinlatma">Aydınlatma Metni</a><a href="/gizlilik" aria-current="page">Gizlilik Politikası</a><a href="/kosullar">Kullanım Koşulları</a></nav>
+  </header>
+  <main class="legal">
+    <p class="draft-note" id="draftNote">Taslak: bu metin avukat kontrolündedir ve kesinleşmemiştir. Sarı işaretli yerler henüz doldurulmadı.</p>
+    <h1>Gizlilik Politikası</h1>
+    <p class="updated">Son güncelleme: <mark class="todo">[tarih]</mark></p>
+    <p>Luma Event, düğün, nişan, doğum günü gibi etkinlikler için dijital davetiye ve misafir yönetimi sunar. Bu politika, verilerinizi ne kadar süre sakladığımızı, nasıl koruduğumuzu ve hangi tarayıcı depolama araçlarını kullandığımızı açıklar. Hangi verileri neden işlediğimiz ve haklarınız <a href="/aydinlatma">Aydınlatma Metni</a>'nde yer alır.</p>
+    <h2 id="saklama">1. Verileri ne kadar saklarız?</h2>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Veri</th><th scope="col">Saklama süresi</th></tr></thead><tbody><tr><td>Hesap bilgileri (ad, e-posta)</td><td>Hesap açık kaldığı sürece. Hesabınızı Ayarlar → Hesabımı sil ile sildiğinizde hemen silinir; e-postayla istediğinizde <mark class="todo">[30]</mark> gün içinde silinir.</td></tr><tr><td>Etkinlik ve misafir listesi</td><td>Etkinlik sahibi etkinliği silene kadar. Etkinlik silinince misafir bilgileri, yanıtlar, fotoğraflar ve mesajlar da silinir.</td></tr><tr><td>Beslenme bilgisi</td><td>Misafir alanı boşaltana veya etkinlik silinene kadar. Alan boşaltılınca bilgi ve rıza kaydı silinir.</td></tr><tr><td>Fotoğraflar ve anı defteri mesajları</td><td>Etkinlik sahibinin seçtiği saklama süresi dolunca otomatik silinir. Süre seçilmemişse etkinlik silinene kadar saklanır.</td></tr><tr><td>Tek kullanımlık e-posta bağlantıları (doğrulama, şifre sıfırlama)</td><td>30 dakika ile 24 saat arasında geçerlidir; kullanıldıktan sonra geçersiz olur.</td></tr><tr><td>Davetiye cihaz kayıtları ve e-posta kodları</td><td>Cihaz kaydı, etkinlik sahibi misafirin bağlantısını yenileyene veya etkinliği silene kadar; e-posta kodu 15 dakika geçerlidir ve kullanılınca silinir.</td></tr><tr><td>Deneme sayısı sınırı kayıtları (IP adresi)</td><td>En fazla 1 saat.</td></tr><tr><td>Sunucu istek kayıtları (log)</td><td><mark class="todo">[Süre: avukatla netleştirilecek, 5651 sayılı Kanun]</mark></td></tr><tr><td>Hata kayıtları (Sentry)</td><td><mark class="todo">[90 gün: Sentry ayarıyla netleştirilecek]</mark></td></tr><tr><td>Veritabanı ve fotoğraf yedekleri</td><td>14 gün. Silinen veriler sunucudaki ve sunucu dışındaki yedeklerden en geç 14 gün içinde kalkar.</td></tr></tbody></table></div>
+    <h2 id="koruma">2. Verilerinizi nasıl koruyoruz?</h2>
+    <ul><li>Site yalnızca şifreli bağlantıyla (HTTPS) çalışır.</li><li>Şifreler okunabilir halde saklanmaz; yalnızca geri döndürülemez özetleri tutulur.</li><li>Fotoğraflar herkese açık bir klasörde değil, özel bir depolama alanında tutulur ve yalnızca birkaç dakika geçerli imzalı bağlantılarla açılır.</li><li>Davetiyeler tahmin edilemeyen kişiye özel bağlantılarla açılır. Etkinlik sahibi ayrıca bir erişim kodu belirleyebilir.</li><li>Giriş, kayıt, katılım yanıtı ve yükleme işlemlerinde deneme sayısı sınırlanır.</li><li>Sunucu Türkiye'dedir (İstanbul). Her gece yedek alınır ve yedeklerin bir kopyası sunucu dışında saklanır.</li><li>Davetiye sayfaları ve fotoğraflar arama motorlarına kapalıdır.</li></ul>
+    <h2 id="cerezler">3. Çerezler ve tarayıcı depolaması</h2>
+    <p>Luma Event reklam, analiz veya takip çerezi kullanmaz. Yalnızca sitenin çalışması için zorunlu olan şu araçlar kullanılır; bunlar için onayınızı istemiyoruz:</p>
+    <div class="table-wrap"><table><thead><tr><th scope="col">Araç</th><th scope="col">Ne için</th><th scope="col">Ne kadar kalır</th></tr></thead><tbody><tr><td>Erişim kodu çerezi (luma_access_…)</td><td>Erişim kodu olan bir davetiyede kodu tekrar sormamak</td><td>12 saat</td></tr><tr><td>Davetiye cihaz çerezi (luma_guest_…)</td><td>Kişisel davetiye bağlantınızın bu cihazda açıldığını hatırlamak</td><td>180 gün</td></tr><tr><td>Fotoğraf yükleme çerezi (luma_upload_…)</td><td>Masadaki QR koddan açılan yükleme sayfasının çalışması</td><td>24 saat</td></tr><tr><td>Önizleme çerezi (luma_preview_…)</td><td>Etkinlik sahibinin davetiyeyi misafirler gibi görmesi</td><td>12 saat</td></tr><tr><td>Oturum depolaması (sessionStorage)</td><td>Etkinlik sahibinin giriş oturumu</td><td>Tarayıcı sekmesi kapanınca silinir</td></tr><tr><td>Yerel depolama (localStorage)</td><td>Dil ve görünüm tercihleri, misafirin kendi yanıtını düzenleyebilmesi</td><td>Siz silene kadar</td></tr></tbody></table></div>
+    <p>Sayfaların yazı tipleri kendi sunucumuzdan yüklenir; yazı tipi için Google Fonts gibi dış bir hizmete istek gönderilmez.</p>
+    <h2 id="cocuklar">4. Çocuklar</h2>
+    <p>Hesap açmak için 18 yaşını doldurmuş olmak gerekir. Misafirlerin yüklediği fotoğraflarda çocuklar yer alabilir; bu fotoğrafları paylaşırken velilerinin rızasını gözetmenizi rica ederiz. Bir fotoğrafın kaldırılmasını etkinlik sahibinden veya bizden isteyebilirsiniz.</p>
+    <h2 id="degisiklikler">5. Bu politikadaki değişiklikler</h2>
+    <p>Politikayı değiştirdiğimizde bu sayfadaki "Son güncelleme" tarihini yeniler, önemli değişiklikleri hesap sahiplerine e-postayla bildiririz.</p>
+    <h2 id="iletisim">6. İletişim</h2>
+    <p>Sorularınız ve talepleriniz için: <a href="mailto:kvkk@melisauyar.com">kvkk@melisauyar.com</a>.</p>
+  </main>
+  <footer class="legal-footer">
+    <a href="/gizlilik">Gizlilik</a> · <a href="/aydinlatma">Aydınlatma Metni</a> · <a href="/kosullar">Kullanım Koşulları</a> · İletişim: <a href="mailto:kvkk@melisauyar.com">kvkk@melisauyar.com</a>
+  </footer>
+</body>
+</html>

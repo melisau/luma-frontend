@@ -59,5 +59,5 @@ test('fonts, looks and colour scheme are wired into the pages',()=>{
  assert.match(css,/\.invitation\[data-font=modern\]/);assert.match(css,/\.invitation\[data-font=script\]/);
  assert.ok(app.indexOf('/js/looks.js')<app.indexOf('/js/main.js')&&app.indexOf('/js/wording.js')<app.indexOf('/js/main.js'));
  assert.match(app,/name="color-scheme" content="light only"/);
- assert.match(read('js/main.js'),/LumaLooks\.init\(\);\nLumaWording\.init\(\);/);
+ assert.match(read('js/main.js'),/LumaLooks\.init\(\);\r?\nLumaWording\.init\(\);/);
 });

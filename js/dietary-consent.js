@@ -5,7 +5,7 @@ window.LumaDietaryConsent = {
   droppedText: 'Beslenme bilginiz onay verilmediği için kaydedilmedi. Yanıtınızın geri kalanı kaydedildi.',
   plannerNote: 'Bu bilgiyi yalnızca misafirin onayıyla girin.',
   fieldMarkup() {
-    return `<div class="field full"><label for="rsvpDietary">BESLENME TERCİHİ VEYA ALERJİ (İSTEĞE BAĞLI)</label><textarea id="rsvpDietary" name="dietary_requirements" maxlength="1000" placeholder="Alerji, vejetaryen menü..."></textarea><small class="field-hint">Bu alanı doldurmak zorunda değilsiniz; katılım yanıtınız bundan etkilenmez.</small><label class="consent-check"><input type="checkbox" id="rsvpDietaryConsent" name="dietary_consent" value="yes"><span>${this.consentText} Ayrıntılar: Aydınlatma Metni.</span></label></div>`;
+    return `<div class="field full"><label for="rsvpDietary">BESLENME TERCİHİ VEYA ALERJİ (İSTEĞE BAĞLI)</label><textarea id="rsvpDietary" name="dietary_requirements" maxlength="1000" placeholder="Alerji, vejetaryen menü..."></textarea><small class="field-hint">Bu alanı doldurmak zorunda değilsiniz; katılım yanıtınız bundan etkilenmez.</small><label class="consent-check"><input type="checkbox" id="rsvpDietaryConsent" name="dietary_consent" value="yes"><span>${this.consentText} Ayrıntılar: <a href="/aydinlatma" target="_blank" rel="noopener">Aydınlatma Metni</a>.</span></label></div>`;
   },
   // Without consent the text is not sent at all; the server drops it as well.
   payload(text, consented) {

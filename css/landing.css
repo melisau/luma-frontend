@@ -8,3 +8,4 @@
 .language-switch{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid #25463b44;border-radius:10px;background:#fffaf3;margin-left:auto}.language-switch button{min-width:34px;min-height:30px;border:0;border-radius:7px;background:transparent;color:var(--forest);font:700 11px var(--sans);letter-spacing:.06em}.language-switch button[aria-pressed="true"]{background:var(--forest);color:var(--cream)}.language-switch button:focus-visible{outline-offset:2px}
 @media(max-width:800px){.language-switch{margin-left:auto}.header-cta{margin-left:0}}
 @media(max-width:480px){.header-cta{display:none}}
+.site-footer{flex-wrap:wrap}.site-footer .legal-links{order:4;flex-basis:100%;font-size:14px;line-height:1.8;opacity:.8}.site-footer .legal-links a{color:inherit}
