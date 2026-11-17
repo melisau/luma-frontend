@@ -64,7 +64,7 @@ window.LumaEventData = {
   async load(token, { admin = false } = {}) {
     const sequence=++this.loadSequence;
     this.cache={guests:[],messages:[],invitation:null,activities:[],event:null};
-    this.lastError='';this.loadErrors=[];this.accessRequired=false;
+    this.lastError='';this.loadErrors=[];this.accessRequired=false;this.personalRequired=false;
     if(!token){this.lastError='Etkinlik seçilmedi.';return false}
     const headers=this.authHeaders(admin),base=`${LumaConfig.apiBase}/api/${admin?'admin/':''}events/${encodeURIComponent(token)}`;
     const paths=admin?['invitation','guests','messages','activities']:['invitation','messages',''];
@@ -74,11 +74,13 @@ window.LumaEventData = {
         if(result.status!=='fulfilled')return {error:'Bağlantı kurulamadı. İnternetinizi ve API bağlantısını kontrol edin.'};
         const response=result.value;
         if(response.status===423)return {error:'Bu davetiye için erişim kodu gerekiyor.',locked:true};
+        if(response.status===401&&response.headers.get('X-Luma-Access')==='personal')return {error:'Bu davetiye kişiye özeldir. Lütfen size gönderilen kişisel bağlantıyı açın; bağlantıyı başkasıyla paylaştıysanız etkinlik sahibinden yenisini isteyin.',personal:true};
         if(!response.ok)return {error:response.status===401?'Oturumunuz sona ermiş. Lütfen tekrar giriş yapın.':[403,404].includes(response.status)?'Davetiye bulunamadı veya artık erişime açık değil.':'Bilgiler yüklenemedi. Lütfen tekrar deneyin.'};
         try{return {data:await response.json()}}catch{return {error:'Sunucudan geçerli bir yanıt alınamadı.'}}
       }));
       if(sequence!==this.loadSequence)return false;
       this.accessRequired=Boolean(bodies.some(body=>body.locked));
+      this.personalRequired=Boolean(bodies.some(body=>body.personal));
       if(bodies[0].error||(!admin&&bodies[2].error)){this.lastError=bodies[0].error||bodies[2].error;return false}
       const next={guests:[],messages:[],invitation:this.normalizeInvitation(bodies[0].data),activities:[],event:null};
       if(admin){
@@ -455,6 +457,8 @@ window.LumaEventData = {
       rsvp_reminder_sent_at: event.rsvp_reminder_sent_at,
       album_public: event.album_public,
       access_code_enabled: event.access_code_enabled,
+      invite_mode: event.invite_mode || 'open',
+      upload_key: event.upload_key || null,
       role: event.role || 'owner',
       is_active: event.is_active,
     };
