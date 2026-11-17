@@ -300,10 +300,14 @@ function approvedMessageCount(messages){return messages.filter(item=>!item.statu
 function normalizedEmail(value){return value.trim().toLocaleLowerCase('tr-TR')}
 function renderGuestTable(){
   const data=readData(),query=(document.getElementById('guestSearchInput').value||'').trim().toLocaleLowerCase('tr-TR');
-  const counts={all:data.guests.length,attending:0,declined:0,pending:0,external:0};data.guests.forEach(g=>{counts[g.status]++;if(g.source==='external')counts.external++});
-  ['All','Attending','Declined','Pending','External'].forEach(key=>document.getElementById(`filter${key}Count`).textContent=counts[key.toLowerCase()]);
-  const visible=data.guests.filter(g=>(activeGuestFilter==='all'||g.status===activeGuestFilter||activeGuestFilter==='external'&&g.source==='external')&&(!query||`${g.name} ${g.email} ${g.group_name||''} ${g.table_name||''}`.toLocaleLowerCase('tr-TR').includes(query)));
-  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small>${g.dietary_requirements?`<small>Beslenme: ${escapeHtml(g.dietary_requirements)}</small>`:''}${g.notes?`<small>Not: ${escapeHtml(g.notes)}</small>`:''}</div></td><td>${escapeHtml(g.group_name||'—')}<br><small>${escapeHtml(g.table_name||'—')}</small></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions"><button type="button" class="guest-edit" data-rsvp-link="${g.id}">Kişisel link${currentEventMeta().invite_mode==='personal'&&g.device_count?` · ${g.device_count} cihaz`:''}</button><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
+  const personal=currentEventMeta().invite_mode==='personal';
+  const counts={all:data.guests.length,attending:0,declined:0,pending:0,external:0,unopened:0};data.guests.forEach(g=>{counts[g.status]++;if(g.source==='external')counts.external++;if(LumaInviteSender.needsReminder(g))counts.unopened++});
+  ['All','Attending','Declined','Pending','External','Unopened'].forEach(key=>{const el=document.getElementById(`filter${key}Count`);if(el)el.textContent=counts[key.toLowerCase()]});
+  document.querySelector('#guestFilters [data-filter="unopened"]')?.classList.toggle('hidden',!personal);document.querySelectorAll('.invite-col').forEach(el=>el.classList.toggle('hidden',!personal));
+  if(!personal&&activeGuestFilter==='unopened')activeGuestFilter='all';
+  const visible=data.guests.filter(g=>(activeGuestFilter==='all'||g.status===activeGuestFilter||activeGuestFilter==='external'&&g.source==='external'||activeGuestFilter==='unopened'&&LumaInviteSender.needsReminder(g))&&(!query||`${g.name} ${g.email} ${g.phone||''} ${g.group_name||''} ${g.table_name||''}`.toLocaleLowerCase('tr-TR').includes(query)));
+  const body=document.getElementById('guestTableBody'),empty=document.getElementById('guestEmptyState');body.innerHTML=visible.map(g=>`<tr><td><div class="guest-identity"><strong>${escapeHtml(g.name)}</strong><small>${escapeHtml(g.email)}</small>${g.phone?`<small>${escapeHtml(g.phone)}</small>`:''}${g.dietary_requirements?`<small>Beslenme: ${escapeHtml(g.dietary_requirements)}</small>`:''}${g.notes?`<small>Not: ${escapeHtml(g.notes)}</small>`:''}</div></td><td>${escapeHtml(g.group_name||'—')}<br><small>${escapeHtml(g.table_name||'—')}</small></td><td><span class="status-badge status-${g.status}">${statusLabels[g.status]}</span></td><td class="invite-col${personal?'':' hidden'}">${LumaInviteSender.badge(g,escapeHtml)}</td><td><span class="source-badge source-${g.source}">${g.source==='external'?'Davet linkinden':'Yönetici ekledi'}</span></td><td>${g.people||1}</td><td><div class="guest-row-actions">${personal?`<button type="button" class="guest-edit guest-whatsapp" data-whatsapp="${g.id}" title="${g.phone?'WhatsApp ile gönder':'WhatsApp açılır, kişiyi siz seçersiniz'}">WhatsApp</button>`:''}<button type="button" class="guest-edit" data-rsvp-link="${g.id}">Kişisel link${currentEventMeta().invite_mode==='personal'&&g.device_count?` · ${g.device_count} cihaz`:''}</button><button type="button" class="guest-edit" data-edit-guest="${g.id}">Düzenle</button><button type="button" class="guest-delete" data-delete-guest="${g.id}" aria-label="Misafiri sil">×</button></div></td></tr>`).join('');empty.classList.toggle('hidden',visible.length>0);
+  body.querySelectorAll('[data-whatsapp]').forEach(button=>button.onclick=()=>sendInviteWhatsApp(readData().guests.find(g=>g.id===button.dataset.whatsapp)));
   body.querySelectorAll('[data-rsvp-link]').forEach(button=>button.onclick=()=>openRsvpLink(readData().guests.find(g=>g.id===button.dataset.rsvpLink)));
   body.querySelectorAll('[data-edit-guest]').forEach(button=>button.onclick=()=>openGuestEditor(readData().guests.find(guest=>guest.id===button.dataset.editGuest)));
   body.querySelectorAll('[data-delete-guest]').forEach(button=>button.onclick=async()=>{try{await LumaEventData.deleteGuest(currentEventToken(),button.dataset.deleteGuest);await refreshGuestViews();toast('Misafir listeden kaldırıldı.')}catch{toast('Misafir silinemedi.')}});
@@ -316,13 +320,14 @@ function openGuestEditor(guest){
   const form=document.getElementById('guestEditForm');
   const dietary=form.elements.dietary_requirements.closest('.field');
   const seating=document.createElement('div');seating.className='field full';seating.innerHTML='<label>GRUP / MASA</label><div class="form-grid"><input name="group_name" maxlength="255" placeholder="Grup"><input name="table_name" maxlength="255" placeholder="Masa"></div>';dietary.before(seating);
+  const phoneField=document.createElement('div');phoneField.className='field full';phoneField.innerHTML='<label for="edit-guestPhone">TELEFON (WHATSAPP İÇİN, İSTEĞE BAĞLI)</label><input id="edit-guestPhone" name="phone" type="tel" inputmode="tel" maxlength="32" placeholder="0532 123 45 67" autocomplete="tel">';seating.before(phoneField);
   form.guestName.value=guest.name;
   form.guestEmail.value=guest.email;
   form.guestStatus.value=guest.status;
   form.guestPeople.value=guest.people||1;
   form.elements.dietary_requirements.value=guest.dietary_requirements||"";
   form.elements.notes.value=guest.notes||"";
-  form.elements.group_name.value=guest.group_name||"";form.elements.table_name.value=guest.table_name||"";
+  form.elements.group_name.value=guest.group_name||"";form.elements.table_name.value=guest.table_name||"";form.elements.phone.value=guest.phone||"";
   modal.classList.remove('hidden');
   form.onsubmit=async e=>{
     e.preventDefault();
@@ -339,6 +344,7 @@ function openGuestEditor(guest){
         notes:form.elements.notes.value.trim(),
         group_name:form.elements.group_name.value.trim(),
         table_name:form.elements.table_name.value.trim(),
+        phone:form.elements.phone.value.trim(),
       });
       await refreshGuestViews();
       modal.classList.add('hidden');
@@ -409,7 +415,7 @@ function downloadCalendarEvent(){
   URL.revokeObjectURL(url);
   toast('Takvim dosyası indirildi.');
 }
-document.getElementById('addGuestForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('guestNameInput').value.trim(),email=normalizedEmail(document.getElementById('guestEmailInput').value);const token=await ensureEventToken();if(!token){toast('Misafir eklemek için önce giriş yapın ve üstten bir etkinlik seçin.');return}try{await LumaEventData.createGuest(token,{name,email,status:'pending',people:1,source:'admin',group_name:document.getElementById('guestGroupInput').value.trim(),table_name:document.getElementById('guestTableInput').value.trim()});form.reset();await refreshGuestViews();await refreshActivities();toast('Misafir eklendi ve cevap bekleniyor listesine alındı.')}catch(err){toast(err.message||'Misafir eklenemedi.')}};
+document.getElementById('addGuestForm').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget;const name=document.getElementById('guestNameInput').value.trim(),email=normalizedEmail(document.getElementById('guestEmailInput').value);const token=await ensureEventToken();if(!token){toast('Misafir eklemek için önce giriş yapın ve üstten bir etkinlik seçin.');return}try{await LumaEventData.createGuest(token,{name,email,status:'pending',people:1,source:'admin',group_name:document.getElementById('guestGroupInput').value.trim(),table_name:document.getElementById('guestTableInput').value.trim(),phone:document.getElementById('guestPhoneInput').value.trim()});form.reset();await refreshGuestViews();await refreshActivities();toast('Misafir eklendi ve cevap bekleniyor listesine alındı.')}catch(err){toast(err.message||'Misafir eklenemedi.')}};
 document.querySelectorAll('#guestFilters [data-filter]').forEach(button=>button.onclick=()=>{activeGuestFilter=button.dataset.filter;document.querySelectorAll('#guestFilters button').forEach(x=>x.classList.toggle('active',x===button));renderGuestTable()});
 document.getElementById('guestSearchInput').addEventListener('input',renderGuestTable);
 document.getElementById('copyInviteLinkBtn').onclick=async()=>{if(currentEventMeta().invite_mode==='personal'){toast('Bu davetiye kişiye özel: her misafirin bağlantısını listedeki "Kişisel link" düğmesinden kopyalayın.');return}const link=LumaConfig.inviteUrl(currentEventToken());try{await navigator.clipboard.writeText(link);toast('Bu etkinliğe özel davet bağlantısı kopyalandı.')}catch{window.prompt('Etkinliğe özel davet bağlantısını kopyalayın:',link)}};
@@ -1067,10 +1073,14 @@ async function openPersonalLink(guest){
   modal.classList.remove('hidden');
   const token=await ensureEventToken(),body=document.getElementById('personalLinkBody');
   const render=data=>{
-    body.innerHTML='<input id="personalLinkUrl" readonly aria-label="Kişisel davet bağlantısı" style="width:100%"><p id="personalLinkDevices"></p><div class="personal-link-actions"><button type="button" id="copyPersonalLink" class="create-btn">Bağlantıyı kopyala</button><button type="button" id="resetPersonalLink" class="ghost-btn">Bağlantıyı yenile</button></div><p class="personal-link-note">Yenilerseniz eski bağlantı ve onunla açılmış cihazlar hemen çalışmaz; misafire yeni bağlantıyı göndermeniz gerekir.</p>';
+    body.innerHTML='<input id="personalLinkUrl" readonly aria-label="Kişisel davet bağlantısı" style="width:100%"><p id="personalLinkDevices"></p><label class="invite-message-field"><span>WHATSAPP MESAJI</span><textarea id="inviteMessageTemplate" rows="4" maxlength="1000"></textarea><small>{ad}, {etkinlik} ve {bağlantı} kendiliğinden doldurulur. Mesaj bu cihazda bu etkinlik için saklanır.</small></label><p id="inviteSentState" class="personal-link-note"></p><div class="personal-link-actions"><button type="button" id="whatsappPersonalLink" class="create-btn whatsapp-btn">WhatsApp\'tan gönder</button><button type="button" id="copyPersonalLink" class="ghost-btn">Bağlantıyı kopyala</button><button type="button" id="resetPersonalLink" class="ghost-btn">Bağlantıyı yenile</button></div><p class="personal-link-note">Yenilerseniz eski bağlantı ve onunla açılmış cihazlar hemen çalışmaz; misafire yeni bağlantıyı göndermeniz gerekir.</p>';
     document.getElementById('personalLinkUrl').value=data.url;
     document.getElementById('personalLinkDevices').textContent=`${data.device_count?`${data.device_count} cihazda açıldı.`:'Henüz açılmadı.'} İlk ${data.device_allowance} cihaz bağlantıyla doğrudan açılır; sonrası misafirin e-postasına gelen kodla.`;
-    document.getElementById('copyPersonalLink').onclick=async e=>{try{await navigator.clipboard.writeText(data.url);e.currentTarget.textContent='Kopyalandı'}catch{document.getElementById('personalLinkUrl').select();e.currentTarget.textContent='Seçip kopyalayın'}};
+    const templateInput=document.getElementById('inviteMessageTemplate');templateInput.value=LumaInviteSender.template(currentEventId());
+    templateInput.oninput=()=>LumaInviteSender.saveTemplate(currentEventId(),templateInput.value);
+    const sentState=()=>{const current=readData().guests.find(g=>g.id===guest.id)||guest;document.getElementById('inviteSentState').textContent=`Durum: ${LumaInviteSender.STATUS_LABELS[LumaInviteSender.status(current)]}${current.invite_sent_at?` · son gönderim ${new Date(current.invite_sent_at).toLocaleString('tr-TR',{dateStyle:'short',timeStyle:'short'})}`:''}${current.phone?'':' · Telefon eklemediyseniz WhatsApp açılınca kişiyi siz seçersiniz.'}`};sentState();
+    document.getElementById('whatsappPersonalLink').onclick=()=>sendInviteWhatsApp(readData().guests.find(g=>g.id===guest.id)||guest,templateInput.value).then(sentState);
+    document.getElementById('copyPersonalLink').onclick=async e=>{const button=e.currentTarget;const text=LumaInviteSender.message(templateInput.value,{name:guest.name,eventName:currentEventMeta().name,url:data.url});try{await navigator.clipboard.writeText(text);button.textContent='Mesaj kopyalandı';LumaInviteSender.markSent(token,guest.id).then(()=>refreshGuestViews()).then(sentState).catch(()=>{})}catch{document.getElementById('personalLinkUrl').select();button.textContent='Seçip kopyalayın'}};
     document.getElementById('resetPersonalLink').onclick=async e=>{
       if(!confirm(`${guest.name} için yeni bağlantı oluşturulsun mu? Eski bağlantı hemen çalışmaz.`))return;
       e.currentTarget.disabled=true;
@@ -1078,6 +1088,11 @@ async function openPersonalLink(guest){
     };
   };
   try{render(await LumaGuestAccess.adminLink(token,guest.id))}catch(error){body.textContent=error.message}
+}
+
+async function sendInviteWhatsApp(guest,template){
+  if(!guest)return;
+  try{await LumaInviteSender.send(guest,{eventToken:await ensureEventToken(),eventId:currentEventId(),eventName:currentEventMeta().name,template,refresh:refreshGuestViews});toast('WhatsApp açıldı. Mesajı gönderdiğinizde misafir “Gönderildi” olarak görünür.')}catch(error){toast(error.message||'WhatsApp açılamadı.')}
 }
 
 // Guests: the owner's slide show, when shared and not empty.

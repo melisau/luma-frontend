@@ -10,7 +10,7 @@
   <meta name="referrer" content="no-referrer" />
   <title>Luma — Anılarınız tek bir yerde</title>
   <link rel="stylesheet" href="/css/fonts.css?v=2">
-  <link rel="stylesheet" href="/css/styles.css?v=81" />
+  <link rel="stylesheet" href="/css/styles.css?v=82" />
   <link rel="stylesheet" href="/css/visual-select.css?v=1" />
   <link rel="stylesheet" href="/css/visual-editor.css?v=2" />
   <link rel="stylesheet" href="/css/invitation-progress.css?v=4" />
@@ -145,8 +145,8 @@
       <div class="content hidden" id="guestsView">
         <div class="editor-heading"><div><p class="eyebrow">MİSAFİR YÖNETİMİ</p><h1>Davetli listesi</h1><p>Misafirleri ekleyin, davet bağlantısını paylaşın ve katılım yanıtlarını izleyin.</p></div><button type="button" id="exportGuestsBtn" class="ghost-btn">CSV indir</button><button id="copyInviteLinkBtn" class="ghost-btn"><i data-icon="arrow"></i>Davet linkini kopyala</button></div>
         <section class="guest-manager">
-          <form id="addGuestForm" class="add-guest-form"><div><h2>Yeni misafir ekle</h2><p>Grup ve masa bilgisi isteğe bağlıdır.</p></div><label><span>KAYITLI KİŞİ</span><select id="savedContactSelect"><option value="">Kişi seçin (isteğe bağlı)</option></select></label><label><span>AD SOYAD</span><input id="guestNameInput" required autocomplete="name"></label><label><span>E-POSTA</span><input id="guestEmailInput" required type="email" autocomplete="email"></label><label><span>GRUP</span><input id="guestGroupInput" placeholder="Aile, iş arkadaşları..."></label><label><span>MASA</span><input id="guestTableInput" placeholder="Masa 4"></label><button class="create-btn" type="submit">Misafir Ekle</button></form>
-          <div class="guest-list-panel"><div class="guest-toolbar"><div id="guestFilters" class="guest-filters"><button class="active" data-filter="all">Tümü <span id="filterAllCount">0</span></button><button data-filter="attending">Gelecek <span id="filterAttendingCount">0</span></button><button data-filter="declined">Gelmeyecek <span id="filterDeclinedCount">0</span></button><button data-filter="pending">Cevap bekleniyor <span id="filterPendingCount">0</span></button><button data-filter="external">Linkten gelen <span id="filterExternalCount">0</span></button></div><label class="guest-search"><i data-icon="users"></i><input id="guestSearchInput" type="search" placeholder="İsim, e-posta, grup veya masa ara"></label></div><div class="guest-table-wrap"><table class="guest-table"><thead><tr><th>MİSAFİR</th><th>GRUP / MASA</th><th>DURUM</th><th>KAYNAK</th><th>KİŞİ</th><th></th></tr></thead><tbody id="guestTableBody"></tbody></table><div id="guestEmptyState" class="guest-empty">Henüz misafir eklenmedi.</div></div></div>
+          <form id="addGuestForm" class="add-guest-form"><div><h2>Yeni misafir ekle</h2><p>Grup ve masa bilgisi isteğe bağlıdır.</p></div><label><span>KAYITLI KİŞİ</span><select id="savedContactSelect"><option value="">Kişi seçin (isteğe bağlı)</option></select></label><label><span>AD SOYAD</span><input id="guestNameInput" required autocomplete="name"></label><label><span>E-POSTA</span><input id="guestEmailInput" required type="email" autocomplete="email"></label><label><span>GRUP</span><input id="guestGroupInput" placeholder="Aile, iş arkadaşları..."></label><label><span>MASA</span><input id="guestTableInput" placeholder="Masa 4"></label><label><span>TELEFON (WHATSAPP)</span><input id="guestPhoneInput" type="tel" inputmode="tel" maxlength="32" placeholder="0532 123 45 67" autocomplete="tel"></label><button class="create-btn" type="submit">Misafir Ekle</button></form>
+          <div class="guest-list-panel"><div class="guest-toolbar"><div id="guestFilters" class="guest-filters"><button class="active" data-filter="all">Tümü <span id="filterAllCount">0</span></button><button data-filter="attending">Gelecek <span id="filterAttendingCount">0</span></button><button data-filter="declined">Gelmeyecek <span id="filterDeclinedCount">0</span></button><button data-filter="pending">Cevap bekleniyor <span id="filterPendingCount">0</span></button><button data-filter="external">Linkten gelen <span id="filterExternalCount">0</span></button><button data-filter="unopened" class="hidden" title="Davetiyeyi henüz açmamış ve yanıt vermemiş misafirler">Açmadı <span id="filterUnopenedCount">0</span></button></div><label class="guest-search"><i data-icon="users"></i><input id="guestSearchInput" type="search" placeholder="İsim, e-posta, grup veya masa ara"></label></div><div class="guest-table-wrap"><table class="guest-table"><thead><tr><th>MİSAFİR</th><th>GRUP / MASA</th><th>DURUM</th><th class="invite-col hidden">DAVET</th><th>KAYNAK</th><th>KİŞİ</th><th></th></tr></thead><tbody id="guestTableBody"></tbody></table><div id="guestEmptyState" class="guest-empty">Henüz misafir eklenmedi.</div></div></div>
         </section>
       </div>
 
@@ -258,7 +258,7 @@
   </div>
   <script src="/js/config.runtime.js?v=1"></script>
   <script src="/js/config.js?v=8"></script>
-  <script src="/js/event-data.js?v=personal-2"></script>
+  <script src="/js/event-data.js?v=whatsapp-1"></script>
   <script src="/js/upload.js?v=10"></script>
   <script src="/js/gallery.js?v=6"></script>
   <script src="/js/qr.js?v=5"></script>
@@ -279,5 +279,6 @@
   <script src="/js/editor-preview.js?v=6"></script>
   <script src="/js/looks.js?v=1"></script>
   <script src="/js/wording.js?v=1"></script>
-  <script src="/js/main.js?v=legal-8"></script></body>
+  <script src="/js/invite-sender.js?v=1"></script>
+  <script src="/js/main.js?v=legal-9"></script></body>
 </html>
