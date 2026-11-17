@@ -36,6 +36,7 @@ window.LumaCeremony={
     </div></div>`;
     LumaEnvelope.applyAppearance(layer,appearance,name);
     layer.dataset.hand=window.LumaPresentation?.current?.opening_hand==='witch'?'witch':'gloved';
+    layer.dataset.font=window.LumaPresentation?.current?.font||'classic';
     const backdropColor=window.LumaPresentation?.current?.opening_background_color;
     if(/^#[0-9a-f]{6}$/i.test(backdropColor||""))layer.querySelector(".s1-stage").style.background=backdropColor;
     const openingBackground=window.LumaVisualLayers?.openingBackground;

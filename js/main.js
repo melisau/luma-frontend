@@ -738,6 +738,8 @@ document.getElementById('contactForm').onsubmit=async e=>{e.preventDefault();con
 function ensureMemoryCopyFields(){if(document.getElementById('contentMemoryTitle'))return;const grid=document.querySelector('.memory-preset-grid');grid.closest('.editor-panel').querySelector('h2').textContent='Anı bölümü';const fields=document.createElement('div');fields.className='content-fields';fields.innerHTML='<label class="editor-field full"><span>ANI BÖLÜMÜ BAŞLIĞI</span><input id="contentMemoryTitle" maxlength="255" placeholder="Örn. Gözünden bu güzel gece"></label><label class="editor-field full"><span>ANI BÖLÜMÜ AÇIKLAMASI</span><textarea id="contentMemoryText" maxlength="2000" placeholder="Fotoğraf paylaşım çağrınızı yazın"></textarea></label>';grid.before(fields)}
 ensureMemoryCopyFields();
 LumaInvitationColors.init();
+LumaLooks.init();
+LumaWording.init();
 LumaVisualLayers.init();
 LumaPresentation.init();
 LumaEditorPreview.init();
