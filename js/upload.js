@@ -59,11 +59,29 @@ window.LumaUpload = {
           const detail = JSON.parse(xhr.responseText).detail;
           if (typeof detail === 'string') message = detail;
         } catch {}
-        reject(new Error(message));
+        const error = new Error(message);
+        error.status = xhr.status;
+        error.retryAfter = Number(xhr.getResponseHeader('Retry-After')) || 0;
+        reject(error);
       };
       xhr.onerror = () => reject(new Error('Bağlantı hatası. Lütfen tekrar deneyin.'));
       xhr.send(formData);
     });
+  },
+
+  // A busy venue (everyone on one Wi-Fi) can hit the server's per-minute limit; wait as the
+  // server asks and try again instead of failing the guest's upload.
+  async uploadWithRetry(send, onWait, wait = ms => new Promise(resolve => setTimeout(resolve, ms)), attempts = 4) {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await send();
+      } catch (error) {
+        if (error.status !== 429 || attempt >= attempts) throw error;
+        const seconds = Math.min(30, Math.max(3, error.retryAfter || 5));
+        if (onWait) onWait(seconds);
+        await wait(seconds * 1000);
+      }
+    }
   },
 
   bindUploadForm(form, onComplete) {
@@ -174,10 +192,16 @@ window.LumaUpload = {
       progressBar.style.width = '0%';
 
       try {
-        const result = await this.uploadPhotos(token, files, uploaderName, caption, percent => {
-          progressBar.style.width = `${percent}%`;
-          statusBox.textContent = `Yükleniyor... ${percent}%`;
-        });
+        const result = await this.uploadWithRetry(
+          () => this.uploadPhotos(token, files, uploaderName, caption, percent => {
+            progressBar.style.width = `${percent}%`;
+            statusBox.textContent = `Yükleniyor... ${percent}%`;
+          }),
+          seconds => {
+            progressBar.style.width = '0%';
+            statusBox.textContent = `Şu an çok sayıda fotoğraf yükleniyor; ${seconds} saniye sonra kendiliğinden yeniden denenecek...`;
+          }
+        );
         const resultMessage=`${result.uploaded.length} fotoğraf gönderildi.${result.duplicates_skipped ? ` ${result.duplicates_skipped} yinelenen fotoğraf atlandı.` : ''}`;
         progressBar.style.width = '100%';
         statusBox.classList.add('hidden');
