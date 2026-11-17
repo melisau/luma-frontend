@@ -1,0 +1,36 @@
+/* Font pairs (presentation.font). The invitation uses var(--serif) for its display type. */
+.invitation[data-font=modern],.luxury-opening[data-font=modern]{--serif:'Playfair Display',Georgia,serif}
+.invitation[data-font=clean],.luxury-opening[data-font=clean]{--serif:'Manrope',Arial,sans-serif}
+.invitation[data-font=clean] .hero-copy h1{letter-spacing:-1px;font-weight:600}
+.invitation[data-font=script] .hero-copy h1,.invitation[data-font=script] .signature,.luxury-opening[data-font=script] .opening-name{font-family:'Great Vibes','Cormorant Garamond',cursive;font-weight:400;letter-spacing:0}
+.invitation[data-font=script] .hero-copy h1 i{font-style:normal}
+
+/* Ready-made looks panel */
+.looks-panel .look-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.look-option{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:8px 8px 10px;border:1px solid #e3ded4;border-radius:10px;background:#fff;text-align:left;cursor:pointer}
+.look-option:hover,.look-option:focus-visible{border-color:#25463B;outline:none}
+.look-option.selected{border-color:#25463B;box-shadow:0 0 0 2px #25463B33}
+.look-option strong{font-size:12px;margin-top:6px}
+.look-option small{font-size:10px;line-height:1.4;color:#7a7c75}
+.look-badge{position:absolute;top:6px;right:6px;font-size:9px;letter-spacing:.4px;background:#25463B;color:#fff;border-radius:999px;padding:2px 7px}
+.look-swatch{display:flex;width:100%;height:70px;border-radius:7px;overflow:hidden}
+.look-envelope{position:relative;flex:0 0 42%;display:block}
+.look-envelope i{position:absolute;left:0;right:0;top:44%;height:7px}
+.look-card{flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:6px 8px}
+.look-card b{font-size:22px;line-height:1;font-weight:500}
+.look-card em{display:block;height:5px;border-radius:3px}
+.look-font-classic{font-family:'Cormorant Garamond',Georgia,serif}
+.look-font-modern{font-family:'Playfair Display',Georgia,serif}
+.look-font-script{font-family:'Great Vibes',cursive;font-weight:400!important}
+.look-font-clean{font-family:'Manrope',Arial,sans-serif;font-weight:600!important}
+.look-status{font-size:11px;color:#4d5049;min-height:1em;margin:10px 0 0}
+.font-field{margin-top:12px}
+
+/* Ready-made wording */
+.wording-btn{margin:6px 0 4px;grid-column:1/-1;justify-self:start}
+.wording-help{font-size:11px;color:#6f726a}
+.wording-list{display:grid;gap:10px;margin-top:12px;max-height:55vh;overflow:auto}
+.wording-card{border:1px solid #e3ded4;border-radius:8px;padding:12px 14px;background:#fff}
+.wording-card small{display:block;font-size:10px;letter-spacing:.4px;color:#8a8a82}
+.wording-card strong{display:block;font-family:var(--serif);font-size:20px;font-weight:500;margin:4px 0}
+.wording-card p{font-size:12px;line-height:1.6;color:#4d5049;margin:0 0 10px}

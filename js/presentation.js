@@ -1,7 +1,7 @@
 /* Optional paper stationery and event-owner photo exhibitions. */
 window.LumaPresentation={
   confirmations:{appearance:false,colors:false},
-  defaults:{opening_hand:'gloved',paper_style:'none',paper_texture:'cotton',paper_color:'#F5F0E6',paper_text:'#354634',paper_target:'details',photo_layout:'stacked',photo_columns:2,section_transition:'none',transition_target:'all',transition_color:'#F5F0E6',opening_background_color:'',button_radius:null},
+  defaults:{event_type:'wedding',font:'classic',look:'',opening_hand:'gloved',paper_style:'none',paper_texture:'cotton',paper_color:'#F5F0E6',paper_text:'#354634',paper_target:'details',photo_layout:'stacked',photo_columns:2,section_transition:'none',transition_target:'all',transition_color:'#F5F0E6',opening_background_color:'',button_radius:null},
   init(){
     const panel=document.createElement('section');panel.className='editor-panel presentation-panel';
     const options=values=>Object.entries(values).map(([value,label])=>`<option value="${value}">${label}</option>`).join('');
@@ -25,7 +25,7 @@ window.LumaPresentation={
     document.getElementById('openingStyle').addEventListener('change',()=>this.preview());
     this.fillEditor({});
   },
-  fillEditor(settings={}){const data={...this.defaults,...settings};this.confirmations={appearance:settings.appearance_confirmed===true,colors:settings.colors_confirmed===true};document.querySelectorAll('[data-presentation]').forEach(input=>input.value=data[input.dataset.presentation]);this.preview();window.LumaInvitationProgress?.render()},
+  fillEditor(settings={}){const data={...this.defaults,...settings};this.confirmations={appearance:settings.appearance_confirmed===true,colors:settings.colors_confirmed===true};document.querySelectorAll('[data-presentation]').forEach(input=>input.value=data[input.dataset.presentation]);this.preview();window.LumaInvitationProgress?.render();window.LumaLooks?.render()},
   readEditor(){return {...Object.fromEntries([...document.querySelectorAll('[data-presentation]')].map(input=>[input.dataset.presentation,input.dataset.presentation==='photo_columns'?Number(input.value):input.dataset.presentation==='button_radius'?(input.value===''?null:Math.min(999,Math.max(0,Number(input.value)))):input.value])),editor_saved:true,appearance_confirmed:this.confirmations.appearance,colors_confirmed:this.confirmations.colors}},
   decorate(target,data){target.dataset.paper=data.paper_style;target.dataset.paperTexture=data.paper_texture;target.style.setProperty('--paper-color',/^#[0-9a-f]{6}$/i.test(data.paper_color)?data.paper_color:this.defaults.paper_color);target.style.setProperty('--paper-ink',/^#[0-9a-f]{6}$/i.test(data.paper_text)?data.paper_text:this.defaults.paper_text)},
   preview(){const data=this.readEditor();const preset=document.getElementById('buttonRadiusPreset');const radius=data.button_radius===null?'':String(data.button_radius);preset.value=['','0','8','16','999'].includes(radius)?radius:'custom';document.getElementById('openingBackgroundPicker').value=/^#[0-9a-f]{6}$/i.test(data.opening_background_color||'')?data.opening_background_color:'#17352B';const sample=document.querySelector('.paper-sample');this.decorate(sample,data);sample.classList.toggle('hidden',data.paper_style==='none');
@@ -39,6 +39,7 @@ window.LumaPresentation={
     window.LumaEditorPreview?.schedule()},
   apply(settings={}){
     const data={...this.defaults,...settings};this.current=data;
+    const invitationEl=document.getElementById('invitation');if(invitationEl)invitationEl.dataset.font=['classic','modern','script','clean'].includes(data.font)?data.font:'classic';
     for(const el of [document.getElementById('invitation'),document.getElementById('modal')]){if(!el)continue;if(data.button_radius!==null&&Number.isFinite(Number(data.button_radius))){el.dataset.buttonRadius='custom';el.style.setProperty('--invite-button-radius',Math.min(999,Math.max(0,Number(data.button_radius)))+'px')}else{delete el.dataset.buttonRadius;el.style.removeProperty('--invite-button-radius')}}
     document.querySelectorAll('#invitation .invitation-paper').forEach(el=>{el.classList.remove('invitation-paper');delete el.dataset.paper;delete el.dataset.paperTexture;el.style.removeProperty('--paper-color');el.style.removeProperty('--paper-ink')});
     if(data.paper_style!=='none'){
