@@ -9,7 +9,7 @@
   <meta name="referrer" content="no-referrer" />
   <title>Luma — Anılarınız tek bir yerde</title>
   <link rel="stylesheet" href="/css/fonts.css?v=1">
-  <link rel="stylesheet" href="/css/styles.css?v=76" />
+  <link rel="stylesheet" href="/css/styles.css?v=79" />
   <link rel="stylesheet" href="/css/visual-select.css?v=1" />
   <link rel="stylesheet" href="/css/visual-editor.css?v=2" />
   <link rel="stylesheet" href="/css/invitation-progress.css?v=4" />
@@ -149,7 +149,7 @@
       </div>
 
       <div class="content hidden" id="galleryView">
-        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ GALERİSİ</p><h1>Misafirlerden gelen görseller</h1><p>Yüklenen fotoğrafları onaylayın veya gizleyin. Yalnızca onaylı görseller misafirlere görünür.</p></div><button id="downloadAlbumBtn" class="ghost-btn">Albümü indir (ZIP)</button><button id="favoriteFilterBtn" class="ghost-btn" aria-pressed="false">☆ Yalnızca favoriler</button></div>
+        <div class="editor-heading"><div><p class="eyebrow">YÖNETİCİ GALERİSİ</p><h1>Misafirlerden gelen görseller</h1><p>Yüklenen fotoğrafları onaylayın veya gizleyin. Yalnızca onaylı görseller misafirlere görünür.</p></div><button id="downloadAlbumBtn" class="ghost-btn">Albümü indir (ZIP)</button><button id="openSlideshowEditor" class="create-btn" type="button">▶ Slayt gösterisi</button><button id="favoriteFilterBtn" class="ghost-btn" aria-pressed="false">☆ Yalnızca favoriler</button></div>
         <div class="gallery-toolbar"><div id="photoFilters" class="guest-filters"><button class="active" data-photo-filter="all">Tümü <span id="photoFilterAllCount">0</span></button><button data-photo-filter="uploaded">Bekleyen <span id="photoFilterUploadedCount">0</span></button><button data-photo-filter="approved">Onaylı <span id="photoFilterApprovedCount">0</span></button><button data-photo-filter="hidden">Gizli <span id="photoFilterHiddenCount">0</span></button></div></div>
         <div id="adminGalleryGrid" class="admin-gallery-grid"></div><div id="adminGalleryEmpty" class="manager-empty"><i data-icon="image"></i><h2>Henüz görsel yüklenmedi</h2><p>Misafirlerin davetiye üzerinden eklediği içerikler burada görünecek.</p></div>
       </div>
@@ -245,7 +245,7 @@
     <section id="details" class="details-section invite-section"><p class="invite-kicker">DAVETLİSİNİZ</p><h2>Günün Detayları</h2><div class="detail-grid"><article><span>01</span><i data-icon="calendar"></i><h3>Tarih &amp; Saat</h3><p><span id="detailDate"></span><br><span id="detailTime"></span></p><button id="calendarBtn">Takvime Ekle ↗</button></article><article id="detailVenueArticle"><span>02</span><i data-icon="pin"></i><h3>Mekân</h3><p></p><a href="https://maps.google.com" target="_blank" rel="noreferrer">Yol Tarifi Al ↗</a></article><article id="detailGuestNoteArticle"><span>03</span><i data-icon="sparkle"></i><h3>Notumuz</h3><p></p><button data-modal="rsvp">Katılım Bildir ↗</button></article></div></section>
 
     <section class="invite-section logistics-section"><div class="detail-grid"><article class="hidden"><h3>Tam Adres</h3><p class="logistics-text" id="detail_address"></p></article><article class="hidden"><h3>Ulaşım ve Otopark</h3><p class="logistics-text" id="detail_transport_notes"></p></article><article class="hidden"><h3>İletişim Bilgileri</h3><p class="logistics-text" id="detail_contact_info"></p></article><article class="hidden"><h3>Etkinlik Programı</h3><p class="logistics-text" id="detail_schedule"></p></article></div></section>
-    <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><p id="memoryPolicyNotice" class="hidden" role="status"></p><div class="memory-actions"><button type="button" data-modal="upload" data-upload-action><i data-icon="upload"></i>Fotoğraf Yükle</button><button type="button" data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button><p id="uploadDisabledNote" class="upload-disabled-note hidden">Bu etkinlik için fotoğraf yükleme geçici olarak kapalı.</p></div></div><div class="memory-collage" id="publicMemoryCollage"><img id="publicMemoryFallback" class="memory-collage-fallback" src="/assets/images/wedding-hero.webp" alt="Düğün anısı"><div id="publicPhotoGrid" class="public-photo-grid hidden" aria-live="polite"></div><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
+    <section id="memories" class="memory-section invite-section"><div><p class="invite-kicker">ANI BİRİKTİR</p><h2>Gözünden<br><i>bizim hikâyemiz.</i></h2><p>O gece yakaladığın en güzel anları bizimle paylaş. Her kare, yıllarca saklayacağımız bir hatıraya dönüşsün.</p><p id="memoryPolicyNotice" class="hidden" role="status"></p><div class="memory-actions"><button type="button" data-modal="upload" data-upload-action><i data-icon="upload"></i>Fotoğraf Yükle</button><button type="button" data-modal="message"><i data-icon="book"></i>Mesaj Bırak</button><a id="watchSlideshowBtn" class="watch-slideshow hidden" href="#">▶ Slayt gösterisini izle</a><p id="uploadDisabledNote" class="upload-disabled-note hidden">Bu etkinlik için fotoğraf yükleme geçici olarak kapalı.</p></div></div><div class="memory-collage" id="publicMemoryCollage"><img id="publicMemoryFallback" class="memory-collage-fallback" src="/assets/images/wedding-hero.webp" alt="Düğün anısı"><div id="publicPhotoGrid" class="public-photo-grid hidden" aria-live="polite"></div><div class="upload-badge"><strong id="publicMemoryCount">0</strong><small>ANI PAYLAŞILDI</small></div></div></section>
 
     <footer class="invite-footer"><span class="invite-brand">Luma</span><p><span id="footerEventName"></span><span id="footerDate"></span></p><small>Sevgiyle hazırlandı.</small></footer>
   </section>
@@ -267,6 +267,7 @@
   <script src="/js/date-utils.js?v=1"></script>
   <script src="/js/rsvp-access.js?v=1"></script>
   <script src="/js/guest-access.js?v=1"></script>
+  <script src="/js/slideshow-editor.js?v=3"></script>
   <script src="/js/dietary-consent.js?v=1"></script>
   <script src="/js/invitation-colors.js?v=2"></script>
   <script src="/js/visual-layers.js?v=11"></script>
@@ -274,5 +275,5 @@
   <script src="/js/presentation.js?v=13"></script>
   <script src="/js/invitation-progress.js?v=6"></script>
   <script src="/js/editor-preview.js?v=5"></script>
-  <script src="/js/main.js?v=personal-2"></script></body>
+  <script src="/js/main.js?v=slideshow-1"></script></body>
 </html>
